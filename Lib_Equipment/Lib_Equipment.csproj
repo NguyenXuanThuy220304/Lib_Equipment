@@ -63,11 +63,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Database\DataProvider.cs" />
+    <Compile Include="FrmBaoTriThietBi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmBaoTriThietBi.Designer.cs">
+      <DependentUpon>FrmBaoTriThietBi.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmLogin.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FrmLogin.Designer.cs">
       <DependentUpon>FrmLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmLuanChuyenThietBi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmLuanChuyenThietBi.Designer.cs">
+      <DependentUpon>FrmLuanChuyenThietBi.cs</DependentUpon>
     </Compile>
     <Compile Include="FrmMain.cs">
       <SubType>Form</SubType>
@@ -104,6 +116,18 @@
     </Compile>
     <Compile Include="FrmQuanLyTaiKhoan.Designer.cs">
       <DependentUpon>FrmQuanLyTaiKhoan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmQuanLyThietBi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmQuanLyThietBi.Designer.cs">
+      <DependentUpon>FrmQuanLyThietBi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmSaoLuuPhucHoi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmSaoLuuPhucHoi.Designer.cs">
+      <DependentUpon>FrmSaoLuuPhucHoi.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AppSession.cs" />
     <Compile Include="Helpers\SecurityHelper.cs" />

@@ -1,5 +1,4 @@
 ﻿using Lib_Equipment.Database;
-using Lib_Equipment.Helpers;
 using System;
 using System.Data;
 using System.Data.SqlClient;
@@ -11,15 +10,18 @@ namespace Lib_Equipment
     {
         private string selectedRoleID = "";
 
+        // 1. THÊM BIẾN CỜ KHÓA ĐỂ CHỐNG LỖI PHẢN ỨNG DÂY CHUYỀN
+        private bool isUpdatingCheck = false;
+
         public FrmPhanQuyen()
         {
             InitializeComponent();
-            // Đăng ký sự kiện Check Item nếu bạn chưa đăng ký trong Designer
             this.clbMenu.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.clbMenu_ItemCheck);
         }
 
         private void FrmPhanQuyen_Load(object sender, EventArgs e)
         {
+            clbMenu.CheckOnClick = true; // Bắt buộc để click 1 lần là ăn ngay
             LoadDanhSachRole();
             LoadDanhSachMenu();
         }
@@ -35,12 +37,8 @@ namespace Lib_Equipment
             dgvRole.Columns["RoleName"].HeaderText = "Tên Nhóm Quyền";
         }
 
-        // =======================================================
-        // CẬP NHẬT: TẢI DANH SÁCH MENU THEO THỨ TỰ LOGIC
-        // =======================================================
         private void LoadDanhSachMenu()
         {
-            // Sử dụng CASE WHEN trong SQL để ép thứ tự: Nhóm Hệ thống -> Thư viện -> Thiết bị -> Báo cáo
             string query = @"
                 SELECT MenuID, MenuName 
                 FROM SysMenu 
@@ -53,12 +51,11 @@ namespace Lib_Equipment
                         WHEN MenuID LIKE 'btnBaoCao%' OR MenuID LIKE 'btnSub%BCThuVien' OR MenuID LIKE 'btnSub%BCThietBi' THEN 5
                         ELSE 6 
                     END,
-                    CASE WHEN MenuName NOT LIKE '%---%' THEN 0 ELSE 1 END, -- Mục cha hiện trước mục con
+                    CASE WHEN MenuName NOT LIKE '%---%' THEN 0 ELSE 1 END,
                     MenuName ASC";
 
             DataTable dtMenu = DataProvider.Instance.ExecuteQuery(query);
 
-            // Xóa DataSource cũ trước khi nạp mới để tránh xung đột
             ((ListBox)clbMenu).DataSource = null;
             ((ListBox)clbMenu).DataSource = dtMenu;
             ((ListBox)clbMenu).DisplayMember = "MenuName";
@@ -71,7 +68,9 @@ namespace Lib_Equipment
             {
                 selectedRoleID = dgvRole.Rows[e.RowIndex].Cells["RoleID"].Value.ToString();
 
-                // Hủy tick toàn bộ trước khi load quyền của Role mới
+                // Bật cờ khóa trước khi dùng code để load dữ liệu cũ lên
+                isUpdatingCheck = true;
+
                 for (int i = 0; i < clbMenu.Items.Count; i++)
                 {
                     clbMenu.SetItemChecked(i, false);
@@ -83,74 +82,100 @@ namespace Lib_Equipment
 
                 foreach (DataRow row in dtPermissions.Rows)
                 {
-                    string allowedMenuID = row["MenuID"].ToString();
+                    string allowedMenuID = row["MenuID"].ToString().Trim();
                     for (int i = 0; i < clbMenu.Items.Count; i++)
                     {
                         DataRowView item = (DataRowView)clbMenu.Items[i];
-                        if (item["MenuID"].ToString() == allowedMenuID)
+                        if (item["MenuID"].ToString().Trim() == allowedMenuID)
                         {
                             clbMenu.SetItemChecked(i, true);
                             break;
                         }
                     }
                 }
+
+                // Mở cờ khóa sau khi load xong
+                isUpdatingCheck = false;
             }
         }
 
         // =======================================================
-        // CẬP NHẬT: LOGIC TÍCH MỤC CHA TỰ ĐỘNG TÍCH MỤC CON
+        // 2. LOGIC TÍCH MỤC (ĐÃ FIX CHUẨN)
         // =======================================================
         private void clbMenu_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            // Sử dụng BeginInvoke để thực thi sau khi giá trị Check thực sự thay đổi
+            // NGĂN CHẶN LỖI DÂY CHUYỀN
+            if (isUpdatingCheck) return;
+
             this.BeginInvoke(new MethodInvoker(() => {
+
+                isUpdatingCheck = true; // Khóa lại không cho sự kiện khác xen vào
+
                 DataRowView currentItem = (DataRowView)clbMenu.Items[e.Index];
                 string menuName = currentItem["MenuName"].ToString();
+                bool isChecked = (e.NewValue == CheckState.Checked);
 
-                // Kiểm tra nếu là mục CHA (Không chứa dấu "---")
+                // NẾU LÀ MỤC CHA
                 if (!menuName.Contains("---"))
                 {
-                    bool isChecked = (e.NewValue == CheckState.Checked);
-
-                    // Duyệt các mục phía dưới mục cha này cho đến khi gặp mục cha tiếp theo
+                    // Tích tất cả mục con bên dưới nó
                     for (int i = e.Index + 1; i < clbMenu.Items.Count; i++)
                     {
                         DataRowView nextItem = (DataRowView)clbMenu.Items[i];
-                        string nextMenuName = nextItem["MenuName"].ToString();
-
-                        if (nextMenuName.Contains("---"))
+                        if (nextItem["MenuName"].ToString().Contains("---"))
                         {
                             clbMenu.SetItemChecked(i, isChecked);
                         }
                         else
                         {
-                            // Đã chạm đến mục cha của nhóm khác
                             break;
                         }
                     }
                 }
+                // NẾU LÀ MỤC CON
+                else
+                {
+                    // Chỉ khi mục con ĐƯỢC TÍCH, ta mới tự động tích mục cha
+                    if (isChecked)
+                    {
+                        for (int i = e.Index - 1; i >= 0; i--)
+                        {
+                            DataRowView prevItem = (DataRowView)clbMenu.Items[i];
+                            if (!prevItem["MenuName"].ToString().Contains("---"))
+                            {
+                                clbMenu.SetItemChecked(i, true);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                isUpdatingCheck = false; // Xong việc thì mở khóa
             }));
         }
 
+        // =======================================================
+        // 3. LƯU QUYỀN VÀO DATABASE
+        // =======================================================
         private void btnLuuQuyen_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(selectedRoleID))
             {
-                MessageBox.Show("Vui lòng chọn một quyền bên trái!", "Thông báo");
+                MessageBox.Show("Vui lòng chọn một quyền ở bảng bên trái trước!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             try
             {
-                // Bước 1: Xóa các bản ghi cũ
+                // Bước 1: Quét sạch quyền cũ
                 string deleteQuery = "DELETE FROM RolePermission WHERE RoleID = @role";
                 DataProvider.Instance.ExecuteNonQuery(deleteQuery, new SqlParameter[] { new SqlParameter("@role", selectedRoleID) });
 
-                // Bước 2: Lưu tất cả mục được tích
+                // Bước 2: Nạp các quyền mới đang được tích
                 foreach (object itemChecked in clbMenu.CheckedItems)
                 {
                     DataRowView item = (DataRowView)itemChecked;
-                    string menuID = item["MenuID"].ToString();
+                    string menuID = item["MenuID"].ToString().Trim();
 
                     string insertQuery = "INSERT INTO RolePermission (RoleID, MenuID) VALUES (@role, @menu)";
                     SqlParameter[] p = {
@@ -160,11 +185,11 @@ namespace Lib_Equipment
                     DataProvider.Instance.ExecuteNonQuery(insertQuery, p);
                 }
 
-                MessageBox.Show($"Đã cập nhật phân quyền chi tiết cho nhóm: {selectedRoleID}", "Thành công");
+                MessageBox.Show($"Lưu thành công phân quyền mới cho: {selectedRoleID}\nVui lòng đăng nhập lại để thay đổi có hiệu lực.", "Hoàn tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi lưu quyền: " + ex.Message, "Lỗi");
+                MessageBox.Show("Lỗi khi cập nhật SQL: " + ex.Message, "Lỗi");
             }
         }
     }

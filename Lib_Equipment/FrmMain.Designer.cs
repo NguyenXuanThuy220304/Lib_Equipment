@@ -83,7 +83,7 @@
             this.pnlSidebar.Controls.Add(this.pnlLogo);
             this.pnlSidebar.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlSidebar.Location = new System.Drawing.Point(0, 0);
-            this.pnlSidebar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pnlSidebar.Margin = new System.Windows.Forms.Padding(4);
             this.pnlSidebar.Name = "pnlSidebar";
             this.pnlSidebar.Size = new System.Drawing.Size(347, 862);
             this.pnlSidebar.TabIndex = 0;
@@ -96,7 +96,7 @@
             this.btnDangXuat.ForeColor = System.Drawing.Color.White;
             this.btnDangXuat.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
             this.btnDangXuat.Location = new System.Drawing.Point(0, 1042);
-            this.btnDangXuat.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnDangXuat.Margin = new System.Windows.Forms.Padding(4);
             this.btnDangXuat.Name = "btnDangXuat";
             this.btnDangXuat.Size = new System.Drawing.Size(326, 62);
             this.btnDangXuat.TabIndex = 10;
@@ -112,7 +112,7 @@
             this.pnlSubMenuBaoCao.Controls.Add(this.btnSubBCThuVien);
             this.pnlSubMenuBaoCao.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlSubMenuBaoCao.Location = new System.Drawing.Point(0, 931);
-            this.pnlSubMenuBaoCao.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pnlSubMenuBaoCao.Margin = new System.Windows.Forms.Padding(4);
             this.pnlSubMenuBaoCao.Name = "pnlSubMenuBaoCao";
             this.pnlSubMenuBaoCao.Size = new System.Drawing.Size(326, 111);
             this.pnlSubMenuBaoCao.TabIndex = 9;
@@ -127,7 +127,7 @@
             this.btnSubBCThietBi.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
             this.btnSubBCThietBi.HoverState.ForeColor = System.Drawing.Color.White;
             this.btnSubBCThietBi.Location = new System.Drawing.Point(0, 55);
-            this.btnSubBCThietBi.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSubBCThietBi.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubBCThietBi.Name = "btnSubBCThietBi";
             this.btnSubBCThietBi.Size = new System.Drawing.Size(326, 55);
             this.btnSubBCThietBi.TabIndex = 1;
@@ -144,7 +144,7 @@
             this.btnSubBCThuVien.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
             this.btnSubBCThuVien.HoverState.ForeColor = System.Drawing.Color.White;
             this.btnSubBCThuVien.Location = new System.Drawing.Point(0, 0);
-            this.btnSubBCThuVien.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSubBCThuVien.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubBCThuVien.Name = "btnSubBCThuVien";
             this.btnSubBCThuVien.Size = new System.Drawing.Size(326, 55);
             this.btnSubBCThuVien.TabIndex = 0;
@@ -160,7 +160,7 @@
             this.btnBaoCao.ForeColor = System.Drawing.Color.White;
             this.btnBaoCao.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
             this.btnBaoCao.Location = new System.Drawing.Point(0, 869);
-            this.btnBaoCao.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnBaoCao.Margin = new System.Windows.Forms.Padding(4);
             this.btnBaoCao.Name = "btnBaoCao";
             this.btnBaoCao.Size = new System.Drawing.Size(326, 62);
             this.btnBaoCao.TabIndex = 8;
@@ -177,7 +177,7 @@
             this.pnlSubMenuThietBi.Controls.Add(this.btnSubDanhMucTB);
             this.pnlSubMenuThietBi.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlSubMenuThietBi.Location = new System.Drawing.Point(0, 703);
-            this.pnlSubMenuThietBi.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pnlSubMenuThietBi.Margin = new System.Windows.Forms.Padding(4);
             this.pnlSubMenuThietBi.Name = "pnlSubMenuThietBi";
             this.pnlSubMenuThietBi.Size = new System.Drawing.Size(326, 166);
             this.pnlSubMenuThietBi.TabIndex = 7;
@@ -191,13 +191,14 @@
             this.btnSubBaoTri.ForeColor = System.Drawing.Color.LightGray;
             this.btnSubBaoTri.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
             this.btnSubBaoTri.Location = new System.Drawing.Point(0, 110);
-            this.btnSubBaoTri.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSubBaoTri.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubBaoTri.Name = "btnSubBaoTri";
             this.btnSubBaoTri.Size = new System.Drawing.Size(326, 55);
             this.btnSubBaoTri.TabIndex = 2;
             this.btnSubBaoTri.Text = "• Bảo trì & Thanh lý";
             this.btnSubBaoTri.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnSubBaoTri.TextOffset = new System.Drawing.Point(40, 0);
+            this.btnSubBaoTri.Click += new System.EventHandler(this.btnSubBaoTri_Click);
             // 
             // btnSubLuanChuyen
             // 
@@ -207,13 +208,14 @@
             this.btnSubLuanChuyen.ForeColor = System.Drawing.Color.LightGray;
             this.btnSubLuanChuyen.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
             this.btnSubLuanChuyen.Location = new System.Drawing.Point(0, 55);
-            this.btnSubLuanChuyen.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSubLuanChuyen.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubLuanChuyen.Name = "btnSubLuanChuyen";
             this.btnSubLuanChuyen.Size = new System.Drawing.Size(326, 55);
             this.btnSubLuanChuyen.TabIndex = 1;
             this.btnSubLuanChuyen.Text = "• Luân chuyển / Cấp phát";
             this.btnSubLuanChuyen.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnSubLuanChuyen.TextOffset = new System.Drawing.Point(40, 0);
+            this.btnSubLuanChuyen.Click += new System.EventHandler(this.btnSubLuanChuyen_Click);
             // 
             // btnSubDanhMucTB
             // 
@@ -223,13 +225,14 @@
             this.btnSubDanhMucTB.ForeColor = System.Drawing.Color.LightGray;
             this.btnSubDanhMucTB.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
             this.btnSubDanhMucTB.Location = new System.Drawing.Point(0, 0);
-            this.btnSubDanhMucTB.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSubDanhMucTB.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubDanhMucTB.Name = "btnSubDanhMucTB";
             this.btnSubDanhMucTB.Size = new System.Drawing.Size(326, 55);
             this.btnSubDanhMucTB.TabIndex = 0;
             this.btnSubDanhMucTB.Text = "• Danh mục Thiết bị";
             this.btnSubDanhMucTB.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnSubDanhMucTB.TextOffset = new System.Drawing.Point(40, 0);
+            this.btnSubDanhMucTB.Click += new System.EventHandler(this.btnSubDanhMucTB_Click);
             // 
             // btnThietBi
             // 
@@ -239,7 +242,7 @@
             this.btnThietBi.ForeColor = System.Drawing.Color.White;
             this.btnThietBi.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
             this.btnThietBi.Location = new System.Drawing.Point(0, 641);
-            this.btnThietBi.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnThietBi.Margin = new System.Windows.Forms.Padding(4);
             this.btnThietBi.Name = "btnThietBi";
             this.btnThietBi.Size = new System.Drawing.Size(326, 62);
             this.btnThietBi.TabIndex = 6;
@@ -256,7 +259,7 @@
             this.pnlSubMenuThuVien.Controls.Add(this.btnSubQuanLySach);
             this.pnlSubMenuThuVien.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlSubMenuThuVien.Location = new System.Drawing.Point(0, 475);
-            this.pnlSubMenuThuVien.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pnlSubMenuThuVien.Margin = new System.Windows.Forms.Padding(4);
             this.pnlSubMenuThuVien.Name = "pnlSubMenuThuVien";
             this.pnlSubMenuThuVien.Size = new System.Drawing.Size(326, 166);
             this.pnlSubMenuThuVien.TabIndex = 5;
@@ -270,7 +273,7 @@
             this.btnSubMuonTra.ForeColor = System.Drawing.Color.LightGray;
             this.btnSubMuonTra.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
             this.btnSubMuonTra.Location = new System.Drawing.Point(0, 110);
-            this.btnSubMuonTra.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSubMuonTra.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubMuonTra.Name = "btnSubMuonTra";
             this.btnSubMuonTra.Size = new System.Drawing.Size(326, 55);
             this.btnSubMuonTra.TabIndex = 2;
@@ -287,7 +290,7 @@
             this.btnSubQuanLyDocGia.ForeColor = System.Drawing.Color.LightGray;
             this.btnSubQuanLyDocGia.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
             this.btnSubQuanLyDocGia.Location = new System.Drawing.Point(0, 55);
-            this.btnSubQuanLyDocGia.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSubQuanLyDocGia.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubQuanLyDocGia.Name = "btnSubQuanLyDocGia";
             this.btnSubQuanLyDocGia.Size = new System.Drawing.Size(326, 55);
             this.btnSubQuanLyDocGia.TabIndex = 1;
@@ -304,7 +307,7 @@
             this.btnSubQuanLySach.ForeColor = System.Drawing.Color.LightGray;
             this.btnSubQuanLySach.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
             this.btnSubQuanLySach.Location = new System.Drawing.Point(0, 0);
-            this.btnSubQuanLySach.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSubQuanLySach.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubQuanLySach.Name = "btnSubQuanLySach";
             this.btnSubQuanLySach.Size = new System.Drawing.Size(326, 55);
             this.btnSubQuanLySach.TabIndex = 0;
@@ -321,7 +324,7 @@
             this.btnThuVien.ForeColor = System.Drawing.Color.White;
             this.btnThuVien.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
             this.btnThuVien.Location = new System.Drawing.Point(0, 413);
-            this.btnThuVien.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnThuVien.Margin = new System.Windows.Forms.Padding(4);
             this.btnThuVien.Name = "btnThuVien";
             this.btnThuVien.Size = new System.Drawing.Size(326, 62);
             this.btnThuVien.TabIndex = 4;
@@ -338,7 +341,7 @@
             this.pnlSubMenuHeThong.Controls.Add(this.btnSubTaiKhoan);
             this.pnlSubMenuHeThong.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlSubMenuHeThong.Location = new System.Drawing.Point(0, 247);
-            this.pnlSubMenuHeThong.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pnlSubMenuHeThong.Margin = new System.Windows.Forms.Padding(4);
             this.pnlSubMenuHeThong.Name = "pnlSubMenuHeThong";
             this.pnlSubMenuHeThong.Size = new System.Drawing.Size(326, 166);
             this.pnlSubMenuHeThong.TabIndex = 3;
@@ -352,13 +355,14 @@
             this.btnSubSaoLuu.ForeColor = System.Drawing.Color.LightGray;
             this.btnSubSaoLuu.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
             this.btnSubSaoLuu.Location = new System.Drawing.Point(0, 110);
-            this.btnSubSaoLuu.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSubSaoLuu.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubSaoLuu.Name = "btnSubSaoLuu";
             this.btnSubSaoLuu.Size = new System.Drawing.Size(326, 55);
             this.btnSubSaoLuu.TabIndex = 2;
             this.btnSubSaoLuu.Text = "• Sao lưu / Phục hồi";
             this.btnSubSaoLuu.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnSubSaoLuu.TextOffset = new System.Drawing.Point(40, 0);
+            this.btnSubSaoLuu.Click += new System.EventHandler(this.btnSubSaoLuu_Click);
             // 
             // btnSubPhanQuyen
             // 
@@ -368,7 +372,7 @@
             this.btnSubPhanQuyen.ForeColor = System.Drawing.Color.LightGray;
             this.btnSubPhanQuyen.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
             this.btnSubPhanQuyen.Location = new System.Drawing.Point(0, 55);
-            this.btnSubPhanQuyen.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSubPhanQuyen.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubPhanQuyen.Name = "btnSubPhanQuyen";
             this.btnSubPhanQuyen.Size = new System.Drawing.Size(326, 55);
             this.btnSubPhanQuyen.TabIndex = 1;
@@ -385,7 +389,7 @@
             this.btnSubTaiKhoan.ForeColor = System.Drawing.Color.LightGray;
             this.btnSubTaiKhoan.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
             this.btnSubTaiKhoan.Location = new System.Drawing.Point(0, 0);
-            this.btnSubTaiKhoan.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSubTaiKhoan.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubTaiKhoan.Name = "btnSubTaiKhoan";
             this.btnSubTaiKhoan.Size = new System.Drawing.Size(326, 55);
             this.btnSubTaiKhoan.TabIndex = 0;
@@ -402,7 +406,7 @@
             this.btnHeThong.ForeColor = System.Drawing.Color.White;
             this.btnHeThong.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
             this.btnHeThong.Location = new System.Drawing.Point(0, 185);
-            this.btnHeThong.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnHeThong.Margin = new System.Windows.Forms.Padding(4);
             this.btnHeThong.Name = "btnHeThong";
             this.btnHeThong.Size = new System.Drawing.Size(326, 62);
             this.btnHeThong.TabIndex = 2;
@@ -419,7 +423,7 @@
             this.btnTrangChu.ForeColor = System.Drawing.Color.White;
             this.btnTrangChu.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
             this.btnTrangChu.Location = new System.Drawing.Point(0, 123);
-            this.btnTrangChu.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnTrangChu.Margin = new System.Windows.Forms.Padding(4);
             this.btnTrangChu.Name = "btnTrangChu";
             this.btnTrangChu.Size = new System.Drawing.Size(326, 62);
             this.btnTrangChu.TabIndex = 1;
@@ -433,7 +437,7 @@
             this.pnlLogo.Controls.Add(this.lblLogo);
             this.pnlLogo.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlLogo.Location = new System.Drawing.Point(0, 0);
-            this.pnlLogo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pnlLogo.Margin = new System.Windows.Forms.Padding(4);
             this.pnlLogo.Name = "pnlLogo";
             this.pnlLogo.Size = new System.Drawing.Size(326, 123);
             this.pnlLogo.TabIndex = 0;
@@ -459,7 +463,7 @@
             this.pnlHeader.Controls.Add(this.btnClose);
             this.pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlHeader.Location = new System.Drawing.Point(347, 0);
-            this.pnlHeader.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pnlHeader.Margin = new System.Windows.Forms.Padding(4);
             this.pnlHeader.Name = "pnlHeader";
             this.pnlHeader.Size = new System.Drawing.Size(1253, 74);
             this.pnlHeader.TabIndex = 1;
@@ -483,7 +487,7 @@
             this.btnMinimize.FillColor = System.Drawing.Color.White;
             this.btnMinimize.IconColor = System.Drawing.Color.Gray;
             this.btnMinimize.Location = new System.Drawing.Point(1077, 15);
-            this.btnMinimize.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnMinimize.Margin = new System.Windows.Forms.Padding(4);
             this.btnMinimize.Name = "btnMinimize";
             this.btnMinimize.Size = new System.Drawing.Size(47, 37);
             this.btnMinimize.TabIndex = 2;
@@ -495,7 +499,7 @@
             this.btnMaximize.FillColor = System.Drawing.Color.White;
             this.btnMaximize.IconColor = System.Drawing.Color.Gray;
             this.btnMaximize.Location = new System.Drawing.Point(1132, 15);
-            this.btnMaximize.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnMaximize.Margin = new System.Windows.Forms.Padding(4);
             this.btnMaximize.Name = "btnMaximize";
             this.btnMaximize.Size = new System.Drawing.Size(47, 37);
             this.btnMaximize.TabIndex = 1;
@@ -508,7 +512,7 @@
             this.btnClose.HoverState.IconColor = System.Drawing.Color.White;
             this.btnClose.IconColor = System.Drawing.Color.Gray;
             this.btnClose.Location = new System.Drawing.Point(1187, 15);
-            this.btnClose.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnClose.Margin = new System.Windows.Forms.Padding(4);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(47, 37);
             this.btnClose.TabIndex = 0;
@@ -519,7 +523,7 @@
             this.pnlDesktop.Controls.Add(this.lblWelcomeText);
             this.pnlDesktop.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlDesktop.Location = new System.Drawing.Point(347, 74);
-            this.pnlDesktop.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pnlDesktop.Margin = new System.Windows.Forms.Padding(4);
             this.pnlDesktop.Name = "pnlDesktop";
             this.pnlDesktop.Size = new System.Drawing.Size(1253, 788);
             this.pnlDesktop.TabIndex = 2;
@@ -552,7 +556,7 @@
             this.Controls.Add(this.pnlHeader);
             this.Controls.Add(this.pnlSidebar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Hệ thống Quản lý";
