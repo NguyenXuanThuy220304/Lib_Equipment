@@ -99,6 +99,12 @@
     <Compile Include="FrmPhanQuyen.Designer.cs">
       <DependentUpon>FrmPhanQuyen.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmQuanLyBanSao.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmQuanLyBanSao.Designer.cs">
+      <DependentUpon>FrmQuanLyBanSao.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmQuanLyDocGia.cs">
       <SubType>Form</SubType>
     </Compile>

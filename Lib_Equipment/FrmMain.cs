@@ -15,18 +15,14 @@ namespace Lib_Equipment
         public FrmMain()
         {
             InitializeComponent();
-            CustomizeDesign(); // Ẩn các sub-menu lúc khởi tạo
+            CustomizeDesign();
         }
 
         private void FrmMain_Load(object sender, EventArgs e)
         {
-            // Gọi hàm phân quyền khi Form load xong
             ApplyDynamicPermissions();
         }
 
-        // =========================================================================
-        // 1. HÀM XỬ LÝ ẨN HIỆN SUB-MENU
-        // =========================================================================
         private void CustomizeDesign()
         {
             pnlSubMenuHeThong.Visible = false;
@@ -55,9 +51,7 @@ namespace Lib_Equipment
                 subMenu.Visible = false;
             }
         }
-        // =========================================================================
-        // HÀM TÌM KIẾM ĐỆ QUY (TÌM XUYÊN QUA MỌI PANEL LỒNG NHAU)
-        // =========================================================================
+
         private Control FindControlRecursive(Control root, string name)
         {
             if (root.Name == name) return root;
@@ -69,9 +63,6 @@ namespace Lib_Equipment
             return null;
         }
 
-        // =========================================================================
-        // PHÂN QUYỀN ĐỘNG CHUẨN NHẤT
-        // =========================================================================
         private void ApplyDynamicPermissions()
         {
             try
@@ -82,19 +73,18 @@ namespace Lib_Equipment
                     return;
                 }
 
-                // 1. ẨN TẤT CẢ CÁC NÚT (Liệt kê rõ ràng để không ẩn nhầm Panel chứa nó)
-                // - Nút Cha
+                // 1. ẨN TẤT CẢ CÁC NÚT
                 btnHeThong.Visible = false;
                 btnThuVien.Visible = false;
                 btnThietBi.Visible = false;
                 btnBaoCao.Visible = false;
 
-                // - Nút Con
                 btnSubTaiKhoan.Visible = false;
                 btnSubPhanQuyen.Visible = false;
                 btnSubSaoLuu.Visible = false;
 
                 btnSubQuanLySach.Visible = false;
+                btnSubQuanLyBanSao.Visible = false; // Ẩn nút mới thêm
                 btnSubQuanLyDocGia.Visible = false;
                 btnSubMuonTra.Visible = false;
 
@@ -105,7 +95,7 @@ namespace Lib_Equipment
                 btnSubBCThuVien.Visible = false;
                 btnSubBCThietBi.Visible = false;
 
-                // 2. TRUY VẤN CSDL
+                // 2. TRUY VẤN CSDL ĐỂ LẤY QUYỀN
                 string query = "SELECT MenuID FROM RolePermission WHERE RoleID = @role";
                 SqlParameter[] param = { new SqlParameter("@role", AppSession.RoleID) };
                 DataTable dtPerms = DataProvider.Instance.ExecuteQuery(query, param);
@@ -113,10 +103,7 @@ namespace Lib_Equipment
                 // 3. HIỂN THỊ CÁC NÚT ĐƯỢC PHÉP
                 foreach (DataRow row in dtPerms.Rows)
                 {
-                    // Thêm .Trim() để đề phòng Database có khoảng trắng dư thừa
                     string menuIdAllowed = row["MenuID"].ToString().Trim();
-
-                    // Sử dụng hàm tìm kiếm đệ quy tự viết
                     Control foundControl = FindControlRecursive(this, menuIdAllowed);
                     if (foundControl != null)
                     {
@@ -124,13 +111,12 @@ namespace Lib_Equipment
                     }
                 }
 
-                // 4. BƯỚC LOGIC THÔNG MINH (CỨU CÁNH UX): 
-                // Nếu người dùng được cấp quyền bất kỳ Nút Con nào, thì BẮT BUỘC phải hiện Nút Cha tương ứng
-                // để họ có chỗ bấm xổ menu xuống.
+                // 4. KIỂM TRA ĐỂ MỞ MENU CHA NẾU CÓ ÍT NHẤT 1 NÚT CON ĐƯỢC BẬT
                 if (btnSubTaiKhoan.Visible || btnSubPhanQuyen.Visible || btnSubSaoLuu.Visible)
                     btnHeThong.Visible = true;
 
-                if (btnSubQuanLySach.Visible || btnSubQuanLyDocGia.Visible || btnSubMuonTra.Visible)
+                // Đã thêm nút Bản sao vào điều kiện này
+                if (btnSubQuanLySach.Visible || btnSubQuanLyBanSao.Visible || btnSubQuanLyDocGia.Visible || btnSubMuonTra.Visible)
                     btnThuVien.Visible = true;
 
                 if (btnSubDanhMucTB.Visible || btnSubLuanChuyen.Visible || btnSubBaoTri.Visible)
@@ -146,9 +132,6 @@ namespace Lib_Equipment
             }
         }
 
-        // =========================================================================
-        // 3. HÀM MỞ FORM CON
-        // =========================================================================
         private void OpenChildForm(Form childForm, string title)
         {
             if (currentChildForm != null)
@@ -166,9 +149,6 @@ namespace Lib_Equipment
             lblTitle.Text = title;
         }
 
-        // =========================================================================
-        // 4. SỰ KIỆN CLICK MENU CHA
-        // =========================================================================
         private void btnTrangChu_Click(object sender, EventArgs e)
         {
             HideAllSubMenu();
@@ -181,49 +161,24 @@ namespace Lib_Equipment
         private void btnThietBi_Click(object sender, EventArgs e) { ShowSubMenu(pnlSubMenuThietBi); }
         private void btnBaoCao_Click(object sender, EventArgs e) { ShowSubMenu(pnlSubMenuBaoCao); }
 
-        // =========================================================================
-        // 5. SỰ KIỆN CLICK SUB-MENU
-        // =========================================================================
-        private void btnSubTaiKhoan_Click(object sender, EventArgs e)
-        {
-            OpenChildForm(new FrmQuanLyTaiKhoan(), "QUẢN LÝ TÀI KHOẢN HỆ THỐNG");
-        }
+        private void btnSubTaiKhoan_Click(object sender, EventArgs e) { OpenChildForm(new FrmQuanLyTaiKhoan(), "QUẢN LÝ TÀI KHOẢN HỆ THỐNG"); }
+        private void btnSubPhanQuyen_Click(object sender, EventArgs e) { OpenChildForm(new FrmPhanQuyen(), "PHÂN QUYỀN CHỨC NĂNG"); }
+        private void btnSubSaoLuu_Click(object sender, EventArgs e) { OpenChildForm(new FrmSaoLuuPhucHoi(), "SAO LƯU & PHỤC HỒI DỮ LIỆU"); }
 
-        private void btnSubPhanQuyen_Click(object sender, EventArgs e)
-        {
-            OpenChildForm(new FrmPhanQuyen(), "PHÂN QUYỀN CHỨC NĂNG");
-        }
+        private void btnSubQuanLySach_Click(object sender, EventArgs e) { OpenChildForm(new FrmQuanLySach(), "DANH MỤC ĐẦU SÁCH"); }
 
-        private void btnSubQuanLySach_Click(object sender, EventArgs e)
-        {
-            OpenChildForm(new FrmQuanLySach(), "DANH MỤC ĐẦU SÁCH");
-        }
+        // SỰ KIỆN GỌI FORM KHO SÁCH (BẢN SAO)
+        private void btnSubQuanLyBanSao_Click(object sender, EventArgs e) { OpenChildForm(new FrmQuanLyBanSao(), "QUẢN LÝ KHO SÁCH (BẢN SAO)"); }
 
-        private void btnSubQuanLyDocGia_Click(object sender, EventArgs e)
-        {
-            OpenChildForm(new FrmQuanLyDocGia(), "QUẢN LÝ ĐỘC GIẢ");
-        }
+        private void btnSubQuanLyDocGia_Click(object sender, EventArgs e) { OpenChildForm(new FrmQuanLyDocGia(), "QUẢN LÝ ĐỘC GIẢ"); }
+        private void btnSubMuonTra_Click(object sender, EventArgs e) { OpenChildForm(new FrmMuonTraSach(), "NGHIỆP VỤ MƯỢN TRẢ SÁCH"); }
 
-        private void btnSubMuonTra_Click(object sender, EventArgs e)
-        {
-            OpenChildForm(new FrmMuonTraSach(), "NGHIỆP VỤ MƯỢN TRẢ SÁCH");
-        }
-
-        private void btnSubDanhMucTB_Click(object sender, EventArgs e) { 
-            FrmQuanLyThietBi frmQuanLyThietBi = new FrmQuanLyThietBi();
-            OpenChildForm(frmQuanLyThietBi, "DANH MỤC THIẾT BỊ");
-        }
-        private void btnSubLuanChuyen_Click(object sender, EventArgs e) {
-            FrmLuanChuyenThietBi frm = new FrmLuanChuyenThietBi();
-            OpenChildForm(frm, "LUÂN CHUYỂN & CẤP PHÁT THIẾT BỊ");
-        }
+        private void btnSubDanhMucTB_Click(object sender, EventArgs e) { OpenChildForm(new FrmQuanLyThietBi(), "DANH MỤC THIẾT BỊ"); }
+        private void btnSubLuanChuyen_Click(object sender, EventArgs e) { OpenChildForm(new FrmLuanChuyenThietBi(), "LUÂN CHUYỂN & CẤP PHÁT THIẾT BỊ"); }
         private void btnSubBaoTri_Click(object sender, EventArgs e) { OpenChildForm(new FrmBaoTriThietBi(), "BẢO TRÌ VÀ THANH LÝ THIẾT BỊ"); }
+
         private void btnSubBCThuVien_Click(object sender, EventArgs e) { /* Gọi Form BC */ }
         private void btnSubBCThietBi_Click(object sender, EventArgs e) { /* Gọi Form BC */ }
-        private void btnSubSaoLuu_Click(object sender, EventArgs e) {
-            FrmSaoLuuPhucHoi frm = new FrmSaoLuuPhucHoi();
-            OpenChildForm(frm, "SAO LƯU & PHỤC HỒI DỮ LIỆU");
-        }
 
         private void btnDangXuat_Click(object sender, EventArgs e)
         {
@@ -237,7 +192,6 @@ namespace Lib_Equipment
 
         private void FrmMain_Load_1(object sender, EventArgs e)
         {
-            // Gọi hàm phân quyền khi Form load xong
             ApplyDynamicPermissions();
         }
     }

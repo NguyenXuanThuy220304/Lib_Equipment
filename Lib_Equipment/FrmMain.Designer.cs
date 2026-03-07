@@ -33,6 +33,7 @@
             this.pnlSubMenuThuVien = new Guna.UI2.WinForms.Guna2Panel();
             this.btnSubMuonTra = new Guna.UI2.WinForms.Guna2Button();
             this.btnSubQuanLyDocGia = new Guna.UI2.WinForms.Guna2Button();
+            this.btnSubQuanLyBanSao = new Guna.UI2.WinForms.Guna2Button(); // NÚT MỚI
             this.btnSubQuanLySach = new Guna.UI2.WinForms.Guna2Button();
             this.btnThuVien = new Guna.UI2.WinForms.Guna2Button();
             this.pnlSubMenuHeThong = new Guna.UI2.WinForms.Guna2Panel();
@@ -253,15 +254,17 @@
             // 
             // pnlSubMenuThuVien
             // 
+            // ĐÃ TĂNG CHIỀU CAO LÊN 221 ĐỂ CHỨA NÚT KHO SÁCH MỚI
             this.pnlSubMenuThuVien.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(85)))), ((int)(((byte)(142)))));
             this.pnlSubMenuThuVien.Controls.Add(this.btnSubMuonTra);
             this.pnlSubMenuThuVien.Controls.Add(this.btnSubQuanLyDocGia);
+            this.pnlSubMenuThuVien.Controls.Add(this.btnSubQuanLyBanSao);
             this.pnlSubMenuThuVien.Controls.Add(this.btnSubQuanLySach);
             this.pnlSubMenuThuVien.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlSubMenuThuVien.Location = new System.Drawing.Point(0, 475);
+            this.pnlSubMenuThuVien.Location = new System.Drawing.Point(0, 420);
             this.pnlSubMenuThuVien.Margin = new System.Windows.Forms.Padding(4);
             this.pnlSubMenuThuVien.Name = "pnlSubMenuThuVien";
-            this.pnlSubMenuThuVien.Size = new System.Drawing.Size(326, 166);
+            this.pnlSubMenuThuVien.Size = new System.Drawing.Size(326, 221);
             this.pnlSubMenuThuVien.TabIndex = 5;
             this.pnlSubMenuThuVien.Visible = false;
             // 
@@ -272,11 +275,11 @@
             this.btnSubMuonTra.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnSubMuonTra.ForeColor = System.Drawing.Color.LightGray;
             this.btnSubMuonTra.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
-            this.btnSubMuonTra.Location = new System.Drawing.Point(0, 110);
+            this.btnSubMuonTra.Location = new System.Drawing.Point(0, 165);
             this.btnSubMuonTra.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubMuonTra.Name = "btnSubMuonTra";
             this.btnSubMuonTra.Size = new System.Drawing.Size(326, 55);
-            this.btnSubMuonTra.TabIndex = 2;
+            this.btnSubMuonTra.TabIndex = 3;
             this.btnSubMuonTra.Text = "• Mượn / Trả sách";
             this.btnSubMuonTra.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnSubMuonTra.TextOffset = new System.Drawing.Point(40, 0);
@@ -289,15 +292,32 @@
             this.btnSubQuanLyDocGia.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnSubQuanLyDocGia.ForeColor = System.Drawing.Color.LightGray;
             this.btnSubQuanLyDocGia.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
-            this.btnSubQuanLyDocGia.Location = new System.Drawing.Point(0, 55);
+            this.btnSubQuanLyDocGia.Location = new System.Drawing.Point(0, 110);
             this.btnSubQuanLyDocGia.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubQuanLyDocGia.Name = "btnSubQuanLyDocGia";
             this.btnSubQuanLyDocGia.Size = new System.Drawing.Size(326, 55);
-            this.btnSubQuanLyDocGia.TabIndex = 1;
+            this.btnSubQuanLyDocGia.TabIndex = 2;
             this.btnSubQuanLyDocGia.Text = "• Quản lý Độc giả";
             this.btnSubQuanLyDocGia.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnSubQuanLyDocGia.TextOffset = new System.Drawing.Point(40, 0);
             this.btnSubQuanLyDocGia.Click += new System.EventHandler(this.btnSubQuanLyDocGia_Click);
+            // 
+            // btnSubQuanLyBanSao
+            // 
+            this.btnSubQuanLyBanSao.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnSubQuanLyBanSao.FillColor = System.Drawing.Color.Transparent;
+            this.btnSubQuanLyBanSao.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.btnSubQuanLyBanSao.ForeColor = System.Drawing.Color.LightGray;
+            this.btnSubQuanLyBanSao.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
+            this.btnSubQuanLyBanSao.Location = new System.Drawing.Point(0, 55);
+            this.btnSubQuanLyBanSao.Margin = new System.Windows.Forms.Padding(4);
+            this.btnSubQuanLyBanSao.Name = "btnSubQuanLyBanSao";
+            this.btnSubQuanLyBanSao.Size = new System.Drawing.Size(326, 55);
+            this.btnSubQuanLyBanSao.TabIndex = 1;
+            this.btnSubQuanLyBanSao.Text = "• Quản lý Kho sách";
+            this.btnSubQuanLyBanSao.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnSubQuanLyBanSao.TextOffset = new System.Drawing.Point(40, 0);
+            this.btnSubQuanLyBanSao.Click += new System.EventHandler(this.btnSubQuanLyBanSao_Click);
             // 
             // btnSubQuanLySach
             // 
@@ -323,7 +343,7 @@
             this.btnThuVien.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.btnThuVien.ForeColor = System.Drawing.Color.White;
             this.btnThuVien.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
-            this.btnThuVien.Location = new System.Drawing.Point(0, 413);
+            this.btnThuVien.Location = new System.Drawing.Point(0, 358);
             this.btnThuVien.Margin = new System.Windows.Forms.Padding(4);
             this.btnThuVien.Name = "btnThuVien";
             this.btnThuVien.Size = new System.Drawing.Size(326, 62);
@@ -340,7 +360,7 @@
             this.pnlSubMenuHeThong.Controls.Add(this.btnSubPhanQuyen);
             this.pnlSubMenuHeThong.Controls.Add(this.btnSubTaiKhoan);
             this.pnlSubMenuHeThong.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlSubMenuHeThong.Location = new System.Drawing.Point(0, 247);
+            this.pnlSubMenuHeThong.Location = new System.Drawing.Point(0, 192);
             this.pnlSubMenuHeThong.Margin = new System.Windows.Forms.Padding(4);
             this.pnlSubMenuHeThong.Name = "pnlSubMenuHeThong";
             this.pnlSubMenuHeThong.Size = new System.Drawing.Size(326, 166);
@@ -405,7 +425,7 @@
             this.btnHeThong.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.btnHeThong.ForeColor = System.Drawing.Color.White;
             this.btnHeThong.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
-            this.btnHeThong.Location = new System.Drawing.Point(0, 185);
+            this.btnHeThong.Location = new System.Drawing.Point(0, 130);
             this.btnHeThong.Margin = new System.Windows.Forms.Padding(4);
             this.btnHeThong.Name = "btnHeThong";
             this.btnHeThong.Size = new System.Drawing.Size(326, 62);
@@ -422,7 +442,7 @@
             this.btnTrangChu.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.btnTrangChu.ForeColor = System.Drawing.Color.White;
             this.btnTrangChu.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
-            this.btnTrangChu.Location = new System.Drawing.Point(0, 123);
+            this.btnTrangChu.Location = new System.Drawing.Point(0, 68);
             this.btnTrangChu.Margin = new System.Windows.Forms.Padding(4);
             this.btnTrangChu.Name = "btnTrangChu";
             this.btnTrangChu.Size = new System.Drawing.Size(326, 62);
@@ -439,17 +459,17 @@
             this.pnlLogo.Location = new System.Drawing.Point(0, 0);
             this.pnlLogo.Margin = new System.Windows.Forms.Padding(4);
             this.pnlLogo.Name = "pnlLogo";
-            this.pnlLogo.Size = new System.Drawing.Size(326, 123);
+            this.pnlLogo.Size = new System.Drawing.Size(326, 68);
             this.pnlLogo.TabIndex = 0;
             // 
             // lblLogo
             // 
             this.lblLogo.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
             this.lblLogo.ForeColor = System.Drawing.Color.White;
-            this.lblLogo.Location = new System.Drawing.Point(16, 26);
+            this.lblLogo.Location = new System.Drawing.Point(16, 0);
             this.lblLogo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblLogo.Name = "lblLogo";
-            this.lblLogo.Size = new System.Drawing.Size(300, 74);
+            this.lblLogo.Size = new System.Drawing.Size(300, 68);
             this.lblLogo.TabIndex = 0;
             this.lblLogo.Text = "UNETI ADMIN";
             this.lblLogo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -607,6 +627,7 @@
         // --- SUB MENU THƯ VIỆN ---
         private Guna.UI2.WinForms.Guna2Panel pnlSubMenuThuVien;
         private Guna.UI2.WinForms.Guna2Button btnSubQuanLySach;
+        private Guna.UI2.WinForms.Guna2Button btnSubQuanLyBanSao; // KHAI BÁO NÚT MỚI
         private Guna.UI2.WinForms.Guna2Button btnSubQuanLyDocGia;
         private Guna.UI2.WinForms.Guna2Button btnSubMuonTra;
 

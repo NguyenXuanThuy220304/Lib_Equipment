@@ -39,6 +39,7 @@ namespace Lib_Equipment
 
         private void LoadDanhSachMenu()
         {
+            // ĐÃ SỬA SQL Ở ĐÂY: Bổ sung "OR MenuID LIKE '%BanSao'" vào Nhóm 3 (Thư viện)
             string query = @"
                 SELECT MenuID, MenuName 
                 FROM SysMenu 
@@ -46,7 +47,7 @@ namespace Lib_Equipment
                     CASE 
                         WHEN MenuID = 'btnTrangChu' THEN 1
                         WHEN MenuID LIKE 'btnHeThong%' OR MenuID LIKE 'btnSub%TaiKhoan' OR MenuID LIKE 'btnSub%PhanQuyen' OR MenuID LIKE 'btnSub%SaoLuu' THEN 2
-                        WHEN MenuID LIKE 'btnThuVien%' OR MenuID LIKE 'btnSub%Sach' OR MenuID LIKE 'btnSub%DocGia' OR MenuID LIKE 'btnSub%MuonTra' THEN 3
+                        WHEN MenuID LIKE 'btnThuVien%' OR MenuID LIKE 'btnSub%Sach' OR MenuID LIKE '%BanSao' OR MenuID LIKE 'btnSub%DocGia' OR MenuID LIKE 'btnSub%MuonTra' THEN 3
                         WHEN MenuID LIKE 'btnThietBi%' OR MenuID LIKE 'btnSub%DanhMucTB' OR MenuID LIKE 'btnSub%LuanChuyen' OR MenuID LIKE 'btnSub%BaoTri' THEN 4
                         WHEN MenuID LIKE 'btnBaoCao%' OR MenuID LIKE 'btnSub%BCThuVien' OR MenuID LIKE 'btnSub%BCThietBi' THEN 5
                         ELSE 6 
