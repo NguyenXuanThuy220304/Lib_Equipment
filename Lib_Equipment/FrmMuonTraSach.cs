@@ -17,10 +17,8 @@ namespace Lib_Equipment
 
         private void FrmMuonTraSach_Load(object sender, EventArgs e)
         {
-            dtpHanTra.Value = DateTime.Now.AddDays(14);
+            dtpHanTra.Value = DateTime.Now.AddDays(14); // Mặc định cho mượn 14 ngày
             SetupGridReturnButton();
-
-            // GỌI HÀM NÀY LÚC MỞ FORM ĐỂ HIỆN TẤT CẢ PHIẾU CHƯA TRẢ
             RefreshGrid();
         }
 
@@ -41,19 +39,18 @@ namespace Lib_Equipment
         }
 
         // ==========================================================
-        // HÀM THÔNG MINH: TẢI DANH SÁCH SÁCH ĐANG MƯỢN
+        // 1. LÀM MỚI DANH SÁCH (TẤT CẢ / HOẶC 1 ĐỘC GIẢ)
         // ==========================================================
         private void RefreshGrid()
         {
             string query = "";
             DataTable dt = new DataTable();
 
-            // Nếu chưa nhập sinh viên -> Hiển thị TẤT CẢ sách đang mượn của thư viện
             if (string.IsNullOrEmpty(txtMaDG.Text.Trim()))
             {
                 query = @"
                     SELECT br.RecordID AS [Mã Phiếu], 
-                           r.FullName AS [Người Mượn], -- Hiện thêm tên người mượn
+                           r.FullName AS [Người Mượn],
                            bd.CopyID AS [Mã Bản Sao], 
                            b.Title AS [Tên Sách], 
                            br.BorrowDate AS [Ngày Mượn], 
@@ -67,7 +64,6 @@ namespace Lib_Equipment
 
                 dt = DataProvider.Instance.ExecuteQuery(query);
             }
-            // Nếu đã nhập mã sinh viên -> Lọc riêng sách của sinh viên đó
             else
             {
                 query = @"
@@ -87,8 +83,6 @@ namespace Lib_Equipment
             }
 
             dgvDangMuon.DataSource = dt;
-
-            // Đẩy nút TRẢ SÁCH xuống cột cuối cùng
             if (dgvDangMuon.Columns.Contains("btnReturn"))
             {
                 dgvDangMuon.Columns["btnReturn"].DisplayIndex = dgvDangMuon.Columns.Count - 1;
@@ -96,7 +90,7 @@ namespace Lib_Equipment
         }
 
         // ==========================================================
-        // TÌM ĐỘC GIẢ
+        // 2. QUÉT THẺ ĐỘC GIẢ (CHECK QUÁ HẠN & KHÓA TÀI KHOẢN)
         // ==========================================================
         private void txtMaDG_KeyDown(object sender, KeyEventArgs e)
         {
@@ -105,7 +99,7 @@ namespace Lib_Equipment
                 if (string.IsNullOrEmpty(txtMaDG.Text))
                 {
                     txtTenDG.Clear();
-                    RefreshGrid(); // Nếu xóa trắng mã ĐG và ấn Enter -> Load lại toàn bộ
+                    RefreshGrid();
                     return;
                 }
 
@@ -116,29 +110,49 @@ namespace Lib_Equipment
                 if (dt.Rows.Count > 0)
                 {
                     txtTenDG.Text = dt.Rows[0]["FullName"].ToString();
+
+                    // Check trạng thái thẻ
                     string statusValue = dt.Rows[0]["Status"].ToString().Trim().ToLower();
                     if (statusValue != "1" && statusValue != "true")
                     {
-                        MessageBox.Show("Thẻ độc giả này đã bị khóa hoặc hết hạn!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        btnChoMuon.Enabled = false;
-                        dgvDangMuon.DataSource = null;
-                        return;
+                        MessageBox.Show("Thẻ độc giả này đã bị khóa hệ thống!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        btnChoMuon.Enabled = false; return;
                     }
 
-                    RefreshGrid(); // Load riêng sách của Độc giả này
-                    txtMaBanSao.Focus();
+                    // CHECK LUẬT BÁCH KHOA: CÓ NỢ SÁCH QUÁ HẠN KHÔNG?
+                    string checkOverdue = @"
+                        SELECT COUNT(*) FROM BorrowRecord br 
+                        JOIN BorrowDetail bd ON br.RecordID = bd.RecordID 
+                        WHERE br.ReaderID = @id AND bd.ReturnDate IS NULL AND br.DueDate < CAST(GETDATE() AS DATE)";
+
+                    // ĐÃ FIX LỖI MẢNG THAM SỐ Ở ĐÂY
+                    SqlParameter[] paramCheck = { new SqlParameter("@id", txtMaDG.Text.Trim()) };
+                    int overdueCount = (int)DataProvider.Instance.ExecuteScalar(checkOverdue, paramCheck);
+
+                    RefreshGrid();
+
+                    if (overdueCount > 0)
+                    {
+                        MessageBox.Show($"CẢNH BÁO: Độc giả này đang có {overdueCount} cuốn sách QUÁ HẠN!\n\nHệ thống tự động TẠM KHÓA quyền mượn mới. Vui lòng trả sách cũ và nộp phạt để mở khóa.", "Chế tài kỷ luật", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                        btnChoMuon.Enabled = false;
+                        txtMaBanSao.Enabled = false;
+                    }
+                    else
+                    {
+                        txtMaBanSao.Enabled = true;
+                        txtMaBanSao.Focus();
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Không tìm thấy Độc giả này trong hệ thống!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    txtTenDG.Clear();
-                    RefreshGrid(); // Load lại toàn bộ
+                    MessageBox.Show("Không tìm thấy Độc giả này!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtTenDG.Clear(); RefreshGrid();
                 }
             }
         }
 
         // ==========================================================
-        // QUÉT MÃ SÁCH
+        // 3. QUÉT SÁCH (SÁCH NÀO CŨNG MƯỢN ĐƯỢC MIỄN LÀ "CÓ SẴN")
         // ==========================================================
         private void txtMaBanSao_KeyDown(object sender, KeyEventArgs e)
         {
@@ -147,7 +161,7 @@ namespace Lib_Equipment
                 if (string.IsNullOrEmpty(txtMaBanSao.Text)) return;
 
                 string query = @"
-                    SELECT b.Title, bc.Status, bc.Location 
+                    SELECT b.Title, bc.Status 
                     FROM BookCopy bc
                     JOIN Book b ON bc.BookID = b.BookID
                     WHERE bc.CopyID = @id AND (bc.IsDeleted = 0 OR bc.IsDeleted IS NULL)";
@@ -159,19 +173,13 @@ namespace Lib_Equipment
                 {
                     txtTenSachMuon.Text = dt.Rows[0]["Title"].ToString();
                     string status = dt.Rows[0]["Status"].ToString();
-                    string location = dt.Rows[0]["Location"].ToString();
 
+                    // Sách phòng đọc hay kho mượn đều ok, chỉ cần chưa bị mượn/mất
                     if (status != "Có sẵn")
                     {
-                        MessageBox.Show("Sách này hiện đang được mượn hoặc không có sẵn!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("Sách này hiện đang được mượn hoặc không có sẵn (Hỏng/Mất)!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         btnChoMuon.Enabled = false;
                         txtTenSachMuon.ForeColor = Color.DimGray;
-                    }
-                    else if (!location.Contains("Kho mượn"))
-                    {
-                        MessageBox.Show("Đây là sách đọc tại chỗ! Không được phép mượn mang về.", "Cảnh báo Kho", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                        btnChoMuon.Enabled = false;
-                        txtTenSachMuon.ForeColor = Color.Red;
                     }
                     else
                     {
@@ -191,15 +199,11 @@ namespace Lib_Equipment
         }
 
         // ==========================================================
-        // XÁC NHẬN CHO MƯỢN
+        // 4. LẬP PHIẾU MƯỢN (DÙNG TRANSACTION)
         // ==========================================================
         private void btnChoMuon_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtTenDG.Text))
-            {
-                MessageBox.Show("Vui lòng xác nhận thông tin Độc giả trước!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+            if (string.IsNullOrEmpty(txtTenDG.Text)) { MessageBox.Show("Vui lòng xác nhận thông tin Độc giả trước!", "Lỗi"); return; }
 
             string sqlBorrow = @"
                 BEGIN TRAN;
@@ -233,22 +237,14 @@ namespace Lib_Equipment
                 DataProvider.Instance.ExecuteNonQuery(sqlBorrow, paramBorrow);
                 MessageBox.Show("Cho mượn sách thành công!", "Hoàn tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                txtMaBanSao.Clear();
-                txtTenSachMuon.Text = "Chưa xác định...";
-                txtTenSachMuon.ForeColor = Color.DimGray;
-                btnChoMuon.Enabled = false;
-
-                RefreshGrid();
-                txtMaBanSao.Focus();
+                txtMaBanSao.Clear(); txtTenSachMuon.Text = "Chưa xác định..."; txtTenSachMuon.ForeColor = Color.DimGray; btnChoMuon.Enabled = false;
+                RefreshGrid(); txtMaBanSao.Focus();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi hệ thống khi tạo phiếu: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            catch (Exception ex) { MessageBox.Show("Lỗi hệ thống: " + ex.Message, "Lỗi"); }
         }
 
         // ==========================================================
-        // XÁC NHẬN TRẢ SÁCH (POPUP)
+        // 5. TRẢ SÁCH (TÍNH TIỀN PHẠT SIÊU CHUẨN)
         // ==========================================================
         private void dgvDangMuon_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -256,91 +252,105 @@ namespace Lib_Equipment
             {
                 string recordId = dgvDangMuon.Rows[e.RowIndex].Cells["Mã Phiếu"].Value.ToString();
                 string copyId = dgvDangMuon.Rows[e.RowIndex].Cells["Mã Bản Sao"].Value.ToString();
-                string tenSach = dgvDangMuon.Rows[e.RowIndex].Cells["Tên Sách"].Value.ToString();
+                DateTime dueDate = Convert.ToDateTime(dgvDangMuon.Rows[e.RowIndex].Cells["Hạn Trả"].Value);
 
+                // TÍNH TOÁN NGÀY TRỄ HẠN (1.000đ / ngày)
+                int lateDays = (DateTime.Now.Date - dueDate.Date).Days;
+                lateDays = lateDays > 0 ? lateDays : 0;
+                decimal lateFine = lateDays * 1000;
+
+                // GIAO DIỆN POPUP 
                 Form frmTra = new Form();
-                frmTra.Text = "Xác nhận tình trạng sách";
-                frmTra.Size = new Size(380, 230);
+                frmTra.Text = "Nghiệp vụ Trả sách & Thu phạt";
+                frmTra.Size = new Size(450, 360);
                 frmTra.StartPosition = FormStartPosition.CenterParent;
                 frmTra.FormBorderStyle = FormBorderStyle.FixedDialog;
-                frmTra.MaximizeBox = false;
-                frmTra.MinimizeBox = false;
-                frmTra.BackColor = Color.White;
+                frmTra.MaximizeBox = false; frmTra.MinimizeBox = false; frmTra.BackColor = Color.White;
 
-                Label lblTinhTrang = new Label() { Text = "Tình trạng:", Left = 20, Top = 25, Width = 110, Font = new Font("Segoe UI", 10, FontStyle.Bold) };
-                ComboBox cboTinhTrang = new ComboBox() { Left = 130, Top = 20, Width = 190, DropDownStyle = ComboBoxStyle.DropDownList, Font = new Font("Segoe UI", 10) };
-                cboTinhTrang.Items.AddRange(new string[] { "Tốt", "Hỏng", "Mất" });
+                Label lblTre = new Label() { Text = $"Trả trễ: {lateDays} ngày (Phạt {lateFine:N0}đ)", Left = 20, Top = 20, Width = 380, Font = new Font("Segoe UI", 11, FontStyle.Bold), ForeColor = lateDays > 0 ? Color.Red : Color.Green };
+
+                Label lblTinhTrang = new Label() { Text = "Tình trạng sách:", Left = 20, Top = 65, Width = 130, Font = new Font("Segoe UI", 10, FontStyle.Bold) };
+                ComboBox cboTinhTrang = new ComboBox() { Left = 150, Top = 60, Width = 250, DropDownStyle = ComboBoxStyle.DropDownList, Font = new Font("Segoe UI", 10) };
+                cboTinhTrang.Items.AddRange(new string[] {
+                    "Bình thường",
+                    "Làm hỏng (Phạt 50k)",
+                    "Mất - Mua đền sách mới",
+                    "Mất - Sách hiếm (Đền x3)",
+                    "Mất - TL nội bộ (Tiếng Việt)",
+                    "Mất - TL nội bộ (Tiếng Ngoại)"
+                });
                 cboTinhTrang.SelectedIndex = 0;
 
-                Label lblPhat = new Label() { Text = "Tiền phạt:", Left = 20, Top = 75, Width = 110, Font = new Font("Segoe UI", 10, FontStyle.Bold) };
-                TextBox txtPhat = new TextBox() { Left = 130, Top = 70, Width = 190, Text = "0", Font = new Font("Segoe UI", 10) };
+                Label lblGhiChu = new Label() { Text = "", Left = 20, Top = 105, Width = 130, Font = new Font("Segoe UI", 10) };
+                TextBox txtInput = new TextBox() { Left = 150, Top = 100, Width = 250, Font = new Font("Segoe UI", 10), Visible = false };
 
-                cboTinhTrang.SelectedIndexChanged += (s, ev) => {
-                    if (cboTinhTrang.Text == "Tốt") txtPhat.Text = "0";
-                    else if (cboTinhTrang.Text == "Hỏng") txtPhat.Text = "50000";
-                    else if (cboTinhTrang.Text == "Mất") txtPhat.Text = "150000";
+                Label lblTongPhat = new Label() { Text = "TỔNG PHẠT (VNĐ):", Left = 20, Top = 155, Width = 130, Font = new Font("Segoe UI", 10, FontStyle.Bold) };
+                TextBox txtTongPhat = new TextBox() { Left = 150, Top = 150, Width = 250, Text = lateFine.ToString(), Font = new Font("Segoe UI", 12, FontStyle.Bold), ForeColor = Color.Red, ReadOnly = true };
+
+                Label lblAction = new Label() { Text = "(Hoàn trả sách bình thường)", Left = 20, Top = 190, Width = 400, Font = new Font("Segoe UI", 9, FontStyle.Italic), ForeColor = Color.Blue };
+
+                // LOGIC TÍNH PHẠT ĐỘNG
+                Action calculateFine = () => {
+                    decimal total = lateFine;
+                    decimal inputVal = 0;
+                    decimal.TryParse(txtInput.Text, out inputVal);
+
+                    if (cboTinhTrang.Text.Contains("Làm hỏng")) { total += 50000; lblAction.Text = "(Sách chuyển trạng thái Hỏng)"; }
+                    else if (cboTinhTrang.Text.Contains("Mua đền sách mới")) { total += 20000; lblAction.Text = "(Thu 1 sách mới + 20k phí mã vạch. Chuyển trạng thái Mất)"; }
+                    else if (cboTinhTrang.Text.Contains("Sách hiếm")) { total += (inputVal * 3); lblAction.Text = "(Phạt gấp 3 lần giá bìa. Chuyển trạng thái Mất)"; }
+                    else if (cboTinhTrang.Text.Contains("Tiếng Việt")) { total += (inputVal * 1000); lblAction.Text = "(Phạt 1.000đ x Số trang. Chuyển trạng thái Mất)"; }
+                    else if (cboTinhTrang.Text.Contains("Tiếng Ngoại")) { total += (inputVal * 10000); lblAction.Text = "(Phạt 10.000đ x Số trang. Chuyển trạng thái Mất)"; }
+                    else { lblAction.Text = "(Hoàn trả sách vào kho bình thường)"; }
+
+                    txtTongPhat.Text = total.ToString("N0");
                 };
 
-                Button btnXacNhan = new Button() { Text = "HOÀN TẤT TRẢ", Left = 130, Top = 120, Width = 190, Height = 45, BackColor = Color.FromArgb(40, 167, 69), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Font = new Font("Segoe UI", 10, FontStyle.Bold) };
+                cboTinhTrang.SelectedIndexChanged += (s, ev) => {
+                    txtInput.Visible = false; lblGhiChu.Text = ""; txtInput.Text = "0";
+                    if (cboTinhTrang.Text.Contains("Sách hiếm")) { lblGhiChu.Text = "Nhập giá bìa (đ):"; txtInput.Visible = true; txtInput.Focus(); }
+                    else if (cboTinhTrang.Text.Contains("nội bộ")) { lblGhiChu.Text = "Nhập số trang:"; txtInput.Visible = true; txtInput.Focus(); }
+                    calculateFine();
+                };
+                txtInput.TextChanged += (s, ev) => calculateFine();
 
-                frmTra.Controls.Add(lblTinhTrang); frmTra.Controls.Add(cboTinhTrang);
-                frmTra.Controls.Add(lblPhat); frmTra.Controls.Add(txtPhat);
-                frmTra.Controls.Add(btnXacNhan);
+                Button btnXacNhan = new Button() { Text = "THU TIỀN VÀ TRẢ SÁCH", Left = 150, Top = 230, Width = 250, Height = 50, BackColor = Color.FromArgb(40, 167, 69), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Font = new Font("Segoe UI", 11, FontStyle.Bold) };
+                frmTra.Controls.AddRange(new Control[] { lblTre, lblTinhTrang, cboTinhTrang, lblGhiChu, txtInput, lblTongPhat, txtTongPhat, lblAction, btnXacNhan });
 
+                // XỬ LÝ LƯU DATABASE
                 btnXacNhan.Click += (s, ev) => {
-                    decimal tienPhat = 0;
-                    decimal.TryParse(txtPhat.Text, out tienPhat);
+                    decimal finalFine = 0;
+                    decimal.TryParse(txtTongPhat.Text.Replace(",", "").Replace(".", ""), out finalFine);
+
+                    string newStatus = "Có sẵn"; string cond = "Tốt";
+                    if (cboTinhTrang.Text.Contains("Hỏng")) { newStatus = "Hỏng"; cond = "Hỏng"; }
+                    else if (cboTinhTrang.Text.Contains("Mất")) { newStatus = "Mất"; cond = "Mất"; }
 
                     string sqlReturn = @"
                         BEGIN TRAN;
                         BEGIN TRY
-                            UPDATE BorrowDetail 
-                            SET ReturnDate = GETDATE(), ReturnCondition = @cond, FineAmount = @fine 
-                            WHERE RecordID = @rec AND CopyID = @copy;
-
-                            IF @cond = N'Mất'
-                                UPDATE BookCopy SET Status = N'Mất' WHERE CopyID = @copy;
-                            ELSE IF @cond = N'Hỏng'
-                                UPDATE BookCopy SET Status = N'Hỏng' WHERE CopyID = @copy;
-                            ELSE
-                                UPDATE BookCopy SET Status = N'Có sẵn' WHERE CopyID = @copy;
-
+                            UPDATE BorrowDetail SET ReturnDate = GETDATE(), ReturnCondition = @cond, FineAmount = @fine WHERE RecordID = @rec AND CopyID = @copy;
+                            UPDATE BookCopy SET Status = @status WHERE CopyID = @copy;
                             COMMIT TRAN;
                         END TRY
-                        BEGIN CATCH
-                            ROLLBACK TRAN;
-                            THROW;
-                        END CATCH;";
+                        BEGIN CATCH ROLLBACK TRAN; THROW; END CATCH;";
 
                     SqlParameter[] paramReturn = {
-                        new SqlParameter("@rec", recordId),
-                        new SqlParameter("@copy", copyId),
-                        new SqlParameter("@cond", cboTinhTrang.Text),
-                        new SqlParameter("@fine", tienPhat)
+                        new SqlParameter("@rec", recordId), new SqlParameter("@copy", copyId),
+                        new SqlParameter("@cond", cond), new SqlParameter("@fine", finalFine),
+                        new SqlParameter("@status", newStatus)
                     };
 
-                    try
-                    {
-                        DataProvider.Instance.ExecuteNonQuery(sqlReturn, paramReturn);
-                        MessageBox.Show("Nhận trả sách thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        frmTra.DialogResult = DialogResult.OK;
-                        frmTra.Close();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Lỗi: " + ex.Message, "Lỗi SQL");
-                    }
+                    DataProvider.Instance.ExecuteNonQuery(sqlReturn, paramReturn);
+                    MessageBox.Show("Đã hoàn tất quy trình trả sách và cập nhật trạng thái kho!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    frmTra.DialogResult = DialogResult.OK; frmTra.Close();
                 };
 
-                if (frmTra.ShowDialog() == DialogResult.OK)
-                {
-                    RefreshGrid();
-                }
+                if (frmTra.ShowDialog() == DialogResult.OK) { RefreshGrid(); }
             }
         }
 
         // ==========================================================
-        // HIGHLIGHT SÁCH QUÁ HẠN 
+        // 6. BÔI ĐỎ SÁCH QUÁ HẠN 
         // ==========================================================
         private void dgvDangMuon_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {

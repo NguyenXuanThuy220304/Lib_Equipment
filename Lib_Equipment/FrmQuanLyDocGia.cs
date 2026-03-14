@@ -37,27 +37,44 @@ namespace Lib_Equipment
 
         private void LoadData()
         {
-            // Kết hợp bảng Reader và Department
             string query = @"
-                SELECT r.ReaderID, r.FullName, d.DepartmentName, r.ReaderType, 
-                       CASE WHEN r.Status = 1 THEN N'Hợp lệ' ELSE N'Bị khóa' END AS TrangThai, 
-                       r.DepartmentID
+                SELECT r.ReaderID AS [Mã Độc giả], 
+                       r.FullName AS [Họ và tên], 
+                       r.DepartmentID AS [Khoa/Viện], -- Đã sửa chính xác theo tên cột trong SQL của bạn
+                       r.ReaderType AS [Loại thẻ],
+                       CASE 
+                           -- Ưu tiên 1: Bị khóa cứng bởi Admin
+                           WHEN r.Status = '0' OR r.Status = 'False' THEN N'Bị khóa (Thủ công)'
+                           
+                           -- Ưu tiên 2: Tự động check xem có đang nợ sách trễ hạn không
+                           WHEN (SELECT COUNT(*) FROM BorrowRecord br 
+                                 JOIN BorrowDetail bd ON br.RecordID = bd.RecordID 
+                                 WHERE br.ReaderID = r.ReaderID 
+                                 AND bd.ReturnDate IS NULL 
+                                 AND br.DueDate < CAST(GETDATE() AS DATE)) > 0 
+                           THEN N'Tạm khóa (Quá hạn)'
+                           
+                           -- Còn lại: Thẻ ngon lành
+                           ELSE N'Hợp lệ' 
+                       END AS [Trạng thái thẻ]
                 FROM Reader r
-                LEFT JOIN Department d ON r.DepartmentID = d.DepartmentID
-                WHERE r.IsDeleted = 0";
+                WHERE r.IsDeleted = 0 OR r.IsDeleted IS NULL";
 
             DataTable dt = DataProvider.Instance.ExecuteQuery(query);
             dgvDocGia.DataSource = dt;
 
-            dgvDocGia.Columns["ReaderID"].HeaderText = "Mã Độc giả";
-            dgvDocGia.Columns["ReaderID"].Width = 120;
-            dgvDocGia.Columns["FullName"].HeaderText = "Họ và tên";
-            dgvDocGia.Columns["FullName"].Width = 200;
-            dgvDocGia.Columns["DepartmentName"].HeaderText = "Khoa/Viện";
-            dgvDocGia.Columns["ReaderType"].HeaderText = "Loại thẻ";
-            dgvDocGia.Columns["TrangThai"].HeaderText = "Trạng thái thẻ";
-
-            dgvDocGia.Columns["DepartmentID"].Visible = false; // Ẩn khóa ngoại
+            // Format màu cho dễ nhìn (Bôi đỏ các thẻ bị khóa)
+            if (dgvDocGia.Columns.Contains("Trạng thái thẻ"))
+            {
+                foreach (DataGridViewRow row in dgvDocGia.Rows)
+                {
+                    string status = row.Cells["Trạng thái thẻ"].Value.ToString();
+                    if (status != "Hợp lệ")
+                    {
+                        row.DefaultCellStyle.ForeColor = System.Drawing.Color.Red;
+                    }
+                }
+            }
         }
 
         // =======================================================
@@ -69,13 +86,13 @@ namespace Lib_Equipment
             {
                 DataGridViewRow row = dgvDocGia.Rows[e.RowIndex];
 
-                selectedReaderID = row.Cells["ReaderID"].Value.ToString();
+                selectedReaderID = row.Cells["Mã Độc giả"].Value.ToString();
 
                 txtMaDocGia.Text = selectedReaderID;
-                txtHoTen.Text = row.Cells["FullName"].Value.ToString();
-                cboDonVi.SelectedValue = row.Cells["DepartmentID"].Value.ToString();
-                cboLoaiDocGia.Text = row.Cells["ReaderType"].Value.ToString();
-                cboTrangThai.Text = row.Cells["TrangThai"].Value.ToString();
+                txtHoTen.Text = row.Cells["Họ và tên"].Value.ToString();
+                cboDonVi.SelectedValue = row.Cells["Khoa/Viện"].Value.ToString();
+                cboLoaiDocGia.Text = row.Cells["Loại thẻ"].Value.ToString();
+                cboTrangThai.Text = row.Cells["Trạng thái thẻ"].Value.ToString();
 
                 // Khóa không cho sửa Mã sinh viên
                 txtMaDocGia.Enabled = false;

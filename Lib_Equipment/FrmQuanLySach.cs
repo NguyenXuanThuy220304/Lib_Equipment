@@ -32,9 +32,10 @@ namespace Lib_Equipment
 
         private void LoadData()
         {
-            // Chỉ hiển thị thông tin bảng Book (Đầu sách), không cần JOIN vị trí kho nữa
+            // SỬA SQL: Subquery tự động đếm số lượng bản sao đang tồn tại (không đếm sách Mất)
             string query = @"
-                SELECT b.BookID, b.Title, b.Author, b.Publisher, b.PublishYear, c.CategoryName, b.CategoryID
+                SELECT b.BookID, b.Title, b.Author, b.Publisher, b.PublishYear, c.CategoryName, b.CategoryID,
+                       (SELECT COUNT(*) FROM BookCopy bc WHERE bc.BookID = b.BookID AND (bc.IsDeleted = 0 OR bc.IsDeleted IS NULL) AND bc.Status != N'Mất') AS [Số lượng]
                 FROM Book b
                 JOIN BookCategory c ON b.CategoryID = c.CategoryID
                 WHERE b.IsDeleted = 0 OR b.IsDeleted IS NULL";
@@ -52,6 +53,15 @@ namespace Lib_Equipment
             dgvSach.Columns["PublishYear"].Width = 80;
             dgvSach.Columns["CategoryName"].HeaderText = "Thể loại";
             dgvSach.Columns["CategoryID"].Visible = false;
+
+            // Căn giữa cột Số lượng cho đẹp
+            if (dgvSach.Columns.Contains("Số lượng"))
+            {
+                dgvSach.Columns["Số lượng"].Width = 90;
+                dgvSach.Columns["Số lượng"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dgvSach.Columns["Số lượng"].DefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
+            }
+
         }
 
         private void dgvSach_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -80,7 +90,6 @@ namespace Lib_Equipment
                 return;
             }
 
-            // CHỈ THÊM ĐẦU SÁCH MỚI (Việc nhập kho giao cho FrmQuanLyBanSao)
             string query = @"INSERT INTO Book (BookID, Title, Author, Publisher, PublishYear, CategoryID, IsDeleted) 
                              VALUES (@id, @title, @author, @pub, @year, @cat, 0)";
 
@@ -100,14 +109,14 @@ namespace Lib_Equipment
             {
                 if (DataProvider.Instance.ExecuteNonQuery(query, param) > 0)
                 {
-                    MessageBox.Show("Tạo Danh mục Đầu sách thành công!\n(Hãy sang chức năng 'Quản lý Kho / Bản sao' để nhập sách vật lý vào kho)", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Thêm Đầu sách thành công!\n(Hãy sang form Nhập Kho để nhập sách vật lý)", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LoadData();
                     btnLamMoi_Click(null, null);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi: Mã sách đã tồn tại!", "Lỗi SQL", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Lỗi: Mã sách đã tồn tại!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

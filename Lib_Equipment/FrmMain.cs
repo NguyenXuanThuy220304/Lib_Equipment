@@ -18,11 +18,6 @@ namespace Lib_Equipment
             CustomizeDesign();
         }
 
-        private void FrmMain_Load(object sender, EventArgs e)
-        {
-            ApplyDynamicPermissions();
-        }
-
         private void CustomizeDesign()
         {
             pnlSubMenuHeThong.Visible = false;
@@ -152,7 +147,9 @@ namespace Lib_Equipment
         private void btnTrangChu_Click(object sender, EventArgs e)
         {
             HideAllSubMenu();
+
             if (currentChildForm != null) currentChildForm.Close();
+            OpenChildForm(new FrmTrangChu(), "TRANG CHỦ");
             lblTitle.Text = "TRANG CHỦ";
         }
 
@@ -163,7 +160,7 @@ namespace Lib_Equipment
 
         private void btnSubTaiKhoan_Click(object sender, EventArgs e) { OpenChildForm(new FrmQuanLyTaiKhoan(), "QUẢN LÝ TÀI KHOẢN HỆ THỐNG"); }
         private void btnSubPhanQuyen_Click(object sender, EventArgs e) { OpenChildForm(new FrmPhanQuyen(), "PHÂN QUYỀN CHỨC NĂNG"); }
-        private void btnSubSaoLuu_Click(object sender, EventArgs e) { OpenChildForm(new FrmSaoLuuPhucHoi(), "SAO LƯU & PHỤC HỒI DỮ LIỆU"); }
+        private void btnSubSaoLuu_Click(object sender, EventArgs e) { OpenChildForm(new FrmSaoLuuPhucHoi(), "SAO LƯU VÀ PHỤC HỒI DỮ LIỆU"); }
 
         private void btnSubQuanLySach_Click(object sender, EventArgs e) { OpenChildForm(new FrmQuanLySach(), "DANH MỤC ĐẦU SÁCH"); }
 
@@ -174,11 +171,11 @@ namespace Lib_Equipment
         private void btnSubMuonTra_Click(object sender, EventArgs e) { OpenChildForm(new FrmMuonTraSach(), "NGHIỆP VỤ MƯỢN TRẢ SÁCH"); }
 
         private void btnSubDanhMucTB_Click(object sender, EventArgs e) { OpenChildForm(new FrmQuanLyThietBi(), "DANH MỤC THIẾT BỊ"); }
-        private void btnSubLuanChuyen_Click(object sender, EventArgs e) { OpenChildForm(new FrmLuanChuyenThietBi(), "LUÂN CHUYỂN & CẤP PHÁT THIẾT BỊ"); }
+        private void btnSubLuanChuyen_Click(object sender, EventArgs e) { OpenChildForm(new FrmLuanChuyenThietBi(), "LUÂN CHUYỂN VÀ CẤP PHÁT THIẾT BỊ"); }
         private void btnSubBaoTri_Click(object sender, EventArgs e) { OpenChildForm(new FrmBaoTriThietBi(), "BẢO TRÌ VÀ THANH LÝ THIẾT BỊ"); }
 
-        private void btnSubBCThuVien_Click(object sender, EventArgs e) { /* Gọi Form BC */ }
-        private void btnSubBCThietBi_Click(object sender, EventArgs e) { /* Gọi Form BC */ }
+        private void btnSubBCThuVien_Click(object sender, EventArgs e) { OpenChildForm(new FrmThongKeThuVien(), "BÁO CÁO VÀ THỐNG KÊ THƯ VIỆN"); }
+        private void btnSubBCThietBi_Click(object sender, EventArgs e) { OpenChildForm(new FrmThongKeThietBi(), "BÁO CÁO VÀ THỐNG KÊ THIẾT BỊ"); }
 
         private void btnDangXuat_Click(object sender, EventArgs e)
         {
@@ -192,7 +189,14 @@ namespace Lib_Equipment
 
         private void FrmMain_Load_1(object sender, EventArgs e)
         {
+            // Giới hạn vùng phóng to (chừa lại thanh Taskbar)
+            this.MaximizedBounds = Screen.PrimaryScreen.WorkingArea;
+
+            // Ra lệnh phóng to Form
+            this.WindowState = FormWindowState.Maximized;
             ApplyDynamicPermissions();
+            OpenChildForm(new FrmTrangChu(), "TRANG CHỦ");
+
         }
     }
 }

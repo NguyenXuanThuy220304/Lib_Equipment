@@ -23,12 +23,6 @@ namespace Lib_Equipment
 
         private void LoadCombobox()
         {
-            cboViTri.Items.Clear();
-            cboViTri.Items.Add("Kho mượn (Được mang về)");
-            cboViTri.Items.Add("Phòng đọc (Đọc tại chỗ)");
-            cboViTri.Items.Add("Kho lưu trữ (Sách cũ)");
-            cboViTri.SelectedIndex = 0;
-
             cboTrangThai.Items.Clear();
             cboTrangThai.Items.Add("Có sẵn");
             cboTrangThai.Items.Add("Đang mượn");
@@ -39,11 +33,11 @@ namespace Lib_Equipment
 
         private void LoadData()
         {
+            // BỎ COLUMN LOCATION ĐI, CHỈ CÒN TRẠNG THÁI
             string query = @"
                 SELECT bc.CopyID AS [Mã Bản Sao], 
                        bc.BookID AS [Mã Sách Gốc], 
                        b.Title AS [Tên Sách],
-                       bc.Location AS [Vị trí Kho], 
                        bc.Status AS [Trạng thái]
                 FROM BookCopy bc
                 JOIN Book b ON bc.BookID = b.BookID
@@ -51,6 +45,11 @@ namespace Lib_Equipment
 
             DataTable dt = DataProvider.Instance.ExecuteQuery(query);
             dgvBanSao.DataSource = dt;
+
+            if (dgvBanSao.Columns.Contains("Tên Sách"))
+            {
+                dgvBanSao.Columns["Tên Sách"].Width = 350;
+            }
         }
 
         private void dgvBanSao_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -62,7 +61,6 @@ namespace Lib_Equipment
 
                 txtMaBanSao.Text = selectedCopyID;
                 txtMaSach.Text = row.Cells["Mã Sách Gốc"].Value.ToString();
-                cboViTri.Text = row.Cells["Vị trí Kho"].Value.ToString();
                 cboTrangThai.Text = row.Cells["Trạng thái"].Value.ToString();
 
                 txtMaBanSao.Enabled = false; // Khóa mã bản sao khi sửa
@@ -88,13 +86,13 @@ namespace Lib_Equipment
                 return;
             }
 
-            string query = @"INSERT INTO BookCopy (CopyID, BookID, Location, Status, CreatedAt, IsDeleted) 
-                             VALUES (@copy, @book, @loc, @status, GETDATE(), 0)";
+            // SQL MỚI KHÔNG CÒN LOCATION
+            string query = @"INSERT INTO BookCopy (CopyID, BookID, Status, CreatedAt, IsDeleted) 
+                             VALUES (@copy, @book, @status, GETDATE(), 0)";
 
             SqlParameter[] param = {
                 new SqlParameter("@copy", txtMaBanSao.Text.Trim()),
                 new SqlParameter("@book", txtMaSach.Text.Trim()),
-                new SqlParameter("@loc", cboViTri.Text),
                 new SqlParameter("@status", cboTrangThai.Text)
             };
 
@@ -102,14 +100,14 @@ namespace Lib_Equipment
             {
                 if (DataProvider.Instance.ExecuteNonQuery(query, param) > 0)
                 {
-                    MessageBox.Show("Nhập kho sách thành công!", "Thông báo");
+                    MessageBox.Show("Tạo mã vạch sách thành công!", "Thông báo");
                     LoadData();
                     btnLamMoi_Click(null, null);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi: Mã bản sao đã tồn tại!", "Lỗi SQL", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Lỗi: Mã bản sao này đã tồn tại trong kho!", "Lỗi SQL", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -117,22 +115,22 @@ namespace Lib_Equipment
         {
             if (string.IsNullOrEmpty(selectedCopyID))
             {
-                MessageBox.Show("Vui lòng chọn bản sao cần sửa/luân chuyển!", "Cảnh báo"); return;
+                MessageBox.Show("Vui lòng chọn bản sao cần cập nhật trạng thái!", "Cảnh báo"); return;
             }
 
+            // CHỈ UPDATE STATUS
             string query = @"UPDATE BookCopy 
-                             SET Location = @loc, Status = @status 
+                             SET Status = @status 
                              WHERE CopyID = @copy";
 
             SqlParameter[] param = {
-                new SqlParameter("@loc", cboViTri.Text),
                 new SqlParameter("@status", cboTrangThai.Text),
                 new SqlParameter("@copy", selectedCopyID)
             };
 
             if (DataProvider.Instance.ExecuteNonQuery(query, param) > 0)
             {
-                MessageBox.Show("Luân chuyển/Cập nhật sách thành công!", "Thông báo");
+                MessageBox.Show("Cập nhật trạng thái sách thành công!", "Thông báo");
                 LoadData();
             }
         }
@@ -141,7 +139,7 @@ namespace Lib_Equipment
         {
             if (string.IsNullOrEmpty(selectedCopyID)) return;
 
-            if (MessageBox.Show("Bạn có chắc chắn muốn xóa bản sao này?", "Xác nhận", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("Bạn có chắc chắn muốn xóa (hủy) mã vạch sách này?", "Xác nhận", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 string query = "UPDATE BookCopy SET IsDeleted = 1 WHERE CopyID = @copy";
                 SqlParameter[] param = { new SqlParameter("@copy", selectedCopyID) };
@@ -161,7 +159,6 @@ namespace Lib_Equipment
             txtMaBanSao.Enabled = true;
             txtMaBanSao.Clear();
             txtMaSach.Clear();
-            cboViTri.SelectedIndex = 0;
             cboTrangThai.SelectedIndex = 0;
         }
     }

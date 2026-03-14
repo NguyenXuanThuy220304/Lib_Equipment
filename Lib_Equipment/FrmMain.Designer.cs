@@ -33,7 +33,7 @@
             this.pnlSubMenuThuVien = new Guna.UI2.WinForms.Guna2Panel();
             this.btnSubMuonTra = new Guna.UI2.WinForms.Guna2Button();
             this.btnSubQuanLyDocGia = new Guna.UI2.WinForms.Guna2Button();
-            this.btnSubQuanLyBanSao = new Guna.UI2.WinForms.Guna2Button(); // NÚT MỚI
+            this.btnSubQuanLyBanSao = new Guna.UI2.WinForms.Guna2Button();
             this.btnSubQuanLySach = new Guna.UI2.WinForms.Guna2Button();
             this.btnThuVien = new Guna.UI2.WinForms.Guna2Button();
             this.pnlSubMenuHeThong = new Guna.UI2.WinForms.Guna2Panel();
@@ -135,6 +135,7 @@
             this.btnSubBCThietBi.Text = "• Thống kê Thiết bị";
             this.btnSubBCThietBi.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnSubBCThietBi.TextOffset = new System.Drawing.Point(40, 0);
+            this.btnSubBCThietBi.Click += new System.EventHandler(this.btnSubBCThietBi_Click);
             // 
             // btnSubBCThuVien
             // 
@@ -152,6 +153,7 @@
             this.btnSubBCThuVien.Text = "• Thống kê Thư viện";
             this.btnSubBCThuVien.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnSubBCThuVien.TextOffset = new System.Drawing.Point(40, 0);
+            this.btnSubBCThuVien.Click += new System.EventHandler(this.btnSubBCThuVien_Click);
             // 
             // btnBaoCao
             // 
@@ -254,7 +256,6 @@
             // 
             // pnlSubMenuThuVien
             // 
-            // ĐÃ TĂNG CHIỀU CAO LÊN 221 ĐỂ CHỨA NÚT KHO SÁCH MỚI
             this.pnlSubMenuThuVien.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(85)))), ((int)(((byte)(142)))));
             this.pnlSubMenuThuVien.Controls.Add(this.btnSubMuonTra);
             this.pnlSubMenuThuVien.Controls.Add(this.btnSubQuanLyDocGia);

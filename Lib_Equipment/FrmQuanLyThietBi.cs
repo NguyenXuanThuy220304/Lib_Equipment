@@ -220,5 +220,20 @@ namespace Lib_Equipment
             if (cboKhoaPhong.Items.Count > 0) cboKhoaPhong.SelectedIndex = 0;
             if (cboTinhTrang.Items.Count > 0) cboTinhTrang.SelectedIndex = 0;
         }
+        private void dgvBaoTri_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // Kiểm tra xem người dùng có click đúng vào dòng dữ liệu không (tránh click nhầm tiêu đề)
+            if (e.RowIndex >= 0)
+            {
+                // Lấy mã thiết bị ở cột đầu tiên ("Mã Thiết Bị") của dòng vừa click
+                string maThietBi = dgvThietBi.Rows[e.RowIndex].Cells["EquipmentID"].Value.ToString();
+                string tenThietBi = dgvThietBi.Rows[e.RowIndex].Cells["EquipmentName"].Value.ToString();
+
+                // Mở Form Lịch sử (Popup) và truyền Mã thiết bị sang để nó tự động truy vấn CSDL
+                // (Chút nữa chúng ta sẽ tạo form này)
+                FrmHoSoThietBi frmHoSo = new FrmHoSoThietBi(maThietBi, tenThietBi);
+                frmHoSo.ShowDialog();
+            }
+        }
     }
 }
