@@ -28,12 +28,11 @@ namespace Lib_Equipment
             DataGridViewButtonColumn btnReturn = new DataGridViewButtonColumn();
             btnReturn.Name = "btnReturn";
             btnReturn.HeaderText = "Thao tác";
-            btnReturn.Text = "XÁC NHẬN TRẢ";
-            btnReturn.UseColumnTextForButtonValue = true;
+
+            // QUAN TRỌNG: Phải set False để chữ trên nút có thể thay đổi động (Xanh/Đỏ)
+            btnReturn.UseColumnTextForButtonValue = false;
+
             btnReturn.FlatStyle = FlatStyle.Flat;
-            btnReturn.DefaultCellStyle.BackColor = Color.FromArgb(220, 53, 69);
-            btnReturn.DefaultCellStyle.ForeColor = Color.White;
-            btnReturn.DefaultCellStyle.SelectionBackColor = Color.FromArgb(200, 35, 51);
             btnReturn.DefaultCellStyle.Padding = new Padding(10, 5, 10, 5);
             dgvDangMuon.Columns.Add(btnReturn);
         }
@@ -125,7 +124,6 @@ namespace Lib_Equipment
                         JOIN BorrowDetail bd ON br.RecordID = bd.RecordID 
                         WHERE br.ReaderID = @id AND bd.ReturnDate IS NULL AND br.DueDate < CAST(GETDATE() AS DATE)";
 
-                    // ĐÃ FIX LỖI MẢNG THAM SỐ Ở ĐÂY
                     SqlParameter[] paramCheck = { new SqlParameter("@id", txtMaDG.Text.Trim()) };
                     int overdueCount = (int)DataProvider.Instance.ExecuteScalar(checkOverdue, paramCheck);
 
@@ -174,7 +172,6 @@ namespace Lib_Equipment
                     txtTenSachMuon.Text = dt.Rows[0]["Title"].ToString();
                     string status = dt.Rows[0]["Status"].ToString();
 
-                    // Sách phòng đọc hay kho mượn đều ok, chỉ cần chưa bị mượn/mất
                     if (status != "Có sẵn")
                     {
                         MessageBox.Show("Sách này hiện đang được mượn hoặc không có sẵn (Hỏng/Mất)!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -199,7 +196,7 @@ namespace Lib_Equipment
         }
 
         // ==========================================================
-        // 4. LẬP PHIẾU MƯỢN (DÙNG TRANSACTION)
+        // 4. LẬP PHIẾU MƯỢN
         // ==========================================================
         private void btnChoMuon_Click(object sender, EventArgs e)
         {
@@ -244,7 +241,7 @@ namespace Lib_Equipment
         }
 
         // ==========================================================
-        // 5. TRẢ SÁCH (TÍNH TIỀN PHẠT SIÊU CHUẨN)
+        // 5. CLICK VÀO NÚT TRẢ SÁCH TRÊN LƯỚI
         // ==========================================================
         private void dgvDangMuon_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -254,12 +251,10 @@ namespace Lib_Equipment
                 string copyId = dgvDangMuon.Rows[e.RowIndex].Cells["Mã Bản Sao"].Value.ToString();
                 DateTime dueDate = Convert.ToDateTime(dgvDangMuon.Rows[e.RowIndex].Cells["Hạn Trả"].Value);
 
-                // TÍNH TOÁN NGÀY TRỄ HẠN (1.000đ / ngày)
                 int lateDays = (DateTime.Now.Date - dueDate.Date).Days;
                 lateDays = lateDays > 0 ? lateDays : 0;
                 decimal lateFine = lateDays * 1000;
 
-                // GIAO DIỆN POPUP 
                 Form frmTra = new Form();
                 frmTra.Text = "Nghiệp vụ Trả sách & Thu phạt";
                 frmTra.Size = new Size(450, 360);
@@ -289,7 +284,6 @@ namespace Lib_Equipment
 
                 Label lblAction = new Label() { Text = "(Hoàn trả sách bình thường)", Left = 20, Top = 190, Width = 400, Font = new Font("Segoe UI", 9, FontStyle.Italic), ForeColor = Color.Blue };
 
-                // LOGIC TÍNH PHẠT ĐỘNG
                 Action calculateFine = () => {
                     decimal total = lateFine;
                     decimal inputVal = 0;
@@ -316,7 +310,6 @@ namespace Lib_Equipment
                 Button btnXacNhan = new Button() { Text = "THU TIỀN VÀ TRẢ SÁCH", Left = 150, Top = 230, Width = 250, Height = 50, BackColor = Color.FromArgb(40, 167, 69), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Font = new Font("Segoe UI", 11, FontStyle.Bold) };
                 frmTra.Controls.AddRange(new Control[] { lblTre, lblTinhTrang, cboTinhTrang, lblGhiChu, txtInput, lblTongPhat, txtTongPhat, lblAction, btnXacNhan });
 
-                // XỬ LÝ LƯU DATABASE
                 btnXacNhan.Click += (s, ev) => {
                     decimal finalFine = 0;
                     decimal.TryParse(txtTongPhat.Text.Replace(",", "").Replace(".", ""), out finalFine);
@@ -350,20 +343,56 @@ namespace Lib_Equipment
         }
 
         // ==========================================================
-        // 6. BÔI ĐỎ SÁCH QUÁ HẠN 
+        // 6. XỬ LÝ MÀU SẮC ĐỘNG CHO CẢ DÒNG VÀ NÚT BẤM 
         // ==========================================================
         private void dgvDangMuon_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if (dgvDangMuon.Columns[e.ColumnIndex].Name == "Hạn Trả" && e.Value != null)
+            if (e.RowIndex < 0 || e.RowIndex >= dgvDangMuon.Rows.Count) return;
+
+            // Kiểm tra dòng này có quá hạn không
+            bool isOverdue = false;
+            if (dgvDangMuon.Rows[e.RowIndex].Cells["Hạn Trả"].Value != null)
             {
                 DateTime dueDate;
-                if (DateTime.TryParse(e.Value.ToString(), out dueDate))
+                if (DateTime.TryParse(dgvDangMuon.Rows[e.RowIndex].Cells["Hạn Trả"].Value.ToString(), out dueDate))
                 {
-                    if (dueDate < DateTime.Now.Date)
+                    if (dueDate.Date < DateTime.Now.Date)
                     {
-                        dgvDangMuon.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Red;
-                        dgvDangMuon.Rows[e.RowIndex].DefaultCellStyle.Font = new Font("Segoe UI", 10.5F, FontStyle.Bold);
+                        isOverdue = true;
                     }
+                }
+            }
+
+            // A. TÔ MÀU CHO CÁC CỘT CHỮ BÌNH THƯỜNG
+            if (dgvDangMuon.Columns[e.ColumnIndex].Name != "btnReturn")
+            {
+                if (isOverdue)
+                {
+                    e.CellStyle.ForeColor = Color.Red;
+                    e.CellStyle.Font = new Font("Segoe UI", 10.5F, FontStyle.Bold);
+                }
+                else
+                {
+                    e.CellStyle.ForeColor = Color.FromArgb(64, 64, 64); // Chữ xám đậm dễ nhìn
+                    e.CellStyle.Font = new Font("Segoe UI", 10.5F, FontStyle.Regular);
+                }
+            }
+            // B. TÔ MÀU RIÊNG CHO CỘT NÚT BẤM (BUTTON)
+            else
+            {
+                if (isOverdue)
+                {
+                    e.CellStyle.BackColor = Color.FromArgb(220, 53, 69); // Nền Đỏ
+                    e.CellStyle.SelectionBackColor = Color.FromArgb(220, 53, 69);
+                    e.CellStyle.ForeColor = Color.White; // Chữ Trắng
+                    e.Value = "XÁC NHẬN";
+                }
+                else
+                {
+                    e.CellStyle.BackColor = Color.FromArgb(40, 167, 69); // Nền Xanh Lá
+                    e.CellStyle.SelectionBackColor = Color.FromArgb(40, 167, 69);
+                    e.CellStyle.ForeColor = Color.White; // Chữ Trắng
+                    e.Value = "XÁC NHẬN";
                 }
             }
         }

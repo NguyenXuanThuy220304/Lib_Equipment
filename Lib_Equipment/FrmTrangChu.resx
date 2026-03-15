@@ -120,4 +120,16 @@
   <metadata name="timerClock.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <data name="lblLibDesc.Text" xml:space="preserve">
+    <value>Hệ thống cung cấp nền tảng số hóa toàn diện để quản lý hàng ngàn đầu sách giáo trình, tài liệu tham khảo.
+
+- Hỗ trợ mượn trả sách nhanh chóng qua mã vạch.
+- Theo dõi và tự động cảnh báo sinh viên nợ phạt quá hạn.</value>
+  </data>
+  <data name="lblEquipDesc.Text" xml:space="preserve">
+    <value>Số hóa quy trình quản lý vòng đời của tài sản, máy móc và thiết bị dạy học trong toàn trường.
+
+- Luân chuyển thiết bị giữa các Khoa/Viện dễ dàng.
+- Lưu vết lịch sử bảo trì, sửa chữa và lập báo cáo tài chính minh bạch.</value>
+  </data>
 </root>

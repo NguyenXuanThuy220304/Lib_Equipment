@@ -45,7 +45,7 @@
             this.pnlCharts.Controls.Add(this.chartTopSach);
             this.pnlCharts.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlCharts.Location = new System.Drawing.Point(0, 0);
-            this.pnlCharts.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pnlCharts.Margin = new System.Windows.Forms.Padding(4);
             this.pnlCharts.Name = "pnlCharts";
             this.pnlCharts.Padding = new System.Windows.Forms.Padding(13, 12, 13, 12);
             this.pnlCharts.Size = new System.Drawing.Size(1333, 394);
@@ -59,7 +59,7 @@
             legend1.Name = "Legend1";
             this.chartTrangThai.Legends.Add(legend1);
             this.chartTrangThai.Location = new System.Drawing.Point(733, 12);
-            this.chartTrangThai.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.chartTrangThai.Margin = new System.Windows.Forms.Padding(4);
             this.chartTrangThai.Name = "chartTrangThai";
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
@@ -78,7 +78,7 @@
             legend2.Name = "Legend1";
             this.chartTopSach.Legends.Add(legend2);
             this.chartTopSach.Location = new System.Drawing.Point(13, 12);
-            this.chartTopSach.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.chartTopSach.Margin = new System.Windows.Forms.Padding(4);
             this.chartTopSach.Name = "chartTopSach";
             series2.ChartArea = "ChartArea1";
             series2.Legend = "Legend1";
@@ -95,7 +95,7 @@
             this.pnlGrid.Controls.Add(this.lblGridTitle);
             this.pnlGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlGrid.Location = new System.Drawing.Point(0, 394);
-            this.pnlGrid.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pnlGrid.Margin = new System.Windows.Forms.Padding(4);
             this.pnlGrid.Name = "pnlGrid";
             this.pnlGrid.Padding = new System.Windows.Forms.Padding(13, 12, 13, 12);
             this.pnlGrid.Size = new System.Drawing.Size(1333, 468);
@@ -127,7 +127,7 @@
             this.dgvBlacklist.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgvBlacklist.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvBlacklist.Location = new System.Drawing.Point(13, 57);
-            this.dgvBlacklist.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dgvBlacklist.Margin = new System.Windows.Forms.Padding(4);
             this.dgvBlacklist.Name = "dgvBlacklist";
             this.dgvBlacklist.ReadOnly = true;
             this.dgvBlacklist.RowHeadersVisible = false;
@@ -158,7 +158,7 @@
             this.Controls.Add(this.pnlGrid);
             this.Controls.Add(this.pnlCharts);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FrmThongKeThuVien";
             this.Text = "Thống Kê Thư Viện";
             this.Load += new System.EventHandler(this.FrmThongKeThuVien_Load);
