@@ -20,7 +20,6 @@
             this.lblSubTitle = new System.Windows.Forms.Label();
             this.lblWelcome = new System.Windows.Forms.Label();
             this.timerClock = new System.Windows.Forms.Timer(this.components);
-            this.picLogo = new System.Windows.Forms.PictureBox();
             this.lblSchoolName = new System.Windows.Forms.Label();
             this.pnlLibInfo = new System.Windows.Forms.Panel();
             this.lblLibDesc = new System.Windows.Forms.Label();
@@ -28,10 +27,14 @@
             this.pnlEquipInfo = new System.Windows.Forms.Panel();
             this.lblEquipDesc = new System.Windows.Forms.Label();
             this.lblEquipTitle = new System.Windows.Forms.Label();
+            this.timerSlider = new System.Windows.Forms.Timer(this.components);
+            this.picSlider = new Guna.UI2.WinForms.Guna2PictureBox();
+            this.picLogo = new System.Windows.Forms.PictureBox();
             this.pnlWelcome.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picLogo)).BeginInit();
             this.pnlLibInfo.SuspendLayout();
             this.pnlEquipInfo.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picSlider)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picLogo)).BeginInit();
             this.SuspendLayout();
             // 
             // pnlWelcome
@@ -82,9 +85,9 @@
             this.lblSubTitle.Location = new System.Drawing.Point(47, 105);
             this.lblSubTitle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSubTitle.Name = "lblSubTitle";
-            this.lblSubTitle.Size = new System.Drawing.Size(571, 32);
+            this.lblSubTitle.Size = new System.Drawing.Size(469, 32);
             this.lblSubTitle.TabIndex = 1;
-            this.lblSubTitle.Text = "Bộ phận Quản lý Cơ sở vật chất và Học liệu (Nội bộ)";
+            this.lblSubTitle.Text = "Bộ phận quản lý cơ sở vật chất và thư viện";
             // 
             // lblWelcome
             // 
@@ -94,9 +97,9 @@
             this.lblWelcome.Location = new System.Drawing.Point(40, 43);
             this.lblWelcome.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblWelcome.Name = "lblWelcome";
-            this.lblWelcome.Size = new System.Drawing.Size(796, 54);
+            this.lblWelcome.Size = new System.Drawing.Size(849, 54);
             this.lblWelcome.TabIndex = 0;
-            this.lblWelcome.Text = "HỆ THỐNG QUẢN LÝ THƯ VIỆN & THIẾT BỊ";
+            this.lblWelcome.Text = "HỆ THỐNG QUẢN LÝ THƯ VIỆN VÀ THIẾT BỊ";
             // 
             // timerClock
             // 
@@ -104,22 +107,11 @@
             this.timerClock.Interval = 1000;
             this.timerClock.Tick += new System.EventHandler(this.timerClock_Tick);
             // 
-            // picLogo
-            // 
-            this.picLogo.Image = global::Lib_Equipment.Properties.Resources.logo_u;
-            this.picLogo.Location = new System.Drawing.Point(107, 271);
-            this.picLogo.Margin = new System.Windows.Forms.Padding(4);
-            this.picLogo.Name = "picLogo";
-            this.picLogo.Size = new System.Drawing.Size(346, 320);
-            this.picLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.picLogo.TabIndex = 1;
-            this.picLogo.TabStop = false;
-            // 
             // lblSchoolName
             // 
             this.lblSchoolName.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
             this.lblSchoolName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.lblSchoolName.Location = new System.Drawing.Point(53, 615);
+            this.lblSchoolName.Location = new System.Drawing.Point(1169, 594);
             this.lblSchoolName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSchoolName.Name = "lblSchoolName";
             this.lblSchoolName.Size = new System.Drawing.Size(453, 86);
@@ -132,7 +124,7 @@
             this.pnlLibInfo.BackColor = System.Drawing.Color.White;
             this.pnlLibInfo.Controls.Add(this.lblLibDesc);
             this.pnlLibInfo.Controls.Add(this.lblLibTitle);
-            this.pnlLibInfo.Location = new System.Drawing.Point(560, 246);
+            this.pnlLibInfo.Location = new System.Drawing.Point(60, 740);
             this.pnlLibInfo.Margin = new System.Windows.Forms.Padding(4);
             this.pnlLibInfo.Name = "pnlLibInfo";
             this.pnlLibInfo.Size = new System.Drawing.Size(707, 234);
@@ -166,7 +158,7 @@
             this.pnlEquipInfo.BackColor = System.Drawing.Color.White;
             this.pnlEquipInfo.Controls.Add(this.lblEquipDesc);
             this.pnlEquipInfo.Controls.Add(this.lblEquipTitle);
-            this.pnlEquipInfo.Location = new System.Drawing.Point(560, 529);
+            this.pnlEquipInfo.Location = new System.Drawing.Point(925, 740);
             this.pnlEquipInfo.Margin = new System.Windows.Forms.Padding(4);
             this.pnlEquipInfo.Name = "pnlEquipInfo";
             this.pnlEquipInfo.Size = new System.Drawing.Size(707, 234);
@@ -195,12 +187,41 @@
             this.lblEquipTitle.TabIndex = 1;
             this.lblEquipTitle.Text = "⚙ THÔNG TIN TRANG THIẾT BỊ";
             // 
+            // timerSlider
+            // 
+            this.timerSlider.Interval = 3000;
+            this.timerSlider.Tick += new System.EventHandler(this.timerSlider_Tick);
+            // 
+            // picSlider
+            // 
+            this.picSlider.BorderRadius = 15;
+            this.picSlider.FillColor = System.Drawing.Color.LightGray;
+            this.picSlider.ImageRotate = 0F;
+            this.picSlider.Location = new System.Drawing.Point(60, 235);
+            this.picSlider.Name = "picSlider";
+            this.picSlider.Size = new System.Drawing.Size(1028, 460);
+            this.picSlider.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.picSlider.TabIndex = 5;
+            this.picSlider.TabStop = false;
+            // 
+            // picLogo
+            // 
+            this.picLogo.Image = global::Lib_Equipment.Properties.Resources.logo_u;
+            this.picLogo.Location = new System.Drawing.Point(1223, 250);
+            this.picLogo.Margin = new System.Windows.Forms.Padding(4);
+            this.picLogo.Name = "picLogo";
+            this.picLogo.Size = new System.Drawing.Size(346, 320);
+            this.picLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.picLogo.TabIndex = 1;
+            this.picLogo.TabStop = false;
+            // 
             // FrmTrangChu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(1333, 862);
+            this.Controls.Add(this.picSlider);
             this.Controls.Add(this.pnlEquipInfo);
             this.Controls.Add(this.pnlLibInfo);
             this.Controls.Add(this.lblSchoolName);
@@ -210,13 +231,15 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FrmTrangChu";
             this.Text = "Trang Chủ";
+            this.Load += new System.EventHandler(this.FrmTrangChu_Load);
             this.pnlWelcome.ResumeLayout(false);
             this.pnlWelcome.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picLogo)).EndInit();
             this.pnlLibInfo.ResumeLayout(false);
             this.pnlLibInfo.PerformLayout();
             this.pnlEquipInfo.ResumeLayout(false);
             this.pnlEquipInfo.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picSlider)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picLogo)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -235,5 +258,7 @@
         private System.Windows.Forms.Panel pnlEquipInfo;
         private System.Windows.Forms.Label lblEquipDesc;
         private System.Windows.Forms.Label lblEquipTitle;
+        private Guna.UI2.WinForms.Guna2PictureBox picSlider;
+        private System.Windows.Forms.Timer timerSlider;
     }
 }

@@ -279,5 +279,17 @@
   <ItemGroup>
     <None Include="Resources\logo_u.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\uneti_sl4.jpeg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\uneti_sl3.jpeg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\uneti_sl2.jpeg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\uneti_sl1.jpeg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

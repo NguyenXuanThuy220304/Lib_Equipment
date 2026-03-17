@@ -89,7 +89,7 @@
             this.cboTheLoai.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.cboTheLoai.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
             this.cboTheLoai.ItemHeight = 30;
-            this.cboTheLoai.Location = new System.Drawing.Point(590, 22);
+            this.cboTheLoai.Location = new System.Drawing.Point(663, 23);
             this.cboTheLoai.Name = "cboTheLoai";
             this.cboTheLoai.Size = new System.Drawing.Size(250, 36);
             this.cboTheLoai.TabIndex = 2;

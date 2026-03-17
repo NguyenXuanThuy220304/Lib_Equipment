@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <metadata name="timerClock.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
+    <value>150, 17</value>
   </metadata>
   <data name="lblLibDesc.Text" xml:space="preserve">
     <value>Hệ thống cung cấp nền tảng số hóa toàn diện để quản lý hàng ngàn đầu sách giáo trình, tài liệu tham khảo.
@@ -132,4 +132,7 @@
 - Luân chuyển thiết bị giữa các Khoa/Viện dễ dàng.
 - Lưu vết lịch sử bảo trì, sửa chữa và lập báo cáo tài chính minh bạch.</value>
   </data>
+  <metadata name="timerSlider.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
 </root>
