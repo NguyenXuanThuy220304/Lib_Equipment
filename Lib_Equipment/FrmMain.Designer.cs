@@ -36,11 +36,11 @@
             this.btnSubQuanLyBanSao = new Guna.UI2.WinForms.Guna2Button();
             this.btnSubQuanLySach = new Guna.UI2.WinForms.Guna2Button();
             this.btnThuVien = new Guna.UI2.WinForms.Guna2Button();
+            this.btnAIsub = new Guna.UI2.WinForms.Guna2Button();
             this.pnlSubMenuHeThong = new Guna.UI2.WinForms.Guna2Panel();
             this.btnSubSaoLuu = new Guna.UI2.WinForms.Guna2Button();
             this.btnSubPhanQuyen = new Guna.UI2.WinForms.Guna2Button();
             this.btnSubTaiKhoan = new Guna.UI2.WinForms.Guna2Button();
-            this.btnHeThong = new Guna.UI2.WinForms.Guna2Button();
             this.btnTrangChu = new Guna.UI2.WinForms.Guna2Button();
             this.pnlLogo = new Guna.UI2.WinForms.Guna2Panel();
             this.lblLogo = new System.Windows.Forms.Label();
@@ -52,6 +52,7 @@
             this.pnlDesktop = new Guna.UI2.WinForms.Guna2Panel();
             this.lblWelcomeText = new System.Windows.Forms.Label();
             this.guna2DragControl1 = new Guna.UI2.WinForms.Guna2DragControl(this.components);
+            this.btnHeThong = new Guna.UI2.WinForms.Guna2Button();
             this.pnlSidebar.SuspendLayout();
             this.pnlSubMenuBaoCao.SuspendLayout();
             this.pnlSubMenuThietBi.SuspendLayout();
@@ -82,6 +83,7 @@
             this.pnlSidebar.Controls.Add(this.btnHeThong);
             this.pnlSidebar.Controls.Add(this.btnTrangChu);
             this.pnlSidebar.Controls.Add(this.pnlLogo);
+            this.pnlSidebar.Controls.Add(this.btnAIsub);
             this.pnlSidebar.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlSidebar.Location = new System.Drawing.Point(0, 0);
             this.pnlSidebar.Margin = new System.Windows.Forms.Padding(4);
@@ -167,7 +169,7 @@
             this.btnBaoCao.Name = "btnBaoCao";
             this.btnBaoCao.Size = new System.Drawing.Size(326, 62);
             this.btnBaoCao.TabIndex = 8;
-            this.btnBaoCao.Text = "  Báo cáo & Thống kê ▾";
+            this.btnBaoCao.Text = "  Báo cáo và thống kê";
             this.btnBaoCao.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnBaoCao.TextOffset = new System.Drawing.Point(20, 0);
             this.btnBaoCao.Click += new System.EventHandler(this.btnBaoCao_Click);
@@ -198,7 +200,7 @@
             this.btnSubBaoTri.Name = "btnSubBaoTri";
             this.btnSubBaoTri.Size = new System.Drawing.Size(326, 55);
             this.btnSubBaoTri.TabIndex = 2;
-            this.btnSubBaoTri.Text = "• Bảo trì & Thanh lý";
+            this.btnSubBaoTri.Text = "• Bảo trì và thanh lý";
             this.btnSubBaoTri.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnSubBaoTri.TextOffset = new System.Drawing.Point(40, 0);
             this.btnSubBaoTri.Click += new System.EventHandler(this.btnSubBaoTri_Click);
@@ -249,7 +251,7 @@
             this.btnThietBi.Name = "btnThietBi";
             this.btnThietBi.Size = new System.Drawing.Size(326, 62);
             this.btnThietBi.TabIndex = 6;
-            this.btnThietBi.Text = "  Quản lý Trang thiết bị ▾";
+            this.btnThietBi.Text = "  Quản lý Trang thiết bị";
             this.btnThietBi.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnThietBi.TextOffset = new System.Drawing.Point(20, 0);
             this.btnThietBi.Click += new System.EventHandler(this.btnThietBi_Click);
@@ -349,10 +351,28 @@
             this.btnThuVien.Name = "btnThuVien";
             this.btnThuVien.Size = new System.Drawing.Size(326, 62);
             this.btnThuVien.TabIndex = 4;
-            this.btnThuVien.Text = "  Quản lý Thư viện ▾";
+            this.btnThuVien.Text = "  Quản lý Thư viện";
             this.btnThuVien.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnThuVien.TextOffset = new System.Drawing.Point(20, 0);
             this.btnThuVien.Click += new System.EventHandler(this.btnThuVien_Click);
+            //
+            // btnAIsub
+            //
+            this.btnAIsub.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnAIsub.FillColor = System.Drawing.Color.Transparent;
+            this.btnAIsub.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.btnAIsub.ForeColor = System.Drawing.Color.LightGray;
+            this.btnAIsub.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
+            this.btnAIsub.HoverState.ForeColor = System.Drawing.Color.White;
+            this.btnAIsub.Location = new System.Drawing.Point(0, 0);
+            this.btnAIsub.Margin = new System.Windows.Forms.Padding(4);
+            this.btnAIsub.Name = "btnAIsub";
+            this.btnAIsub.Size = new System.Drawing.Size(326, 55);
+            this.btnAIsub.TabIndex = 0;
+            this.btnAIsub.Text = "Hỗ trợ (AI)";
+            this.btnAIsub.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnAIsub.TextOffset = new System.Drawing.Point(40, 0);
+            this.btnAIsub.Click += new System.EventHandler(this.btnAIsub_Click);
             // 
             // pnlSubMenuHeThong
             // 
@@ -418,23 +438,6 @@
             this.btnSubTaiKhoan.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnSubTaiKhoan.TextOffset = new System.Drawing.Point(40, 0);
             this.btnSubTaiKhoan.Click += new System.EventHandler(this.btnSubTaiKhoan_Click);
-            // 
-            // btnHeThong
-            // 
-            this.btnHeThong.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnHeThong.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.btnHeThong.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.btnHeThong.ForeColor = System.Drawing.Color.White;
-            this.btnHeThong.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
-            this.btnHeThong.Location = new System.Drawing.Point(0, 130);
-            this.btnHeThong.Margin = new System.Windows.Forms.Padding(4);
-            this.btnHeThong.Name = "btnHeThong";
-            this.btnHeThong.Size = new System.Drawing.Size(326, 62);
-            this.btnHeThong.TabIndex = 2;
-            this.btnHeThong.Text = "  Quản lý Hệ thống ▾";
-            this.btnHeThong.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-            this.btnHeThong.TextOffset = new System.Drawing.Point(20, 0);
-            this.btnHeThong.Click += new System.EventHandler(this.btnHeThong_Click);
             // 
             // btnTrangChu
             // 
@@ -568,6 +571,23 @@
             this.guna2DragControl1.TargetControl = this.pnlHeader;
             this.guna2DragControl1.UseTransparentDrag = true;
             // 
+            // btnHeThong
+            // 
+            this.btnHeThong.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnHeThong.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
+            this.btnHeThong.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.btnHeThong.ForeColor = System.Drawing.Color.White;
+            this.btnHeThong.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
+            this.btnHeThong.Location = new System.Drawing.Point(0, 130);
+            this.btnHeThong.Margin = new System.Windows.Forms.Padding(4);
+            this.btnHeThong.Name = "btnHeThong";
+            this.btnHeThong.Size = new System.Drawing.Size(326, 62);
+            this.btnHeThong.TabIndex = 2;
+            this.btnHeThong.Text = "  Quản lý Hệ thống";
+            this.btnHeThong.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnHeThong.TextOffset = new System.Drawing.Point(20, 0);
+            this.btnHeThong.Click += new System.EventHandler(this.btnHeThong_Click);
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -612,12 +632,10 @@
         private System.Windows.Forms.Label lblWelcomeText;
         private Guna.UI2.WinForms.Guna2Button btnTrangChu;
         private Guna.UI2.WinForms.Guna2Button btnDangXuat;
-
-        // --- CÁC NÚT CHA ---
-        private Guna.UI2.WinForms.Guna2Button btnHeThong;
         private Guna.UI2.WinForms.Guna2Button btnThuVien;
         private Guna.UI2.WinForms.Guna2Button btnThietBi;
         private Guna.UI2.WinForms.Guna2Button btnBaoCao;
+        private Guna.UI2.WinForms.Guna2Button btnAIsub;
 
         // --- SUB MENU HỆ THỐNG ---
         private Guna.UI2.WinForms.Guna2Panel pnlSubMenuHeThong;
@@ -642,5 +660,6 @@
         private Guna.UI2.WinForms.Guna2Panel pnlSubMenuBaoCao;
         private Guna.UI2.WinForms.Guna2Button btnSubBCThuVien;
         private Guna.UI2.WinForms.Guna2Button btnSubBCThietBi;
+        private Guna.UI2.WinForms.Guna2Button btnHeThong;
     }
 }

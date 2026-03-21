@@ -176,6 +176,7 @@ namespace Lib_Equipment
 
         private void btnSubBCThuVien_Click(object sender, EventArgs e) { OpenChildForm(new FrmThongKeThuVien(), "BÁO CÁO VÀ THỐNG KÊ THƯ VIỆN"); }
         private void btnSubBCThietBi_Click(object sender, EventArgs e) { OpenChildForm(new FrmThongKeThietBi(), "BÁO CÁO VÀ THỐNG KÊ THIẾT BỊ"); }
+        private void btnAIsub_Click(object sender, EventArgs e) { OpenChildForm(new FrmTroLyAI(), "Hỗ trợ"); }
 
         private void btnDangXuat_Click(object sender, EventArgs e)
         {
