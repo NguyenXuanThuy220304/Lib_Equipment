@@ -13,7 +13,7 @@ namespace Lib_Equipment
     public partial class FrmTroLyAI : Form
     {
         // API Key lấy từ Google AI Studio
-        private readonly string API_KEY = "AIzaSyBq6irhlY8wzYteJdMN68CHUJ7qI1a5O3E";
+        private readonly string API_KEY = AppSecrets.GeminiApiKey;
 
         public FrmTroLyAI()
         {
@@ -62,31 +62,49 @@ namespace Lib_Equipment
         }
 
         // ====================================================================
-        // HÀM 2: GIAO TIẾP VỚI API GOOGLE GEMINI (ÉP CHUẨN TLS 1.2)
+        // HÀM 2: GIAO TIẾP VỚI API GOOGLE GEMINI (ĐÃ SỬA MODEL & BẮT LỖI)
         // ====================================================================
-        private async Task<string> SendToGeminiAPI(string prompt)
+        private async Task<string> SendToGeminiAPI(string prompt, double temperature = 0.1)
         {
             System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
             using (HttpClient client = new HttpClient())
             {
-                string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={API_KEY}";
-                var payload = new { contents = new[] { new { parts = new[] { new { text = prompt } } } } };
+                // Đã sửa model thành gemini-1.5-flash để tránh lỗi không tồn tại model
+                string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}";
+                var payload = new
+                {
+                    contents = new[] { new { parts = new[] { new { text = prompt } } } },
+                    generationConfig = new { temperature = temperature }
+                };
+
                 string jsonPayload = JsonConvert.SerializeObject(payload);
                 var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await client.PostAsync(url, content);
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    string responseString = await response.Content.ReadAsStringAsync();
-                    JObject jsonResponse = JObject.Parse(responseString);
-                    return jsonResponse["candidates"][0]["content"]["parts"][0]["text"].ToString().Trim();
+                    HttpResponseMessage response = await client.PostAsync(url, content);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseString = await response.Content.ReadAsStringAsync();
+                        JObject jsonResponse = JObject.Parse(responseString);
+                        return jsonResponse["candidates"][0]["content"]["parts"][0]["text"].ToString().Trim();
+                    }
+                    else
+                    {
+                        // Đọc chi tiết lỗi từ Google để in ra màn hình
+                        string errorDetail = await response.Content.ReadAsStringAsync();
+                        return $"ERROR_API: Lỗi {response.StatusCode} - {errorDetail}";
+                    }
                 }
-                return "ERROR";
+                catch (Exception ex)
+                {
+                    return $"ERROR_API: Lỗi kết nối mạng hoặc hệ thống ({ex.Message})";
+                }
             }
         }
 
         // ====================================================================
-        // HÀM 3: LUỒNG XỬ LÝ CHÍNH (AI AGENT 2 NHỊP)
+        // HÀM 3: LUỒNG XỬ LÝ CHÍNH (AI AGENT VỚI FULL DATABASE)
         // ====================================================================
         private async Task CallGeminiAI(string question)
         {
@@ -95,61 +113,118 @@ namespace Lib_Equipment
                 // ---------------------------------------------------------
                 // NHỊP 1: YÊU CẦU AI DỊCH CÂU HỎI THÀNH CÂU LỆNH SQL
                 // ---------------------------------------------------------
-                string schemaPrompt = @"
-Bạn là một chuyên gia cơ sở dữ liệu SQL Server. Hệ thống Thư viện của tôi có các bảng sau:
-1. Reader(ReaderID, FullName, DepartmentID, ReaderType, Status)
-2. Book(BookID, Title, Author)
-3. BookCopy(CopyID, BookID, Status) -- Status có thể là N'Sẵn sàng', N'Đang mượn', N'Cũ/Rách', N'Mất'
-4. BorrowRecord(RecordID, ReaderID, BorrowDate, DueDate)
-5. BorrowDetail(RecordID, CopyID, ReturnDate, FineAmount)
+                string schemaPrompt = $@"
+Bạn là một chuyên gia cơ sở dữ liệu SQL Server và là Trợ lý Quản lý cho một hệ thống trường học. 
+Cơ sở dữ liệu [Lib_EquipmentDB] của chúng tôi gồm các bảng sau:
 
-NẾU câu hỏi của người dùng CẦN tra cứu dữ liệu (như: sách còn không, ai đang mượn, sách quá hạn...), hãy CHỈ TRẢ VỀ MỘT CÂU LỆNH SQL SELECT duy nhất (Dùng T-SQL, có N'' trước chuỗi tiếng Việt). KHÔNG giải thích, KHÔNG dùng Markdown.
-NẾU câu hỏi KHÔNG liên quan đến việc tra cứu dữ liệu (ví dụ: xin chào, hãy tư vấn cách học...), hãy trả lời chính xác chữ: NOT_DB
+-- QUẢN LÝ SÁCH & MƯỢN TRẢ
+-- QUẢN LÝ SÁCH & MƯỢN TRẢ
+1. Sách (Book): BookID, Title, Author, Publisher, PublishYear, CategoryID, CreatedAt, IsDeleted
+2. Danh mục sách (BookCategory): CategoryID, CategoryName, IsDeleted
+3. Bản sao sách (BookCopy): CopyID, BookID, Condition, CreatedAt, IsDeleted, Status (LƯU Ý: Cột Status CHỈ chứa các chữ: N'Sẵn sàng', N'Đang mượn', N'Cũ/Rách', N'Mất')
+4. Phiếu mượn (BorrowRecord): RecordID, ReaderID, CreatedBy, BorrowDate, DueDate, Status, IsDeleted, ReturnDate
+5. Chi tiết mượn (BorrowDetail): RecordID, CopyID, ReturnDate, ReturnCondition, FineAmount
+6. Độc giả (Reader): ReaderID, FullName, DepartmentID, ReaderType, Status, CreatedAt, IsDeleted
 
-Câu hỏi của người dùng: " + question;
+-- QUẢN LÝ THIẾT BỊ & ĐIỀU CHUYỂN
+7. Thiết bị (Equipment): EquipmentID, EquipmentName, CategoryID, DepartmentID, PurchasePrice, ImportDate, Condition, UpdatedBy, UpdatedAt, IsDeleted
+8. Danh mục thiết bị (EquipmentCategory): CategoryID, CategoryName, IsDeleted
+9. Ghi nhận bảo trì (MaintenanceRecord): MaintenanceID, EquipmentID, CreatedBy, MaintenanceDate, Description, Cost, Vendor, IsDeleted
+10. Phiếu điều chuyển (TransferRecord): TransferID, FromDepartmentID, ToDepartmentID, CreatedBy, TransferDate, Reason, IsDeleted
+11. Chi tiết điều chuyển (TransferDetail): TransferID, EquipmentID, ConditionAtTransfer
+12. Khoa/Phòng ban (Department): DepartmentID, DepartmentName, DepartmentType, CreatedAt, IsDeleted
 
-                string step1Response = await SendToGeminiAPI(schemaPrompt);
+-- QUẢN LÝ HỆ THỐNG & NHÂN SỰ
+13. Người dùng/Nhân viên (User): UserID, Username, PasswordHash, FullName, RoleID, Status, CreatedAt, IsDeleted
+14. Vai trò (Role): RoleID, RoleName
+15. Quyền (RolePermission): RoleID, MenuID
+16. Menu hệ thống (SysMenu): MenuID, MenuName
 
-                // Dọn dẹp các ký tự thừa nếu AI lỡ chèn thêm (ví dụ: ```sql)
+QUY TẮC XÂY DỰNG SQL NGHIÊM NGẶT:
+- TRẠNG THÁI (STATUS): Bắt buộc dùng đúng các từ khóa tiếng Việt đã được định nghĩa trong ngoặc đơn của từng bảng (Ví dụ: N'Sẵn sàng'). Tuyệt đối KHÔNG tự ý dịch sang tiếng Anh như 'Available'.
+- CHỈ trả về DUY NHẤT 1 câu lệnh T-SQL SELECT, KHÔNG giải thích, KHÔNG bọc trong markdown (```sql).
+- BẮT BUỘC: Nếu bảng có cột IsDeleted, luôn luôn thêm điều kiện 'IsDeleted = 0'.
+- BẮT BUỘC TÌM KIẾM TƯƠNG ĐỐI: Khi tìm kiếm theo tên (Title, EquipmentName, FullName...), TUYỆT ĐỐI dùng toán tử LIKE N'%từ_khóa%' thay vì dấu '='. 
+- BÓC TÁCH TỪ KHÓA: AI phải tự hiểu và loại bỏ các từ thừa của người dùng. Ví dụ: Người dùng hỏi ""sách hóa học"", chỉ lấy từ khóa '%hóa học%' để ném vào LIKE.
+- PHÂN BIỆT ĐẦU SÁCH VÀ CUỐN SÁCH: Nếu hỏi 'có mấy quyển/cuốn/chiếc', phải đếm số lượng bản sao vật lý trong bảng BookCopy (sách) hoặc Equipment (thiết bị). Nếu hỏi 'có bao nhiêu đầu sách/tựa sách', mới đếm trong bảng Book.
+- Dùng tiền tố N trước tất cả các chuỗi văn bản tiếng Việt.
+- Tự động JOIN các bảng dựa vào Logic ID. Luôn thêm TOP 50 để tránh quá tải.
+- NẾU câu hỏi giao tiếp thông thường (chào hỏi, không liên quan dữ liệu), trả về đúng chữ: NOT_DB
+
+Câu hỏi của quản lý: {question}";
+
+                // Nhiệt độ 0.0 để AI tập trung viết SQL logic chính xác tuyệt đối
+                string step1Response = await SendToGeminiAPI(schemaPrompt, 0.0);
+
+                if (step1Response.StartsWith("ERROR_API"))
+                {
+                    AppendText($"⚠️ Hệ thống AI báo lỗi: \n{step1Response}\n\n", Color.Red, FontStyle.Italic);
+                    return;
+                }
+
                 string sqlQuery = step1Response.Replace("```sql", "").Replace("```", "").Trim();
+                
+                AppendText($"[DEBUG LỆNH SQL]: {sqlQuery}\n\n", Color.Orange, FontStyle.Italic);
 
                 // ---------------------------------------------------------
                 // KIỂM TRA: NẾU KHÔNG PHẢI LÀ CÂU HỎI TRA CỨU DỮ LIỆU
                 // ---------------------------------------------------------
-                if (sqlQuery == "NOT_DB" || sqlQuery == "ERROR" || !sqlQuery.ToUpper().StartsWith("SELECT"))
+                if (sqlQuery == "NOT_DB" || !sqlQuery.ToUpper().StartsWith("SELECT"))
                 {
-                    // Trả lời như một Chatbot bình thường
-                    string normalAnswer = await SendToGeminiAPI("Hãy đóng vai thủ thư UNETI và trả lời câu sau một cách thân thiện: " + question);
-                    AppendText("🤖 Trợ lý AI: ", Color.FromArgb(40, 167, 69), FontStyle.Bold);
+                    string normalPrompt = $"Bạn là Trợ lý AI quản lý thông minh của trường UNETI. Hãy trả lời câu hỏi sau một cách chuyên nghiệp, thân thiện: {question}";
+                    string normalAnswer = await SendToGeminiAPI(normalPrompt, 0.7);
+
+                    if (normalAnswer.StartsWith("ERROR_API"))
+                    {
+                        AppendText($"⚠️ Hệ thống AI báo lỗi: \n{normalAnswer}\n\n", Color.Red, FontStyle.Italic);
+                        return;
+                    }
+
+                    AppendText("🤖 Trợ lý Quản lý: ", Color.FromArgb(40, 167, 69), FontStyle.Bold);
                     AppendText(normalAnswer + "\n\n", Color.Black, FontStyle.Regular);
                     return;
                 }
 
-                // ---------------------------------------------------------
-                // NHỊP 2: CHẠY SQL LẤY DỮ LIỆU -> ĐƯA LẠI CHO AI ĐỂ TẠO CÂU TRẢ LỜI
-                // ---------------------------------------------------------
-                AppendText("⏳ (AI đang quét dữ liệu trong kho...)\n", Color.Gray, FontStyle.Italic);
+                // Bảo mật: Chặn đứng mọi lệnh làm thay đổi cơ sở dữ liệu
+                if (sqlQuery.ToUpper().Contains("DELETE ") || sqlQuery.ToUpper().Contains("DROP ") || sqlQuery.ToUpper().Contains("UPDATE ") || sqlQuery.ToUpper().Contains("INSERT ") || sqlQuery.ToUpper().Contains("TRUNCATE "))
+                {
+                    AppendText("⚠️ Lỗi bảo mật: Câu lệnh truy vấn không hợp lệ.\n\n", Color.Red, FontStyle.Italic);
+                    return;
+                }
 
-                // Chạy lệnh SQL do AI vừa viết
+                // ---------------------------------------------------------
+                // NHỊP 2: CHẠY SQL LẤY DỮ LIỆU -> ĐƯA LẠI CHO AI ĐỂ BÁO CÁO
+                // ---------------------------------------------------------
+                AppendText("⏳ (Đang trích xuất dữ liệu tổng hợp...)\n", Color.Gray, FontStyle.Italic);
+
                 System.Data.DataTable dt = DataProvider.Instance.ExecuteQuery(sqlQuery);
                 string dbResultText = ConvertDataTableToText(dt);
 
-                // Bơm kết quả thật vào cho AI để nó trả lời sinh viên
                 string finalPrompt = $@"
-Dưới đây là kết quả trích xuất từ cơ sở dữ liệu cho câu hỏi '{question}':
-{dbResultText}
+Dưới đây là dữ liệu kết quả được trích xuất từ hệ thống cho câu hỏi '{question}':
+Dữ liệu: {dbResultText}
 
-Hãy đóng vai một thủ thư chuyên nghiệp của UNETI, sử dụng kết quả trên để trả lời người dùng một cách tự nhiên, lịch sự và rõ ràng nhất. 
-Tuyệt đối KHÔNG đề cập đến việc bạn đã dùng câu lệnh SQL hay Database. Chỉ trả lời thông tin người dùng cần.
-";
-                string finalAnswer = await SendToGeminiAPI(finalPrompt);
+Nhiệm vụ: 
+Đóng vai một người Quản lý hệ thống cấp cao, sử dụng CHỈ dữ liệu trên để báo cáo lại cho người dùng một cách rõ ràng, mạch lạc và chuyên nghiệp. 
+- Trình bày dạng danh sách gạch đầu dòng nếu có nhiều kết quả.
+- Tuyệt đối KHÔNG nhắc đến việc bạn đã dùng lệnh SQL.
+- Nếu dữ liệu ghi 'Không tìm thấy...', hãy báo cáo rằng không có dữ liệu khớp với yêu cầu tìm kiếm hiện tại.";
 
-                AppendText("🤖 Trợ lý AI: ", Color.FromArgb(40, 167, 69), FontStyle.Bold);
+                // Nhiệt độ 0.2 để báo cáo bám sát số liệu, không bịa đặt thêm
+                string finalAnswer = await SendToGeminiAPI(finalPrompt, 0.2);
+
+                if (finalAnswer.StartsWith("ERROR_API"))
+                {
+                    AppendText($"⚠️ Lỗi khi tạo báo cáo: \n{finalAnswer}\n\n", Color.Red, FontStyle.Italic);
+                    return;
+                }
+
+                AppendText("🤖 Trợ lý Quản lý: ", Color.FromArgb(40, 167, 69), FontStyle.Bold);
                 AppendText(finalAnswer + "\n\n", Color.Black, FontStyle.Regular);
             }
             catch (Exception ex)
             {
-                AppendText($"⚠️ Lỗi xử lý: AI vừa tạo ra một truy vấn phức tạp chưa được hỗ trợ hoặc máy chủ bận.\n(Chi tiết: {ex.Message})\n\n", Color.Red, FontStyle.Italic);
+                AppendText($"⚠️ Lỗi xử lý dữ liệu: Hệ thống không thể phân tích yêu cầu này.\n(Chi tiết: {ex.Message})\n\n", Color.Red, FontStyle.Italic);
             }
         }
 
@@ -163,14 +238,14 @@ Tuyệt đối KHÔNG đề cập đến việc bạn đã dùng câu lệnh SQL
             rtbChatHistory.SelectionColor = color;
             rtbChatHistory.SelectionFont = new Font(rtbChatHistory.Font, style);
             rtbChatHistory.AppendText(text);
-            rtbChatHistory.ScrollToCaret(); // Tự động cuộn xuống cuối
+            rtbChatHistory.ScrollToCaret();
         }
 
         private void txtQuestion_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
-                e.SuppressKeyPress = true; // Chặn tiếng "bíp" của Windows
+                e.SuppressKeyPress = true;
                 btnSend.PerformClick();
             }
         }

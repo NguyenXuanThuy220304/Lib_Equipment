@@ -355,24 +355,7 @@
             this.btnThuVien.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnThuVien.TextOffset = new System.Drawing.Point(20, 0);
             this.btnThuVien.Click += new System.EventHandler(this.btnThuVien_Click);
-            //
-            // btnAIsub
-            //
-            this.btnAIsub.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnAIsub.FillColor = System.Drawing.Color.Transparent;
-            this.btnAIsub.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.btnAIsub.ForeColor = System.Drawing.Color.LightGray;
-            this.btnAIsub.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
-            this.btnAIsub.HoverState.ForeColor = System.Drawing.Color.White;
-            this.btnAIsub.Location = new System.Drawing.Point(0, 0);
-            this.btnAIsub.Margin = new System.Windows.Forms.Padding(4);
-            this.btnAIsub.Name = "btnAIsub";
-            this.btnAIsub.Size = new System.Drawing.Size(326, 55);
-            this.btnAIsub.TabIndex = 0;
-            this.btnAIsub.Text = "Hỗ trợ (AI)";
-            this.btnAIsub.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-            this.btnAIsub.TextOffset = new System.Drawing.Point(40, 0);
-            this.btnAIsub.Click += new System.EventHandler(this.btnAIsub_Click);
+            
             // 
             // pnlSubMenuHeThong
             // 
@@ -455,6 +438,23 @@
             this.btnTrangChu.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnTrangChu.TextOffset = new System.Drawing.Point(20, 0);
             this.btnTrangChu.Click += new System.EventHandler(this.btnTrangChu_Click);
+            //
+            // btnAIsub
+            //
+            this.btnAIsub.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnAIsub.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
+            this.btnAIsub.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.btnAIsub.ForeColor = System.Drawing.Color.White;
+            this.btnAIsub.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
+            this.btnAIsub.Location = new System.Drawing.Point(0, 68);
+            this.btnAIsub.Margin = new System.Windows.Forms.Padding(4);
+            this.btnAIsub.Name = "btnAIsub";
+            this.btnAIsub.Size = new System.Drawing.Size(326, 62);
+            this.btnAIsub.TabIndex = 1;
+            this.btnAIsub.Text = "  Hỗ trợ(AI)";
+            this.btnAIsub.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnAIsub.TextOffset = new System.Drawing.Point(20, 0);
+            this.btnAIsub.Click += new System.EventHandler(this.btnAIsub_Click);
             // 
             // pnlLogo
             // 
