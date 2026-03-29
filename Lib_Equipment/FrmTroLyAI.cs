@@ -70,7 +70,7 @@ namespace Lib_Equipment
             using (HttpClient client = new HttpClient())
             {
                 // Đã sửa model thành gemini-1.5-flash để tránh lỗi không tồn tại model
-                string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}";
+                string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={API_KEY}";
                 var payload = new
                 {
                     contents = new[] { new { parts = new[] { new { text = prompt } } } },

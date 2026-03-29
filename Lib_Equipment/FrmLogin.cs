@@ -26,13 +26,13 @@ namespace Lib_Equipment
                 return;
             }
 
-            // 2. BĂM MẬT KHẨU
+            // 2. BĂM MẬT KHẨU (Sử dụng chuẩn SHA256 của bạn)
             string hashedPassword = SecurityHelper.HashSHA256(password);
 
-            // 3. Câu lệnh SQL - Lấy đầy đủ thông tin để gán vào Session
-            string query = "SELECT UserID, Username, RoleID FROM [User] WHERE Username = @user AND PasswordHash = @pass AND Status = 1";
+            // 3. Câu lệnh SQL - Lấy thêm FullName để hiển thị lời chào trên form Độc giả
+            string query = "SELECT UserID, Username, RoleID, FullName FROM [User] WHERE Username = @user AND PasswordHash = @pass AND Status = 1";
 
-            // 4. Khai báo tham số (Chú ý tên biến @user và @pass phải khớp với câu lệnh SQL ở trên)
+            // 4. Khai báo tham số
             SqlParameter[] parameters = new SqlParameter[]
             {
                 new SqlParameter("@user", username),
@@ -41,7 +41,6 @@ namespace Lib_Equipment
 
             try
             {
-                // 5. THAY ĐỔI QUAN TRỌNG: Sử dụng ExecuteQuery để lấy DataTable thay vì ExecuteScalar
                 DataTable dt = DataProvider.Instance.ExecuteQuery(query, parameters);
 
                 if (dt != null && dt.Rows.Count > 0)
@@ -49,15 +48,45 @@ namespace Lib_Equipment
                     // Đăng nhập thành công -> Lưu thông tin vào Session
                     AppSession.UserID = Convert.ToInt32(dt.Rows[0]["UserID"]);
                     AppSession.Username = dt.Rows[0]["Username"].ToString();
-                    AppSession.RoleID = dt.Rows[0]["RoleID"].ToString(); // Dòng này giúp FrmMain phân quyền đúng
+                    AppSession.RoleID = dt.Rows[0]["RoleID"].ToString();
 
-                    MessageBox.Show("Đăng nhập thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    string fullName = dt.Rows[0]["FullName"].ToString();
 
-                    // Mở Form chính
-                    FrmMain frm = new FrmMain();
-                    this.Hide();
-                    frm.ShowDialog();
-                    this.Close();
+                    // =================================================================
+                    // XỬ LÝ PHÂN LUỒNG VÀ ÉP ĐỔI MẬT KHẨU
+                    // =================================================================
+
+                    // Giả sử RoleID của Độc giả là Reader (Bạn kiểm tra lại DB của mình nhé, nếu là chữ thì đổi thành "DocGia")
+                    if (AppSession.RoleID == "Reader")
+                    {
+                        // Sinh ra mã Hash của chữ "1" để so sánh xem có phải pass mặc định không
+                        string defaultPasswordHash = SecurityHelper.HashSHA256("1");
+
+                        if (hashedPassword == defaultPasswordHash)
+                        {
+                            MessageBox.Show("Đây là lần đăng nhập đầu tiên.\nHệ thống yêu cầu bạn đổi mật khẩu để bảo mật tài khoản!", "Thiết lập bảo mật", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                            // Mở form đổi mật khẩu, bắt người dùng xử lý xong mới chạy tiếp
+                            frmChangePass frmDoiMK = new frmChangePass(AppSession.Username);
+                            frmDoiMK.ShowDialog();
+                        }
+
+                        // Mở Trang chủ Độc giả (Kèm theo username và tên hiển thị)
+                        frmTrangChuDocGia frmDocGia = new frmTrangChuDocGia(AppSession.Username, fullName);
+                        this.Hide();
+                        frmDocGia.ShowDialog();
+                        this.Close();
+                    }
+                    else
+                    {
+                        // Nếu là Quản trị viên, Thủ thư... thì vào thẳng phần mềm quản lý
+                        MessageBox.Show("Đăng nhập quyền Quản trị thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        FrmMain frm = new FrmMain();
+                        this.Hide();
+                        frm.ShowDialog();
+                        this.Close();
+                    }
                 }
                 else
                 {

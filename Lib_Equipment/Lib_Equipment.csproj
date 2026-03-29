@@ -247,6 +247,18 @@
     <Compile Include="FrmBaoTriThietBi.Designer.cs">
       <DependentUpon>FrmBaoTriThietBi.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmChangePass.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmChangePass.Designer.cs">
+      <DependentUpon>frmChangePass.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmConfirmPopUp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmConfirmPopUp.Designer.cs">
+      <DependentUpon>frmConfirmPopUp.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmHoSoThietBi.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -319,6 +331,12 @@
     <Compile Include="FrmSaoLuuPhucHoi.Designer.cs">
       <DependentUpon>FrmSaoLuuPhucHoi.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmSecondaryBorrow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSecondaryBorrow.Designer.cs">
+      <DependentUpon>frmSecondaryBorrow.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmThongKeThietBi.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -337,6 +355,12 @@
     <Compile Include="FrmTrangChu.Designer.cs">
       <DependentUpon>FrmTrangChu.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmTrangChuDocGia.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmTrangChuDocGia.Designer.cs">
+      <DependentUpon>frmTrangChuDocGia.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmTroLyAI.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -349,6 +373,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FrmBaoTriThietBi.resx">
       <DependentUpon>FrmBaoTriThietBi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmChangePass.resx">
+      <DependentUpon>frmChangePass.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmLogin.resx">
       <DependentUpon>FrmLogin.cs</DependentUpon>
@@ -391,6 +418,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrmTrangChu.resx">
       <DependentUpon>FrmTrangChu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmTrangChuDocGia.resx">
+      <DependentUpon>frmTrangChuDocGia.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
