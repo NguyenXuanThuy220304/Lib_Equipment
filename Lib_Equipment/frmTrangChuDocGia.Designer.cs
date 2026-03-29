@@ -31,10 +31,11 @@
             this.btnSearch = new Guna.UI2.WinForms.Guna2Button();
             this.btnLichSu = new Guna.UI2.WinForms.Guna2Button();
             this.pnlBarcodeCard = new Guna.UI2.WinForms.Guna2Panel();
-            this.lblBarcodeDesc = new System.Windows.Forms.Label();
             this.lblBarcodeTitle = new System.Windows.Forms.Label();
+            this.lblBarcodeDesc = new System.Windows.Forms.Label();
             this.lblGridTitle = new System.Windows.Forms.Label();
             this.dgvMain = new Guna.UI2.WinForms.Guna2DataGridView();
+            this.btnLogout = new System.Windows.Forms.LinkLabel();
             this.pnlHeader.SuspendLayout();
             this.pnlBarcodeCard.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMain)).BeginInit();
@@ -57,7 +58,7 @@
             this.pnlHeader.Controls.Add(this.lblWelcome);
             this.pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlHeader.Location = new System.Drawing.Point(0, 0);
-            this.pnlHeader.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pnlHeader.Margin = new System.Windows.Forms.Padding(4);
             this.pnlHeader.Name = "pnlHeader";
             this.pnlHeader.Size = new System.Drawing.Size(1400, 86);
             this.pnlHeader.TabIndex = 0;
@@ -69,7 +70,7 @@
             this.guna2ControlBox2.FillColor = System.Drawing.Color.Transparent;
             this.guna2ControlBox2.IconColor = System.Drawing.Color.White;
             this.guna2ControlBox2.Location = new System.Drawing.Point(1259, 15);
-            this.guna2ControlBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.guna2ControlBox2.Margin = new System.Windows.Forms.Padding(4);
             this.guna2ControlBox2.Name = "guna2ControlBox2";
             this.guna2ControlBox2.Size = new System.Drawing.Size(59, 44);
             this.guna2ControlBox2.TabIndex = 2;
@@ -81,7 +82,7 @@
             this.guna2ControlBox1.HoverState.FillColor = System.Drawing.Color.Red;
             this.guna2ControlBox1.IconColor = System.Drawing.Color.White;
             this.guna2ControlBox1.Location = new System.Drawing.Point(1325, 15);
-            this.guna2ControlBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.guna2ControlBox1.Margin = new System.Windows.Forms.Padding(4);
             this.guna2ControlBox1.Name = "guna2ControlBox1";
             this.guna2ControlBox1.Size = new System.Drawing.Size(59, 44);
             this.guna2ControlBox1.TabIndex = 1;
@@ -107,7 +108,7 @@
             this.txtSearch.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.txtSearch.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
             this.txtSearch.Location = new System.Drawing.Point(33, 117);
-            this.txtSearch.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.txtSearch.Margin = new System.Windows.Forms.Padding(5);
             this.txtSearch.Name = "txtSearch";
             this.txtSearch.PlaceholderText = "🔍 Nhập tên sách hoặc tác giả...";
             this.txtSearch.SelectedText = "";
@@ -122,7 +123,7 @@
             this.btnSearch.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.btnSearch.ForeColor = System.Drawing.Color.White;
             this.btnSearch.Location = new System.Drawing.Point(647, 117);
-            this.btnSearch.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSearch.Margin = new System.Windows.Forms.Padding(4);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(160, 55);
             this.btnSearch.TabIndex = 2;
@@ -136,7 +137,7 @@
             this.btnLichSu.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.btnLichSu.ForeColor = System.Drawing.Color.White;
             this.btnLichSu.Location = new System.Drawing.Point(820, 117);
-            this.btnLichSu.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnLichSu.Margin = new System.Windows.Forms.Padding(4);
             this.btnLichSu.Name = "btnLichSu";
             this.btnLichSu.Size = new System.Drawing.Size(173, 55);
             this.btnLichSu.TabIndex = 3;
@@ -150,7 +151,7 @@
             this.pnlBarcodeCard.Controls.Add(this.lblBarcodeTitle);
             this.pnlBarcodeCard.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(81)))), ((int)(((byte)(0)))));
             this.pnlBarcodeCard.Location = new System.Drawing.Point(1013, 117);
-            this.pnlBarcodeCard.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pnlBarcodeCard.Margin = new System.Windows.Forms.Padding(4);
             this.pnlBarcodeCard.Name = "pnlBarcodeCard";
             this.pnlBarcodeCard.Size = new System.Drawing.Size(353, 55);
             this.pnlBarcodeCard.TabIndex = 4;
@@ -166,6 +167,13 @@
             this.lblBarcodeTitle.Size = new System.Drawing.Size(271, 28);
             this.lblBarcodeTitle.TabIndex = 0;
             this.lblBarcodeTitle.Text = "⚡ TỰ ĐỘNG MƯỢN SÁCH";
+            // 
+            // lblBarcodeDesc
+            // 
+            this.lblBarcodeDesc.Location = new System.Drawing.Point(0, 0);
+            this.lblBarcodeDesc.Name = "lblBarcodeDesc";
+            this.lblBarcodeDesc.Size = new System.Drawing.Size(100, 23);
+            this.lblBarcodeDesc.TabIndex = 0;
             // 
             // lblGridTitle
             // 
@@ -204,7 +212,7 @@
             this.dgvMain.DefaultCellStyle = dataGridViewCellStyle3;
             this.dgvMain.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
             this.dgvMain.Location = new System.Drawing.Point(33, 252);
-            this.dgvMain.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dgvMain.Margin = new System.Windows.Forms.Padding(4);
             this.dgvMain.Name = "dgvMain";
             this.dgvMain.ReadOnly = true;
             this.dgvMain.RowHeadersVisible = false;
@@ -234,12 +242,27 @@
             this.dgvMain.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
             this.dgvMain.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
             // 
+            // btnLogout
+            // 
+            this.btnLogout.AutoSize = true;
+            this.btnLogout.DisabledLinkColor = System.Drawing.Color.Black;
+            this.btnLogout.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnLogout.LinkColor = System.Drawing.Color.Black;
+            this.btnLogout.Location = new System.Drawing.Point(1256, 205);
+            this.btnLogout.Name = "btnLogout";
+            this.btnLogout.Size = new System.Drawing.Size(110, 28);
+            this.btnLogout.TabIndex = 7;
+            this.btnLogout.TabStop = true;
+            this.btnLogout.Text = "Đăng xuất";
+            this.btnLogout.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.btnLogout_LinkClicked);
+            // 
             // frmTrangChuDocGia
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(246)))), ((int)(((byte)(250)))));
             this.ClientSize = new System.Drawing.Size(1400, 800);
+            this.Controls.Add(this.btnLogout);
             this.Controls.Add(this.dgvMain);
             this.Controls.Add(this.lblGridTitle);
             this.Controls.Add(this.pnlBarcodeCard);
@@ -248,7 +271,7 @@
             this.Controls.Add(this.txtSearch);
             this.Controls.Add(this.pnlHeader);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "frmTrangChuDocGia";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Trang Chủ Độc Giả";
@@ -279,5 +302,6 @@
         private System.Windows.Forms.Label lblBarcodeDesc;
         private System.Windows.Forms.Label lblGridTitle;
         private Guna.UI2.WinForms.Guna2DataGridView dgvMain;
+        private System.Windows.Forms.LinkLabel btnLogout;
     }
 }

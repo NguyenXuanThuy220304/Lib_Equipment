@@ -25,15 +25,12 @@ namespace Lib_Equipment
             this.fullName = fullName;
             this.apiKey = apiKey;
 
-            // Ép Focus vào Textbox ẩn để chờ súng quét
             this.Load += (s, e) => { txtBarcodeScanner.Clear(); txtBarcodeScanner.Focus(); };
             this.Click += (s, e) => { txtBarcodeScanner.Focus(); };
 
-            // [CỰC QUAN TRỌNG] Chống mất Focus: Nếu Textbox bị mất nháy chuột, ép nó lấy lại ngay
             txtBarcodeScanner.Leave += (s, e) => { txtBarcodeScanner.Focus(); };
         }
 
-        // [CỰC QUAN TRỌNG] Bắt buộc đặt con trỏ vào Textbox ngay khi Form vừa xuất hiện
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
@@ -72,7 +69,7 @@ namespace Lib_Equipment
                     string tacGia = dtSach.Rows[0]["Author"].ToString();
                     string trangThai = dtSach.Rows[0]["Status"].ToString();
 
-                    if (trangThai == "Sẵn sàng")
+                    if (trangThai == "Có sẵn")
                     {
                         currentCopyID = copyId;
 
@@ -81,7 +78,7 @@ namespace Lib_Equipment
                         lblBookAuthor.Text = "Tác giả: " + tacGia;
                         lblStatus.Text = "Trạng thái: " + trangThai;
 
-                        lblStatus.Text = "⏳ Đang gọi AI xử lý...";
+                        lblStatus.Text = "Đang gọi AI xử lý...";
                         lblStatus.ForeColor = System.Drawing.Color.Goldenrod;
 
                         // Tạm thời gỡ ép Focus để tránh kẹt khi hiện Popup
@@ -111,7 +108,7 @@ namespace Lib_Equipment
             string aiPrompt = $"Sinh viên {fullName} vừa quét mã vạch mượn sách '{tenSach}'. Đóng vai Trợ lý AI Thư viện, hãy nói 1 câu chào thân thiện, khen ngợi việc chọn sách, và xác nhận mượn (Dưới 30 chữ).";
             string aiResponse = await CallGeminiAPI(aiPrompt);
 
-            lblStatus.Text = "✅ Đã nhận diện thành công!";
+            lblStatus.Text = "Đã nhận diện thành công!";
             lblStatus.ForeColor = System.Drawing.Color.Green;
 
             // Mở Popup Guna
@@ -121,16 +118,14 @@ namespace Lib_Equipment
             if (confirm.IsConfirmed)
             {
                 XuLyMuonSachThanhCong(currentCopyID);
-                this.Close(); // Mượn xong thì đóng Form chờ này luôn
+                this.Close(); 
             }
             else
             {
-                // Hủy thì reset lại Text và đợi quét cuốn mới
                 lblBookTitle.Text = "Vui lòng quét mã vạch trên sách...";
                 lblBookAuthor.Text = "";
                 lblStatus.Text = "";
 
-                // Gắn lại sự kiện chống mất Focus
                 txtBarcodeScanner.Leave += (s, ev) => { txtBarcodeScanner.Focus(); };
                 txtBarcodeScanner.Clear();
                 txtBarcodeScanner.Focus();
@@ -139,8 +134,6 @@ namespace Lib_Equipment
 
         private void XuLyMuonSachThanhCong(string copyId)
         {
-            // ĐÃ XÓA dòng tạo newRecordId bằng C# vì SQL sẽ tự động tăng cột RecordID
-
             string query = @"
                 BEGIN TRY
                     BEGIN TRAN;
@@ -167,7 +160,6 @@ namespace Lib_Equipment
                 END CATCH
             ";
 
-            // ĐÃ XÓA tham số @recordId vì không cần truyền từ C# xuống nữa
             SqlParameter[] param = {
                 new SqlParameter("@readerId", readerID),
                 new SqlParameter("@copyId", copyId)
@@ -191,7 +183,7 @@ namespace Lib_Equipment
                 System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
                 using (HttpClient client = new HttpClient())
                 {
-                    string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={apiKey}";
+                    string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={apiKey}";
                     var payload = new { contents = new[] { new { parts = new[] { new { text = prompt } } } }, generationConfig = new { temperature = 0.7 } };
 
                     var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");

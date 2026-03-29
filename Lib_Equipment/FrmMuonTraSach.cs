@@ -174,7 +174,7 @@ namespace Lib_Equipment
 
                     if (status != "Có sẵn")
                     {
-                        MessageBox.Show("Sách này hiện đang được mượn hoặc không có sẵn (Hỏng/Mất)!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("Sách này hiện đang được mượn hoặc không có sẵn!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         btnChoMuon.Enabled = false;
                         txtTenSachMuon.ForeColor = Color.DimGray;
                     }

@@ -361,9 +361,7 @@
     <Compile Include="frmTrangChuDocGia.Designer.cs">
       <DependentUpon>frmTrangChuDocGia.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrmTroLyAI.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="FrmTroLyAI.cs" />
     <Compile Include="FrmTroLyAI.Designer.cs">
       <DependentUpon>FrmTroLyAI.cs</DependentUpon>
     </Compile>

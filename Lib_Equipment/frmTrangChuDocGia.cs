@@ -125,7 +125,7 @@ namespace Lib_Equipment
                     bcg.CategoryName AS [Thể Loại],
                     b.Publisher AS [Nhà Xuất Bản],
                     (SELECT COUNT(*) FROM BookCopy bc 
-                     WHERE bc.BookID = b.BookID AND bc.Status = N'Sẵn sàng' AND bc.IsDeleted = 0) AS [Số quyển sẵn sàng]
+                     WHERE bc.BookID = b.BookID AND bc.Status = N'Có sẵn' AND bc.IsDeleted = 0) AS [Số quyển sẵn sàng]
                 FROM Book b
                 LEFT JOIN BookCategory bcg ON b.CategoryID = bcg.CategoryID
                 WHERE {whereClause}
@@ -135,5 +135,14 @@ namespace Lib_Equipment
             dgvMain.DataSource = dt;
         }
 
+        private void btnLogout_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (MessageBox.Show("Bạn có chắc muốn đăng xuất?", "Xác nhận", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                this.Hide();
+                new FrmLogin().ShowDialog();
+                this.Close();
+            }
+        }
     }
 }
