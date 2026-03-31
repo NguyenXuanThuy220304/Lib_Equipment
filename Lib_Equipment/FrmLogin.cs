@@ -98,5 +98,19 @@ namespace Lib_Equipment
                 MessageBox.Show("Lỗi kết nối CSDL:\n" + ex.Message, "Lỗi hệ thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void FrmLogin_KeyDown(object sender, KeyEventArgs e)
+        {
+            
+        }
+
+        private void txtPassword_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                btnDangNhap.PerformClick();
+            }
+        }
     }
 }

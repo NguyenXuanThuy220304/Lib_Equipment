@@ -186,7 +186,7 @@ namespace Lib_Equipment
                 new FrmLogin().ShowDialog();
                 this.Close();
                 // Xóa trí nhớ và khung chat của AI khi Đăng xuất
-                AiChatSession.ClearSession();
+                AiSessionMemory.ClearMemory();
             }
         }
 

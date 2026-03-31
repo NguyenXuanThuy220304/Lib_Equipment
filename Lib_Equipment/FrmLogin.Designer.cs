@@ -32,13 +32,13 @@
             this.guna2Elipse1 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
             this.guna2ShadowForm1 = new Guna.UI2.WinForms.Guna2ShadowForm(this.components);
             this.pnlBranding = new Guna.UI2.WinForms.Guna2Panel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.lblSystemName = new System.Windows.Forms.Label();
             this.guna2ControlBox1 = new Guna.UI2.WinForms.Guna2ControlBox();
             this.txtUsername = new Guna.UI2.WinForms.Guna2TextBox();
             this.txtPassword = new Guna.UI2.WinForms.Guna2TextBox();
             this.btnDangNhap = new Guna.UI2.WinForms.Guna2Button();
             this.lblTitleLogin = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pnlBranding.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -59,10 +59,20 @@
             this.pnlBranding.Controls.Add(this.lblSystemName);
             this.pnlBranding.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlBranding.Location = new System.Drawing.Point(0, 0);
-            this.pnlBranding.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pnlBranding.Margin = new System.Windows.Forms.Padding(4);
             this.pnlBranding.Name = "pnlBranding";
             this.pnlBranding.Size = new System.Drawing.Size(467, 554);
             this.pnlBranding.TabIndex = 0;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::Lib_Equipment.Properties.Resources.logo_u;
+            this.pictureBox1.Location = new System.Drawing.Point(129, 75);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(199, 205);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 2;
+            this.pictureBox1.TabStop = false;
             // 
             // lblSystemName
             // 
@@ -84,7 +94,7 @@
             this.guna2ControlBox1.HoverState.IconColor = System.Drawing.Color.White;
             this.guna2ControlBox1.IconColor = System.Drawing.Color.Gray;
             this.guna2ControlBox1.Location = new System.Drawing.Point(1007, 15);
-            this.guna2ControlBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.guna2ControlBox1.Margin = new System.Windows.Forms.Padding(4);
             this.guna2ControlBox1.Name = "guna2ControlBox1";
             this.guna2ControlBox1.Size = new System.Drawing.Size(44, 36);
             this.guna2ControlBox1.TabIndex = 1;
@@ -132,6 +142,7 @@
             this.txtPassword.TabIndex = 3;
             this.txtPassword.TextOffset = new System.Drawing.Point(10, 0);
             this.txtPassword.UseSystemPasswordChar = true;
+            this.txtPassword.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtPassword_KeyDown);
             // 
             // btnDangNhap
             // 
@@ -141,7 +152,7 @@
             this.btnDangNhap.ForeColor = System.Drawing.Color.White;
             this.btnDangNhap.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
             this.btnDangNhap.Location = new System.Drawing.Point(560, 382);
-            this.btnDangNhap.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnDangNhap.Margin = new System.Windows.Forms.Padding(4);
             this.btnDangNhap.Name = "btnDangNhap";
             this.btnDangNhap.Size = new System.Drawing.Size(427, 62);
             this.btnDangNhap.TabIndex = 4;
@@ -160,16 +171,6 @@
             this.lblTitleLogin.TabIndex = 5;
             this.lblTitleLogin.Text = "ĐĂNG NHẬP";
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::Lib_Equipment.Properties.Resources.logo_u;
-            this.pictureBox1.Location = new System.Drawing.Point(129, 75);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(199, 205);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 2;
-            this.pictureBox1.TabStop = false;
-            // 
             // FrmLogin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -183,10 +184,11 @@
             this.Controls.Add(this.guna2ControlBox1);
             this.Controls.Add(this.pnlBranding);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FrmLogin";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Đăng nhập hệ thống";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FrmLogin_KeyDown);
             this.pnlBranding.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
