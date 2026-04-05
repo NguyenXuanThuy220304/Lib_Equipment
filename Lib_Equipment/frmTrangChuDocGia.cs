@@ -2,6 +2,7 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Lib_Equipment
@@ -19,7 +20,19 @@ namespace Lib_Equipment
             InitializeComponent();
             currentReaderID = readerID;
             currentFullName = fullName;
-            lblWelcome.Text = $"Xin chào, {currentFullName} | MÃ ĐỘC GIẢ: {currentReaderID}";
+            string query = "SELECT ISNULL(Balance, 0) FROM Reader WHERE ReaderID = @id";
+            SqlParameter[] param = { new SqlParameter("@id", readerID) };
+            object balanceObj = DataProvider.Instance.ExecuteScalar(query, param);
+            decimal balance = Convert.ToDecimal(balanceObj);
+
+            // Hiển thị thông tin chào mừng và số dư
+            lblWelcome.Text = $"Xin chào, {currentFullName} | Mã: {currentReaderID}";
+
+            // Giả sử bạn thêm 1 Label tên là lblBalance để hiện số tiền
+            lblBalance.Text = $"Số dư tài khoản: {balance:N0} VNĐ";
+
+            // Đổi màu: Đỏ nếu nợ (âm tiền), Xanh nếu có tiền dư
+            lblBalance.ForeColor = balance < 0 ? Color.Red : Color.Green;
 
             // === GẮN SỰ KIỆN CLICK CHO KHU VỰC MÀU CAM ===
             pnlBarcodeCard.Cursor = Cursors.Hand;
@@ -57,13 +70,17 @@ namespace Lib_Equipment
             lblGridTitle.Text = "📚 Lịch sử mượn sách của bạn";
             txtSearch.Clear();
 
+            // [FIX LỖI]: Dùng CASE WHEN để dịch trạng thái tự động dựa vào việc đã trả hay chưa (ReturnDate)
             string query = $@"
                 SELECT 
                     br.RecordID AS [Mã Phiếu],
                     b.Title AS [Tên Sách],
                     br.BorrowDate AS [Ngày Mượn],
                     br.DueDate AS [Hạn Trả],
-                    br.Status AS [Trạng Thái]
+                    CASE 
+                        WHEN bd.ReturnDate IS NULL THEN N'Đang mượn'
+                        ELSE N'Đã trả'
+                    END AS [Trạng Thái]
                 FROM BorrowRecord br
                 JOIN BorrowDetail bd ON br.RecordID = bd.RecordID
                 JOIN BookCopy bc ON bd.CopyID = bc.CopyID

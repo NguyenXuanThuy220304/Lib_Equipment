@@ -20,6 +20,7 @@ namespace Lib_Equipment
             dtpHanTra.Value = DateTime.Now.AddDays(14); // Mặc định cho mượn 14 ngày
             SetupGridReturnButton();
             RefreshGrid();
+            btnNapTien.Enabled = true;
         }
 
         private void SetupGridReturnButton()
@@ -102,7 +103,8 @@ namespace Lib_Equipment
                     return;
                 }
 
-                string query = "SELECT FullName, Status FROM Reader WHERE ReaderID = @id AND (IsDeleted = 0 OR IsDeleted IS NULL)";
+                // [SỬA ĐỔI]: Lấy thêm cột Balance (Dùng ISNULL để phòng trường hợp tài khoản chưa có giao dịch nào thì mặc định là 0)
+                string query = "SELECT FullName, Status, ISNULL(Balance, 0) AS Balance FROM Reader WHERE ReaderID = @id AND (IsDeleted = 0 OR IsDeleted IS NULL)";
                 SqlParameter[] param = { new SqlParameter("@id", txtMaDG.Text.Trim()) };
 
                 DataTable dt = DataProvider.Instance.ExecuteQuery(query, param);
@@ -118,11 +120,34 @@ namespace Lib_Equipment
                         btnChoMuon.Enabled = false; return;
                     }
 
+                    // ===============================================================
+                    // [THÊM MỚI]: LUẬT KIỂM TRA SỐ DƯ VÍ (NẾU ÂM TIỀN -> CHẶN + HIỆN NẠP TIỀN)
+                    // ===============================================================
+                    decimal balance = Convert.ToDecimal(dt.Rows[0]["Balance"]);
+                    if (balance < 0)
+                    {
+                        DialogResult dialog = MessageBox.Show(
+                            $"CẢNH BÁO TỪ BỘ PHẬN THU NGÂN:\n\nĐộc giả này đang NỢ thư viện số tiền: {Math.Abs(balance):N0} VNĐ (do làm mất sách/hỏng sách).\nHệ thống tự động TỪ CHỐI CHO MƯỢN MỚI.\n\nBạn có muốn mở Cổng thanh toán để độc giả nạp tiền trả nợ ngay bây giờ không?",
+                            "Tài khoản bị khóa do Nợ quỹ",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Error);
+
+                        btnChoMuon.Enabled = false;
+                        txtMaBanSao.Enabled = false;
+
+                        // Nếu thủ thư bấm Yes -> Mở luôn Form nạp tiền (Hàm này đã thêm ở tin nhắn trước)
+                        if (dialog == DialogResult.Yes)
+                        {
+                            HienThiFormNapTien(txtMaDG.Text.Trim(), balance);
+                        }
+                        return; // Bắt buộc dùng return để chặn đứng, không cho chạy phần mượn sách bên dưới
+                    }
+
                     // CHECK LUẬT BÁCH KHOA: CÓ NỢ SÁCH QUÁ HẠN KHÔNG?
                     string checkOverdue = @"
-                        SELECT COUNT(*) FROM BorrowRecord br 
-                        JOIN BorrowDetail bd ON br.RecordID = bd.RecordID 
-                        WHERE br.ReaderID = @id AND bd.ReturnDate IS NULL AND br.DueDate < CAST(GETDATE() AS DATE)";
+                SELECT COUNT(*) FROM BorrowRecord br 
+                JOIN BorrowDetail bd ON br.RecordID = bd.RecordID 
+                WHERE br.ReaderID = @id AND bd.ReturnDate IS NULL AND br.DueDate < CAST(GETDATE() AS DATE)";
 
                     SqlParameter[] paramCheck = { new SqlParameter("@id", txtMaDG.Text.Trim()) };
                     int overdueCount = (int)DataProvider.Instance.ExecuteScalar(checkOverdue, paramCheck);
@@ -395,6 +420,88 @@ namespace Lib_Equipment
                     e.Value = "XÁC NHẬN";
                 }
             }
+        }
+        // ==========================================================
+        // TÍNH NĂNG MỚI: POPUP NẠP TIỀN TỰ ĐỘNG BẰNG CODE
+        // ==========================================================
+        private void HienThiFormNapTien(string maDocGia, decimal soTienNo)
+        {
+            Form frmNap = new Form();
+            frmNap.Text = "Thanh toán nợ & Nạp ví Thư viện";
+            frmNap.Size = new Size(400, 260);
+            frmNap.StartPosition = FormStartPosition.CenterParent;
+            frmNap.FormBorderStyle = FormBorderStyle.FixedDialog;
+            frmNap.MaximizeBox = false; frmNap.MinimizeBox = false;
+            frmNap.BackColor = Color.White;
+
+            Label lblTitle = new Label() { Text = $"ĐỘC GIẢ: {maDocGia}", Left = 20, Top = 20, Width = 350, Font = new Font("Segoe UI", 12, FontStyle.Bold), ForeColor = Color.Blue };
+            Label lblNo = new Label() { Text = $"Dư nợ hiện tại: {soTienNo:N0} VNĐ", Left = 20, Top = 50, Width = 350, Font = new Font("Segoe UI", 10, FontStyle.Italic), ForeColor = Color.Red };
+
+            Label lblSoTien = new Label() { Text = "Số tiền nạp (VNĐ):", Left = 20, Top = 90, Width = 150, Font = new Font("Segoe UI", 10, FontStyle.Bold) };
+
+            // Tự động điền sẵn số tiền nợ (chuyển số âm thành dương) để nộp cho lẹ
+            TextBox txtSoTien = new TextBox() { Text = Math.Abs(soTienNo).ToString(), Left = 170, Top = 85, Width = 190, Font = new Font("Segoe UI", 12) };
+
+            Button btnXacNhan = new Button() { Text = "NẠP TIỀN & MỞ KHÓA", Left = 20, Top = 140, Width = 340, Height = 50, BackColor = Color.FromArgb(40, 167, 69), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Font = new Font("Segoe UI", 11, FontStyle.Bold) };
+
+            frmNap.Controls.AddRange(new Control[] { lblTitle, lblNo, lblSoTien, txtSoTien, btnXacNhan });
+
+            btnXacNhan.Click += (s, ev) =>
+            {
+                decimal tienNap = 0;
+                if (!decimal.TryParse(txtSoTien.Text.Replace(",", "").Replace(".", ""), out tienNap) || tienNap <= 0)
+                {
+                    MessageBox.Show("Vui lòng nhập số tiền hợp lệ!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                string sqlNapTien = "UPDATE Reader SET Balance = ISNULL(Balance, 0) + @TienNap WHERE ReaderID = @id";
+                SqlParameter[] param = {
+                    new SqlParameter("@TienNap", tienNap),
+                    new SqlParameter("@id", maDocGia)
+                };
+
+                try
+                {
+                    DataProvider.Instance.ExecuteNonQuery(sqlNapTien, param);
+                    MessageBox.Show($"Đã nạp thành công {tienNap:N0} VNĐ.\nTài khoản đã sẵn sàng để mượn sách!", "Hoàn tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    frmNap.DialogResult = DialogResult.OK;
+                    frmNap.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi hệ thống: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            };
+
+            // Nếu nạp tiền xong (bấm OK) thì tự động kích hoạt lại hàm Quét độc giả để mở khóa mượn
+            if (frmNap.ShowDialog() == DialogResult.OK)
+            {
+                txtMaDG_KeyDown(txtMaDG, new KeyEventArgs(Keys.Enter));
+            }
+        }
+        private void MoFormNapTienHanhChinh()
+        {
+            string maDG = txtMaDG.Text.Trim();
+            if (string.IsNullOrEmpty(maDG) || txtTenDG.Text == "")
+            {
+                MessageBox.Show("Vui lòng nhập và xác nhận Mã độc giả trước khi nạp tiền!", "Thông báo");
+                return;
+            }
+
+            // Lấy số dư hiện tại để hiển thị
+            string q = "SELECT ISNULL(Balance, 0) FROM Reader WHERE ReaderID = @id";
+
+            // TẠO MẢNG THAM SỐ CHUẨN XÁC
+            SqlParameter[] param = { new SqlParameter("@id", maDG) };
+
+            decimal currentBalance = Convert.ToDecimal(DataProvider.Instance.ExecuteScalar(q, param));
+
+            HienThiFormNapTien(maDG, currentBalance);
+        }
+        private void btnNapTien_Click_1(object sender, EventArgs e)
+        {
+            MoFormNapTienHanhChinh();
         }
     }
 }

@@ -189,7 +189,20 @@ namespace Lib_Equipment
                 AiSessionMemory.ClearMemory();
             }
         }
-
+        private void RunAutoPenaltySystem()
+        {
+            try
+            {
+                string query = "EXEC sp_AutoXulyPhatQuaHan30Ngay";
+                DataProvider.Instance.ExecuteNonQuery(query);
+                // Chạy ngầm im lặng, không cần hiện thông báo để tránh phiền người dùng
+            }
+            catch (Exception ex)
+            {
+                // Có thể ghi log lỗi ra file nếu cần
+                Console.WriteLine("Lỗi chạy hệ thống phạt tự động: " + ex.Message);
+            }
+        }
         private void FrmMain_Load_1(object sender, EventArgs e)
         {
             // Giới hạn vùng phóng to (chừa lại thanh Taskbar)
@@ -199,7 +212,7 @@ namespace Lib_Equipment
             this.WindowState = FormWindowState.Maximized;
             ApplyDynamicPermissions();
             OpenChildForm(new FrmTrangChu(), "TRANG CHỦ");
-
+            RunAutoPenaltySystem();
         }
     }
 }

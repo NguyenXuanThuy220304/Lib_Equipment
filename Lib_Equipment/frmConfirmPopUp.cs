@@ -17,6 +17,20 @@ namespace Lib_Equipment
             lblBookInfo.Text = $"📚 Cuốn sách: {tenSach}\n🆔 Mã vạch: {copyId}";
         }
 
+        // ==========================================================
+        // [THÊM MỚI]: Hỗ trợ xác nhận Giỏ hàng nhiều sách cùng lúc
+        // ==========================================================
+        public frmConfirmPopUp(string aiResponse, int soLuong, string danhSachMa)
+        {
+            InitializeComponent();
+            lblAiResponse.Text = $"\"{aiResponse}\"";
+
+            // Cắt chuỗi nếu dài quá để không tràn giao diện
+            if (danhSachMa.Length > 40) danhSachMa = danhSachMa.Substring(0, 37) + "...";
+
+            lblBookInfo.Text = $"📚 Đang mượn: {soLuong} cuốn sách\n🆔 Các mã: {danhSachMa}";
+        }
+
         private void btnXacNhan_Click(object sender, EventArgs e)
         {
             IsConfirmed = true;
