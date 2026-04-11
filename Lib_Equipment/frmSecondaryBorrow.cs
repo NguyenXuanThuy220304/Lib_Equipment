@@ -245,7 +245,7 @@ namespace Lib_Equipment
             sbQuery.AppendLine("BEGIN TRY");
             sbQuery.AppendLine("BEGIN TRAN;");
 
-            sbQuery.AppendLine("INSERT INTO BorrowRecord (ReaderID, CreatedBy, BorrowDate, DueDate, Status, IsDeleted) VALUES (@readerId, @readerId, GETDATE(), DATEADD(day, 14, GETDATE()), N'Đang mượn', 0);");
+            sbQuery.AppendLine("INSERT INTO BorrowRecord (ReaderID, CreatedBy, BorrowDate, DueDate, Status, IsDeleted) VALUES (@readerId, NULL, GETDATE(), DATEADD(day, 14, GETDATE()), N'Đang mượn', 0);");
             sbQuery.AppendLine("DECLARE @newRecordId INT = SCOPE_IDENTITY();");
 
             foreach (DataRow row in dtGioHang.Rows)

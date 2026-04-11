@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using OfficeOpenXml; // Thư viện EPPlus
 using System.IO;     // Thư viện xử lý lưu File
-
+using Excel = Microsoft.Office.Interop.Excel;
 namespace Lib_Equipment
 {
     public partial class FrmThongKeThietBi : Form
@@ -185,72 +185,107 @@ namespace Lib_Equipment
                 return;
             }
 
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Title = "Xuất báo cáo thiết bị ra Excel";
-            saveFileDialog.Filter = "Excel Workbook (*.xlsx)|*.xlsx";
-            saveFileDialog.FileName = "BaoCao_ThietBi_CanBaoTri.xlsx";
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Title = "Xuất báo cáo thiết bị phân loại theo Sheet";
+            sfd.Filter = "Excel Workbook (*.xlsx)|*.xlsx";
+            sfd.FileName = "BaoCao_ThietBi_PhanLoai_" + DateTime.Now.ToString("ddMMyyyy") + ".xlsx";
 
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            if (sfd.ShowDialog() == DialogResult.OK)
             {
+                Excel.Application xlApp = new Excel.Application();
+                if (xlApp == null)
+                {
+                    MessageBox.Show("Máy tính của bạn chưa cài đặt Microsoft Excel!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
                 try
                 {
-                    
-                    // 2. TẠO FILE EXCEL (Chỉ định đích danh OfficeOpenXml)
-                    using (OfficeOpenXml.ExcelPackage excel = new OfficeOpenXml.ExcelPackage())
+                    Excel.Workbook xlWorkbook = xlApp.Workbooks.Add(Type.Missing);
+
+                    // Tạo 2 Sheet
+                    Excel.Worksheet sheetHong = (Excel.Worksheet)xlWorkbook.Sheets.Add();
+                    sheetHong.Name = "Thiet Bi Hong";
+
+                    Excel.Worksheet sheetBaoTri = (Excel.Worksheet)xlWorkbook.Sheets.Add();
+                    sheetBaoTri.Name = "Dang Bao Tri";
+
+                    // Xóa bớt Sheet mặc định thừa (thường là Sheet1)
+                    try { ((Excel.Worksheet)xlWorkbook.Sheets["Sheet1"]).Delete(); } catch { }
+
+                    // Đổ dữ liệu vào từng Sheet
+                    ExportDataToWorksheet(sheetHong, "DANH SÁCH THIẾT BỊ ĐANG HỎNG", "Hỏng");
+                    ExportDataToWorksheet(sheetBaoTri, "DANH SÁCH THIẾT BỊ ĐANG BẢO TRÌ", "Bảo trì");
+
+                    // Lưu file
+                    xlWorkbook.SaveAs(sfd.FileName);
+                    xlWorkbook.Close();
+                    xlApp.Quit();
+
+                    // Giải phóng bộ nhớ
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(sheetHong);
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(sheetBaoTri);
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(xlWorkbook);
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(xlApp);
+
+                    if (MessageBox.Show("Xuất báo cáo chia Sheet thành công! Mở file ngay?", "Thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                     {
-                        var sheet = excel.Workbook.Worksheets.Add("BaoCao");
-
-                        // IN TIÊU ĐỀ
-                        sheet.Cells["A1:E1"].Merge = true;
-                        sheet.Cells["A1"].Value = "BÁO CÁO DANH SÁCH THIẾT BỊ HỎNG / CẦN BẢO TRÌ";
-                        sheet.Cells["A1"].Style.Font.Size = 14;
-                        sheet.Cells["A1"].Style.Font.Bold = true;
-                        sheet.Cells["A1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                        sheet.Cells["A1"].Style.Font.Color.SetColor(Color.Red);
-
-                        sheet.Cells["A2:E2"].Merge = true;
-                        sheet.Cells["A2"].Value = "Ngày xuất báo cáo: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm");
-                        sheet.Cells["A2"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                        sheet.Cells["A2"].Style.Font.Italic = true;
-
-                        // IN CỘT TIÊU ĐỀ
-                        int startRow = 4;
-                        for (int i = 0; i < dgvBaoTri.Columns.Count; i++)
-                        {
-                            sheet.Cells[startRow, i + 1].Value = dgvBaoTri.Columns[i].HeaderText;
-                            sheet.Cells[startRow, i + 1].Style.Font.Bold = true;
-                            sheet.Cells[startRow, i + 1].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                            sheet.Cells[startRow, i + 1].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(255, 140, 0));
-                            sheet.Cells[startRow, i + 1].Style.Font.Color.SetColor(Color.White);
-                            sheet.Cells[startRow, i + 1].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
-                        }
-
-                        // IN DỮ LIỆU
-                        for (int i = 0; i < dgvBaoTri.Rows.Count; i++)
-                        {
-                            for (int j = 0; j < dgvBaoTri.Columns.Count; j++)
-                            {
-                                object cellValue = dgvBaoTri.Rows[i].Cells[j].Value;
-                                sheet.Cells[i + startRow + 1, j + 1].Value = cellValue != null ? cellValue.ToString() : "";
-                                sheet.Cells[i + startRow + 1, j + 1].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
-                            }
-                        }
-
-                        sheet.Cells[sheet.Dimension.Address].AutoFitColumns();
-                        System.IO.File.WriteAllBytes(saveFileDialog.FileName, excel.GetAsByteArray());
-
-                        if (MessageBox.Show("Xuất báo cáo thành công! Mở file Excel ngay?", "Thành công", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
-                        {
-                            System.Diagnostics.Process.Start(saveFileDialog.FileName);
-                        }
+                        System.Diagnostics.Process.Start(sfd.FileName);
                     }
                 }
                 catch (Exception ex)
                 {
-                    // Đã sửa lại chữ "Lỗi kết nối CSDL" thành "Lỗi xuất Excel" cho chuẩn xác
-                    MessageBox.Show("Lỗi xuất Excel: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Lỗi xuất Excel Interop: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    xlApp.Quit();
                 }
             }
+        }
+
+        // Hàm hỗ trợ lọc dữ liệu và định dạng Sheet bằng Interop
+        private void ExportDataToWorksheet(Excel.Worksheet ws, string title, string filterKeyword)
+        {
+            // 1. Tiêu đề báo cáo
+            ws.Cells[1, 1] = title;
+            Excel.Range titleRange = ws.Range[ws.Cells[1, 1], ws.Cells[1, 5]];
+            titleRange.Merge();
+            titleRange.Font.Bold = true;
+            titleRange.Font.Size = 16;
+            titleRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+            titleRange.Font.Color = ColorTranslator.ToOle(Color.Red);
+
+            ws.Cells[2, 1] = "Ngày xuất: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+            ws.Range[ws.Cells[2, 1], ws.Cells[2, 5]].Merge();
+            ws.Range[ws.Cells[2, 1], ws.Cells[2, 5]].HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+            ws.Range[ws.Cells[2, 1], ws.Cells[2, 5]].Font.Italic = true;
+
+            // 2. Tiêu đề cột
+            for (int j = 0; j < dgvBaoTri.Columns.Count; j++)
+            {
+                ws.Cells[4, j + 1] = dgvBaoTri.Columns[j].HeaderText;
+                ws.Cells[4, j + 1].Font.Bold = true;
+                ws.Cells[4, j + 1].Interior.Color = ColorTranslator.ToOle(Color.LightGray);
+                ws.Cells[4, j + 1].Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+            }
+
+            // 3. Đổ dữ liệu có lọc
+            int excelRow = 5;
+            for (int i = 0; i < dgvBaoTri.Rows.Count; i++)
+            {
+                // Kiểm tra cột Tình trạng (Cột thứ 4 - Index 3)
+                string status = dgvBaoTri.Rows[i].Cells[3].Value?.ToString() ?? "";
+
+                if (status.Contains(filterKeyword))
+                {
+                    for (int j = 0; j < dgvBaoTri.Columns.Count; j++)
+                    {
+                        ws.Cells[excelRow, j + 1] = dgvBaoTri.Rows[i].Cells[j].Value?.ToString();
+                        ws.Cells[excelRow, j + 1].Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+                    }
+                    excelRow++;
+                }
+            }
+
+            ws.Columns.AutoFit();
         }
         private void dgvBaoTri_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {

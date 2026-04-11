@@ -126,15 +126,34 @@ namespace Lib_Equipment
 
             lblGridTitle.Text = $"🔍 Kết quả tìm kiếm cho: '{keyword}'";
 
-            // Thuật toán tách từ khóa
+            // 1. Tách từ khóa người dùng gõ thành các từ đơn lẻ (Loại bỏ khoảng trắng thừa)
             string[] words = keyword.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
             string whereClause = "b.IsDeleted = 0 ";
 
+            // Khai báo List Parameter (Sử dụng đường dẫn đầy đủ vì bạn chưa using System.Collections.Generic)
+            System.Collections.Generic.List<SqlParameter> paramList = new System.Collections.Generic.List<SqlParameter>();
+
+            // 2. Thuật toán tạo chuỗi truy vấn thông minh (Smart Query)
             for (int i = 0; i < words.Length; i++)
             {
-                whereClause += $" AND (b.Title LIKE N'%{words[i]}%' OR b.Author LIKE N'%{words[i]}%') ";
+                string paramName = $"@w{i}";
+
+                // MẸO CỰC HAY: Thêm COLLATE SQL_Latin1_General_CP1_CI_AI để:
+                // - CI (Case Insensitive): Không phân biệt hoa/thường (a = A)
+                // - AI (Accent Insensitive): Không phân biệt dấu tiếng Việt (a = á = ã = ạ)
+                whereClause += $@" 
+                    AND (
+                        b.Title COLLATE SQL_Latin1_General_CP1_CI_AI LIKE {paramName} OR 
+                        b.Author COLLATE SQL_Latin1_General_CP1_CI_AI LIKE {paramName} OR 
+                        bcg.CategoryName COLLATE SQL_Latin1_General_CP1_CI_AI LIKE {paramName}
+                    ) ";
+
+                // Bọc % ở 2 đầu để tìm kiếm gần đúng (Chứa ký tự)
+                paramList.Add(new SqlParameter(paramName, $"%{words[i]}%"));
             }
 
+            // 3. Lắp ráp câu lệnh SQL hoàn chỉnh
             string query = $@"
                 SELECT 
                     b.Title AS [Tên Sách], 
@@ -148,7 +167,8 @@ namespace Lib_Equipment
                 WHERE {whereClause}
                 ORDER BY b.Title ASC";
 
-            DataTable dt = DataProvider.Instance.ExecuteQuery(query);
+            // 4. Truy xuất Database với Parameter mảng để chống SQL Injection
+            DataTable dt = DataProvider.Instance.ExecuteQuery(query, paramList.ToArray());
             dgvMain.DataSource = dt;
         }
 

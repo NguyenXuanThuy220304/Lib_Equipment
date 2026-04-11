@@ -73,6 +73,7 @@
             this.pnlSidebar.AutoScroll = true;
             this.pnlSidebar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
             this.pnlSidebar.Controls.Add(this.btnDangXuat);
+            this.pnlSidebar.Controls.Add(this.btnAIsub);
             this.pnlSidebar.Controls.Add(this.pnlSubMenuBaoCao);
             this.pnlSidebar.Controls.Add(this.btnBaoCao);
             this.pnlSidebar.Controls.Add(this.pnlSubMenuThietBi);
@@ -83,7 +84,6 @@
             this.pnlSidebar.Controls.Add(this.btnHeThong);
             this.pnlSidebar.Controls.Add(this.btnTrangChu);
             this.pnlSidebar.Controls.Add(this.pnlLogo);
-            this.pnlSidebar.Controls.Add(this.btnAIsub);
             this.pnlSidebar.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlSidebar.Location = new System.Drawing.Point(0, 0);
             this.pnlSidebar.Margin = new System.Windows.Forms.Padding(4);
@@ -98,11 +98,11 @@
             this.btnDangXuat.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.btnDangXuat.ForeColor = System.Drawing.Color.White;
             this.btnDangXuat.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
-            this.btnDangXuat.Location = new System.Drawing.Point(0, 1042);
+            this.btnDangXuat.Location = new System.Drawing.Point(0, 1104); // <--- Đẩy tọa độ Y xuống sâu hơn
             this.btnDangXuat.Margin = new System.Windows.Forms.Padding(4);
             this.btnDangXuat.Name = "btnDangXuat";
             this.btnDangXuat.Size = new System.Drawing.Size(326, 62);
-            this.btnDangXuat.TabIndex = 10;
+            this.btnDangXuat.TabIndex = 11;
             this.btnDangXuat.Text = "Đăng xuất";
             this.btnDangXuat.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnDangXuat.TextOffset = new System.Drawing.Point(20, 0);
@@ -438,20 +438,20 @@
             this.btnTrangChu.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnTrangChu.TextOffset = new System.Drawing.Point(20, 0);
             this.btnTrangChu.Click += new System.EventHandler(this.btnTrangChu_Click);
-            //
+            // 
             // btnAIsub
-            //
+            // 
             this.btnAIsub.Dock = System.Windows.Forms.DockStyle.Top;
             this.btnAIsub.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
             this.btnAIsub.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.btnAIsub.ForeColor = System.Drawing.Color.White;
             this.btnAIsub.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
-            this.btnAIsub.Location = new System.Drawing.Point(0, 68);
+            this.btnAIsub.Location = new System.Drawing.Point(0, 1042); // <--- Đưa tọa độ Y xuống dưới Báo cáo
             this.btnAIsub.Margin = new System.Windows.Forms.Padding(4);
             this.btnAIsub.Name = "btnAIsub";
             this.btnAIsub.Size = new System.Drawing.Size(326, 62);
-            this.btnAIsub.TabIndex = 1;
-            this.btnAIsub.Text = "  Hỗ trợ(AI)";
+            this.btnAIsub.TabIndex = 10;
+            this.btnAIsub.Text = "  Hỗ trợ (AI)";
             this.btnAIsub.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnAIsub.TextOffset = new System.Drawing.Point(20, 0);
             this.btnAIsub.Click += new System.EventHandler(this.btnAIsub_Click);
