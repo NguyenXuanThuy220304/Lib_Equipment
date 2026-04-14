@@ -46,7 +46,7 @@ namespace Lib_Equipment
                 // Thay vì dùng DataProvider.Instance có thể bị timeout, ta tạo một truy vấn thẳng
                 string backupSQL = $"BACKUP DATABASE [{dbName}] TO DISK = '{txtBackupPath.Text}'";
 
-                DataProvider.Instance.ExecuteNonQuery(backupSQL);
+                DataProvider.Instance.ExecuteNonQuery(backupSQL,null);
 
                 MessageBox.Show("Đã sao lưu cơ sở dữ liệu thành công!", "Hoàn tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 txtBackupPath.Clear();
@@ -107,7 +107,7 @@ namespace Lib_Equipment
                         ALTER DATABASE [{dbName}] SET MULTI_USER;
                     ";
 
-                    DataProvider.Instance.ExecuteNonQuery(restoreSQL);
+                    DataProvider.Instance.ExecuteNonQuery(restoreSQL, null);
 
                     MessageBox.Show("Đã phục hồi dữ liệu thành công! Phần mềm cần khởi động lại để áp dụng dữ liệu mới.", "Hoàn tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
 

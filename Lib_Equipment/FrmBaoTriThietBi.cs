@@ -83,7 +83,7 @@ namespace Lib_Equipment
                     THROW;
                 END CATCH;";
 
-            SqlParameter[] p = {
+            SqlParameter[] parameters = {
                 new SqlParameter("@eid", txtMaTB.Text),
                 new SqlParameter("@user", AppSession.Username ?? "ADMIN"),
                 new SqlParameter("@date", dtpNgayBT.Value),
@@ -95,7 +95,7 @@ namespace Lib_Equipment
 
             try
             {
-                DataProvider.Instance.ExecuteNonQuery(sql, p);
+                DataProvider.Instance.ExecuteNonQuery(sql, parameters);
                 MessageBox.Show("Thực hiện nghiệp vụ thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LoadEquipment();
                 LoadNextID();

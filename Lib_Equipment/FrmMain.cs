@@ -1,4 +1,5 @@
-﻿using Lib_Equipment.Database;
+﻿using Lib_Equipment.DAO;
+using Lib_Equipment.Database;
 using Lib_Equipment.Helpers;
 using System;
 using System.Data;
@@ -194,7 +195,7 @@ namespace Lib_Equipment
             try
             {
                 string query = "EXEC sp_AutoXulyPhatQuaHan30Ngay";
-                DataProvider.Instance.ExecuteNonQuery(query);
+                DataProvider.Instance.ExecuteNonQuery(query, null);
                 // Chạy ngầm im lặng, không cần hiện thông báo để tránh phiền người dùng
             }
             catch (Exception ex)
@@ -213,6 +214,18 @@ namespace Lib_Equipment
             ApplyDynamicPermissions();
             OpenChildForm(new FrmTrangChu(), "TRANG CHỦ");
             RunAutoPenaltySystem();
+            System.Threading.Tasks.Task.Run(() => {
+                try { Lib_Equipment.BLL.MuonTraBLL.Instance.TuDongKiemTraVaGuiMailLuuLuu(); } catch { }
+            });
+            try
+            {
+                DocGiaDAO.Instance.AutoUpdateDebt();
+                // Sau đó mới load dữ liệu lên các bảng
+            }
+            catch
+            {
+                /* Ghi log nếu cần */
+            }
         }
     }
 }

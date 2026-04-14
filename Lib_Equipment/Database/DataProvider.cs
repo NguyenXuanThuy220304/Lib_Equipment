@@ -53,7 +53,7 @@ namespace Lib_Equipment.Database
         }
 
         // HÀM 2: ExecuteNonQuery - Dùng cho INSERT, UPDATE, DELETE (Trả về số dòng bị ảnh hưởng)
-        public int ExecuteNonQuery(string query, SqlParameter[] parameters = null)
+        public int ExecuteNonQuery(string query, SqlParameter[] parameters)
         {
             int data = 0;
             using (SqlConnection connection = new SqlConnection(connectionString))

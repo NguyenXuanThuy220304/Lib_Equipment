@@ -240,7 +240,20 @@
   <ItemGroup>
     <Compile Include="AppSecrets.cs" />
     <Compile Include="AppSecrets.example.cs" />
+    <Compile Include="BLL\BanSaoBLL.cs" />
+    <Compile Include="BLL\DocGiaBLL.cs" />
+    <Compile Include="BLL\MuonTraBLL.cs" />
+    <Compile Include="BLL\SachBLL.cs" />
+    <Compile Include="BLL\TaiKhoanBLL.cs" />
+    <Compile Include="BLL\ThongKeThuVienBLL.cs" />
+    <Compile Include="DAO\BanSaoDAO.cs" />
+    <Compile Include="DAO\DocGiaDAO.cs" />
+    <Compile Include="DAO\MuonTraDAO.cs" />
+    <Compile Include="DAO\SachDAO.cs" />
+    <Compile Include="DAO\TaiKhoanDAO.cs" />
+    <Compile Include="DAO\ThongKeThuVienDAO.cs" />
     <Compile Include="Database\DataProvider.cs" />
+    <Compile Include="DTO\DocGiaDTO.cs" />
     <Compile Include="FrmBaoTriThietBi.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -366,6 +379,7 @@
       <DependentUpon>FrmTroLyAI.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AppSession.cs" />
+    <Compile Include="Helpers\EmailHelper.cs" />
     <Compile Include="Helpers\SecurityHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -501,5 +515,6 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

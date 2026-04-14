@@ -23,10 +23,15 @@
             this.txtTacGia = new Guna.UI2.WinForms.Guna2TextBox();
             this.txtNhaXuatBan = new Guna.UI2.WinForms.Guna2TextBox();
             this.txtNamXuatBan = new Guna.UI2.WinForms.Guna2TextBox();
+            this.txtGiaSach = new Guna.UI2.WinForms.Guna2TextBox();
+            this.cboLoaiSach = new Guna.UI2.WinForms.Guna2ComboBox();
             this.btnLamMoi = new Guna.UI2.WinForms.Guna2Button();
             this.btnXoa = new Guna.UI2.WinForms.Guna2Button();
             this.btnSua = new Guna.UI2.WinForms.Guna2Button();
             this.btnThem = new Guna.UI2.WinForms.Guna2Button();
+            this.btnInPhieu = new Guna.UI2.WinForms.Guna2Button(); // Khởi tạo nút in phiếu
+            this.lblSoTrang = new System.Windows.Forms.Label();
+            this.txtSoTrang = new System.Windows.Forms.TextBox();
             this.dgvSach = new Guna.UI2.WinForms.Guna2DataGridView();
             this.pnlControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSach)).BeginInit();
@@ -41,14 +46,19 @@
             this.pnlControls.Controls.Add(this.txtTacGia);
             this.pnlControls.Controls.Add(this.txtNhaXuatBan);
             this.pnlControls.Controls.Add(this.txtNamXuatBan);
+            this.pnlControls.Controls.Add(this.txtGiaSach);
+            this.pnlControls.Controls.Add(this.cboLoaiSach);
             this.pnlControls.Controls.Add(this.btnLamMoi);
             this.pnlControls.Controls.Add(this.btnXoa);
             this.pnlControls.Controls.Add(this.btnSua);
             this.pnlControls.Controls.Add(this.btnThem);
+            this.pnlControls.Controls.Add(this.btnInPhieu); // Thêm nút in phiếu vào Panel
+            this.pnlControls.Controls.Add(this.lblSoTrang);
+            this.pnlControls.Controls.Add(this.txtSoTrang);
             this.pnlControls.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlControls.Location = new System.Drawing.Point(0, 0);
             this.pnlControls.Name = "pnlControls";
-            this.pnlControls.Size = new System.Drawing.Size(950, 200);
+            this.pnlControls.Size = new System.Drawing.Size(950, 250);
             this.pnlControls.TabIndex = 1;
             // 
             // txtMaSach
@@ -57,12 +67,12 @@
             this.txtMaSach.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtMaSach.DefaultText = "";
             this.txtMaSach.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.txtMaSach.Location = new System.Drawing.Point(34, 21);
+            this.txtMaSach.Location = new System.Drawing.Point(30, 20);
             this.txtMaSach.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtMaSach.Name = "txtMaSach";
             this.txtMaSach.PlaceholderText = "Mã đầu sách (VD: DS001)";
             this.txtMaSach.SelectedText = "";
-            this.txtMaSach.Size = new System.Drawing.Size(225, 42);
+            this.txtMaSach.Size = new System.Drawing.Size(240, 42);
             this.txtMaSach.TabIndex = 0;
             // 
             // txtTenSach
@@ -71,12 +81,12 @@
             this.txtTenSach.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtTenSach.DefaultText = "";
             this.txtTenSach.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.txtTenSach.Location = new System.Drawing.Point(292, 21);
+            this.txtTenSach.Location = new System.Drawing.Point(290, 20);
             this.txtTenSach.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtTenSach.Name = "txtTenSach";
             this.txtTenSach.PlaceholderText = "Tên sách";
             this.txtTenSach.SelectedText = "";
-            this.txtTenSach.Size = new System.Drawing.Size(338, 42);
+            this.txtTenSach.Size = new System.Drawing.Size(350, 42);
             this.txtTenSach.TabIndex = 1;
             // 
             // cboTheLoai
@@ -88,10 +98,10 @@
             this.cboTheLoai.FocusedColor = System.Drawing.Color.Empty;
             this.cboTheLoai.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.cboTheLoai.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
-            this.cboTheLoai.ItemHeight = 30;
-            this.cboTheLoai.Location = new System.Drawing.Point(663, 23);
+            this.cboTheLoai.ItemHeight = 36;
+            this.cboTheLoai.Location = new System.Drawing.Point(660, 20);
             this.cboTheLoai.Name = "cboTheLoai";
-            this.cboTheLoai.Size = new System.Drawing.Size(250, 36);
+            this.cboTheLoai.Size = new System.Drawing.Size(260, 42);
             this.cboTheLoai.TabIndex = 2;
             // 
             // txtTacGia
@@ -100,12 +110,12 @@
             this.txtTacGia.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtTacGia.DefaultText = "";
             this.txtTacGia.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.txtTacGia.Location = new System.Drawing.Point(34, 84);
+            this.txtTacGia.Location = new System.Drawing.Point(30, 80);
             this.txtTacGia.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtTacGia.Name = "txtTacGia";
             this.txtTacGia.PlaceholderText = "Tác giả";
             this.txtTacGia.SelectedText = "";
-            this.txtTacGia.Size = new System.Drawing.Size(225, 42);
+            this.txtTacGia.Size = new System.Drawing.Size(240, 42);
             this.txtTacGia.TabIndex = 3;
             // 
             // txtNhaXuatBan
@@ -114,12 +124,12 @@
             this.txtNhaXuatBan.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtNhaXuatBan.DefaultText = "";
             this.txtNhaXuatBan.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.txtNhaXuatBan.Location = new System.Drawing.Point(292, 84);
+            this.txtNhaXuatBan.Location = new System.Drawing.Point(290, 80);
             this.txtNhaXuatBan.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtNhaXuatBan.Name = "txtNhaXuatBan";
             this.txtNhaXuatBan.PlaceholderText = "Nhà xuất bản";
             this.txtNhaXuatBan.SelectedText = "";
-            this.txtNhaXuatBan.Size = new System.Drawing.Size(338, 42);
+            this.txtNhaXuatBan.Size = new System.Drawing.Size(350, 42);
             this.txtNhaXuatBan.TabIndex = 4;
             // 
             // txtNamXuatBan
@@ -128,13 +138,47 @@
             this.txtNamXuatBan.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtNamXuatBan.DefaultText = "";
             this.txtNamXuatBan.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.txtNamXuatBan.Location = new System.Drawing.Point(664, 84);
+            this.txtNamXuatBan.Location = new System.Drawing.Point(660, 80);
             this.txtNamXuatBan.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtNamXuatBan.Name = "txtNamXuatBan";
             this.txtNamXuatBan.PlaceholderText = "Năm XB (VD: 2023)";
             this.txtNamXuatBan.SelectedText = "";
-            this.txtNamXuatBan.Size = new System.Drawing.Size(281, 42);
+            this.txtNamXuatBan.Size = new System.Drawing.Size(260, 42);
             this.txtNamXuatBan.TabIndex = 5;
+            // 
+            // txtGiaSach
+            // 
+            this.txtGiaSach.BorderRadius = 5;
+            this.txtGiaSach.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtGiaSach.DefaultText = "";
+            this.txtGiaSach.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            this.txtGiaSach.Location = new System.Drawing.Point(30, 140);
+            this.txtGiaSach.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.txtGiaSach.Name = "txtGiaSach";
+            this.txtGiaSach.PlaceholderText = "Giá tiền / Giá bìa (VNĐ)";
+            this.txtGiaSach.SelectedText = "";
+            this.txtGiaSach.Size = new System.Drawing.Size(240, 42);
+            this.txtGiaSach.TabIndex = 6;
+            // 
+            // cboLoaiSach
+            // 
+            this.cboLoaiSach.BackColor = System.Drawing.Color.Transparent;
+            this.cboLoaiSach.BorderRadius = 5;
+            this.cboLoaiSach.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cboLoaiSach.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboLoaiSach.FocusedColor = System.Drawing.Color.Empty;
+            this.cboLoaiSach.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.cboLoaiSach.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
+            this.cboLoaiSach.ItemHeight = 36;
+            this.cboLoaiSach.Items.AddRange(new object[] {
+            "Bình thường",
+            "Sách hiếm",
+            "TL nội bộ (Tiếng Việt)",
+            "TL nội bộ (Ngoại ngữ)"});
+            this.cboLoaiSach.Location = new System.Drawing.Point(290, 140);
+            this.cboLoaiSach.Name = "cboLoaiSach";
+            this.cboLoaiSach.Size = new System.Drawing.Size(350, 42);
+            this.cboLoaiSach.TabIndex = 7;
             // 
             // btnLamMoi
             // 
@@ -142,10 +186,10 @@
             this.btnLamMoi.FillColor = System.Drawing.Color.Gray;
             this.btnLamMoi.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnLamMoi.ForeColor = System.Drawing.Color.White;
-            this.btnLamMoi.Location = new System.Drawing.Point(440, 140);
+            this.btnLamMoi.Location = new System.Drawing.Point(440, 200);
             this.btnLamMoi.Name = "btnLamMoi";
             this.btnLamMoi.Size = new System.Drawing.Size(110, 40);
-            this.btnLamMoi.TabIndex = 6;
+            this.btnLamMoi.TabIndex = 11;
             this.btnLamMoi.Text = "LÀM MỚI";
             this.btnLamMoi.Click += new System.EventHandler(this.btnLamMoi_Click);
             // 
@@ -155,10 +199,10 @@
             this.btnXoa.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
             this.btnXoa.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnXoa.ForeColor = System.Drawing.Color.White;
-            this.btnXoa.Location = new System.Drawing.Point(300, 140);
+            this.btnXoa.Location = new System.Drawing.Point(300, 200);
             this.btnXoa.Name = "btnXoa";
             this.btnXoa.Size = new System.Drawing.Size(110, 40);
-            this.btnXoa.TabIndex = 7;
+            this.btnXoa.TabIndex = 10;
             this.btnXoa.Text = "XÓA";
             this.btnXoa.Click += new System.EventHandler(this.btnXoa_Click);
             // 
@@ -168,10 +212,10 @@
             this.btnSua.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
             this.btnSua.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnSua.ForeColor = System.Drawing.Color.White;
-            this.btnSua.Location = new System.Drawing.Point(165, 140);
+            this.btnSua.Location = new System.Drawing.Point(165, 200);
             this.btnSua.Name = "btnSua";
             this.btnSua.Size = new System.Drawing.Size(110, 40);
-            this.btnSua.TabIndex = 8;
+            this.btnSua.TabIndex = 9;
             this.btnSua.Text = "SỬA";
             this.btnSua.Click += new System.EventHandler(this.btnSua_Click);
             // 
@@ -181,12 +225,43 @@
             this.btnThem.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
             this.btnThem.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnThem.ForeColor = System.Drawing.Color.White;
-            this.btnThem.Location = new System.Drawing.Point(30, 140);
+            this.btnThem.Location = new System.Drawing.Point(30, 200);
             this.btnThem.Name = "btnThem";
             this.btnThem.Size = new System.Drawing.Size(110, 40);
-            this.btnThem.TabIndex = 9;
+            this.btnThem.TabIndex = 8;
             this.btnThem.Text = "THÊM";
             this.btnThem.Click += new System.EventHandler(this.btnThem_Click);
+            // 
+            // btnInPhieu
+            // 
+            this.btnInPhieu.BorderRadius = 5;
+            this.btnInPhieu.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.btnInPhieu.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnInPhieu.ForeColor = System.Drawing.Color.White;
+            this.btnInPhieu.Location = new System.Drawing.Point(580, 200);
+            this.btnInPhieu.Name = "btnInPhieu";
+            this.btnInPhieu.Size = new System.Drawing.Size(130, 40);
+            this.btnInPhieu.TabIndex = 14;
+            this.btnInPhieu.Text = "SCAN";
+            this.btnInPhieu.Click += new System.EventHandler(this.btnInPhieu_Click);
+            // 
+            // lblSoTrang
+            // 
+            this.lblSoTrang.AutoSize = true;
+            this.lblSoTrang.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSoTrang.Location = new System.Drawing.Point(670, 150);
+            this.lblSoTrang.Name = "lblSoTrang";
+            this.lblSoTrang.Size = new System.Drawing.Size(92, 25);
+            this.lblSoTrang.TabIndex = 12;
+            this.lblSoTrang.Text = "Số trang:";
+            // 
+            // txtSoTrang
+            // 
+            this.txtSoTrang.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtSoTrang.Location = new System.Drawing.Point(768, 147);
+            this.txtSoTrang.Name = "txtSoTrang";
+            this.txtSoTrang.Size = new System.Drawing.Size(100, 30);
+            this.txtSoTrang.TabIndex = 13;
             // 
             // dgvSach
             // 
@@ -213,14 +288,14 @@
             this.dgvSach.DefaultCellStyle = dataGridViewCellStyle3;
             this.dgvSach.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvSach.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dgvSach.Location = new System.Drawing.Point(0, 200);
+            this.dgvSach.Location = new System.Drawing.Point(0, 250);
             this.dgvSach.Name = "dgvSach";
             this.dgvSach.ReadOnly = true;
             this.dgvSach.RowHeadersVisible = false;
             this.dgvSach.RowHeadersWidth = 51;
             this.dgvSach.RowTemplate.Height = 35;
-            this.dgvSach.Size = new System.Drawing.Size(950, 440);
-            this.dgvSach.TabIndex = 0;
+            this.dgvSach.Size = new System.Drawing.Size(950, 390);
+            this.dgvSach.TabIndex = 2;
             this.dgvSach.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.White;
             this.dgvSach.ThemeStyle.AlternatingRowsStyle.Font = null;
             this.dgvSach.ThemeStyle.AlternatingRowsStyle.ForeColor = System.Drawing.Color.Empty;
@@ -253,11 +328,14 @@
             this.Name = "FrmQuanLySach";
             this.Load += new System.EventHandler(this.FrmQuanLySach_Load);
             this.pnlControls.ResumeLayout(false);
+            this.pnlControls.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSach)).EndInit();
             this.ResumeLayout(false);
 
         }
         #endregion
+        private System.Windows.Forms.TextBox txtSoTrang;
+        private System.Windows.Forms.Label lblSoTrang;
         private Guna.UI2.WinForms.Guna2Panel pnlControls;
         private Guna.UI2.WinForms.Guna2DataGridView dgvSach;
         private Guna.UI2.WinForms.Guna2TextBox txtTacGia;
@@ -270,5 +348,8 @@
         private Guna.UI2.WinForms.Guna2ComboBox cboTheLoai;
         private Guna.UI2.WinForms.Guna2TextBox txtNamXuatBan;
         private Guna.UI2.WinForms.Guna2TextBox txtNhaXuatBan;
+        private Guna.UI2.WinForms.Guna2TextBox txtGiaSach;
+        private Guna.UI2.WinForms.Guna2ComboBox cboLoaiSach;
+        private Guna.UI2.WinForms.Guna2Button btnInPhieu;
     }
 }

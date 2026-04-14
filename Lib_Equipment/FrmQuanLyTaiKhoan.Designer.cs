@@ -49,7 +49,7 @@
             this.pnlControls.Controls.Add(this.btnThem);
             this.pnlControls.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlControls.Location = new System.Drawing.Point(0, 0);
-            this.pnlControls.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pnlControls.Margin = new System.Windows.Forms.Padding(4);
             this.pnlControls.Name = "pnlControls";
             this.pnlControls.Size = new System.Drawing.Size(1267, 246);
             this.pnlControls.TabIndex = 1;
@@ -69,7 +69,7 @@
             "Hoạt động",
             "Khóa"});
             this.cboTrangThai.Location = new System.Drawing.Point(693, 98);
-            this.cboTrangThai.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.cboTrangThai.Margin = new System.Windows.Forms.Padding(4);
             this.cboTrangThai.Name = "cboTrangThai";
             this.cboTrangThai.Size = new System.Drawing.Size(265, 36);
             this.cboTrangThai.StartIndex = 0;
@@ -87,7 +87,7 @@
             this.cboQuyen.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
             this.cboQuyen.ItemHeight = 30;
             this.cboQuyen.Location = new System.Drawing.Point(693, 25);
-            this.cboQuyen.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.cboQuyen.Margin = new System.Windows.Forms.Padding(4);
             this.cboQuyen.Name = "cboQuyen";
             this.cboQuyen.Size = new System.Drawing.Size(265, 36);
             this.cboQuyen.TabIndex = 7;
@@ -146,7 +146,7 @@
             this.btnLamMoi.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnLamMoi.ForeColor = System.Drawing.Color.White;
             this.btnLamMoi.Location = new System.Drawing.Point(587, 172);
-            this.btnLamMoi.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnLamMoi.Margin = new System.Windows.Forms.Padding(4);
             this.btnLamMoi.Name = "btnLamMoi";
             this.btnLamMoi.Size = new System.Drawing.Size(147, 49);
             this.btnLamMoi.TabIndex = 3;
@@ -160,7 +160,7 @@
             this.btnXoa.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnXoa.ForeColor = System.Drawing.Color.White;
             this.btnXoa.Location = new System.Drawing.Point(400, 172);
-            this.btnXoa.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnXoa.Margin = new System.Windows.Forms.Padding(4);
             this.btnXoa.Name = "btnXoa";
             this.btnXoa.Size = new System.Drawing.Size(147, 49);
             this.btnXoa.TabIndex = 2;
@@ -174,7 +174,7 @@
             this.btnSua.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnSua.ForeColor = System.Drawing.Color.White;
             this.btnSua.Location = new System.Drawing.Point(220, 172);
-            this.btnSua.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSua.Margin = new System.Windows.Forms.Padding(4);
             this.btnSua.Name = "btnSua";
             this.btnSua.Size = new System.Drawing.Size(147, 49);
             this.btnSua.TabIndex = 1;
@@ -188,7 +188,7 @@
             this.btnThem.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnThem.ForeColor = System.Drawing.Color.White;
             this.btnThem.Location = new System.Drawing.Point(40, 172);
-            this.btnThem.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnThem.Margin = new System.Windows.Forms.Padding(4);
             this.btnThem.Name = "btnThem";
             this.btnThem.Size = new System.Drawing.Size(147, 49);
             this.btnThem.TabIndex = 0;
@@ -221,7 +221,7 @@
             this.dgvTaiKhoan.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvTaiKhoan.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
             this.dgvTaiKhoan.Location = new System.Drawing.Point(0, 246);
-            this.dgvTaiKhoan.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dgvTaiKhoan.Margin = new System.Windows.Forms.Padding(4);
             this.dgvTaiKhoan.Name = "dgvTaiKhoan";
             this.dgvTaiKhoan.ReadOnly = true;
             this.dgvTaiKhoan.RowHeadersVisible = false;
@@ -261,7 +261,7 @@
             this.Controls.Add(this.dgvTaiKhoan);
             this.Controls.Add(this.pnlControls);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FrmQuanLyTaiKhoan";
             this.Text = "Quản lý Tài khoản";
             this.Load += new System.EventHandler(this.FrmQuanLyTaiKhoan_Load);
