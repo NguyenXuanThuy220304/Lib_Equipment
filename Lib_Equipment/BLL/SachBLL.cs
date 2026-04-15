@@ -9,11 +9,12 @@ namespace Lib_Equipment.BLL
         private static SachBLL instance;
         public static SachBLL Instance { get { if (instance == null) instance = new SachBLL(); return instance; } }
         private SachBLL() { }
-
+        public void DongBoViTri() => SachDAO.Instance.SyncLocations();
         public DataTable LayDanhSachTheLoai() => SachDAO.Instance.GetCategories();
         public DataTable LayDanhSachSach() => SachDAO.Instance.GetAllBooks();
 
-        public bool ThemSach(string id, string title, string author, string publisher, string yearStr, string categoryId, string priceStr, string bookType, string pageStr, out string msg)
+        // [ĐÃ SỬA]: Thêm tham số 'string viTri' vào chữ ký hàm
+        public bool ThemSach(string id, string title, string author, string publisher, string yearStr, string categoryId, string priceStr, string bookType, string pageStr, string viTri, out string msg)
         {
             if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(title))
             {
@@ -28,18 +29,18 @@ namespace Lib_Equipment.BLL
 
             try
             {
-                if (SachDAO.Instance.AddBook(id, title, author, publisher, yearObj, categoryId, price, bookType, pageCount))
+                if (SachDAO.Instance.AddBook(id, title, author, publisher, yearObj, categoryId, price, bookType, pageCount, viTri))
                 {
-                    msg = "Thêm Đầu sách thành công!"; return true;
+                    msg = "Thêm thành công!"; return true;
                 }
-                msg = "Lỗi không xác định."; return false;
+                msg = "Thất bại!"; return false;
             }
+
             catch
             {
                 msg = "Lỗi: Mã sách đã tồn tại!"; return false;
             }
         }
-
         public bool SuaSach(string id, string title, string author, string publisher, string yearStr, string categoryId, string priceStr, string bookType, string pageStr)
         {
             if (string.IsNullOrEmpty(id)) return false;
@@ -52,11 +53,20 @@ namespace Lib_Equipment.BLL
 
             return SachDAO.Instance.UpdateBook(id, title, author, publisher, yearObj, categoryId, price, bookType, pageCount);
         }
+
         public DataTable LayDanhSachInPhieu(string bookId)
         {
             if (string.IsNullOrEmpty(bookId)) return null;
             return SachDAO.Instance.GetBookCopiesForExport(bookId);
         }
-        public bool XoaSach(string id) => !string.IsNullOrEmpty(id) && SachDAO.Instance.DeleteBook(id);
+
+        // Trong SachBLL.cs
+        public bool XoaSach(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return false;
+
+            // Gọi lệnh xóa vĩnh viễn từ DAO
+            return SachDAO.Instance.DeleteBook(id);
+        }
     }
 }

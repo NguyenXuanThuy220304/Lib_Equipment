@@ -30,22 +30,23 @@ namespace Lib_Equipment
 
         private void LoadLichSuLuanChuyen()
         {
+            // JOIN với bảng Department để lấy Name thay vì ID
             string query = $@"
-                SELECT 
-                    tr.TransferDate AS [Ngày chuyển],
-                    tr.FromDepartmentID AS [Từ Phòng/Khoa],
-                    tr.ToDepartmentID AS [Đến Phòng/Khoa],
-                    tr.Reason AS [Lý do luân chuyển],
-                    td.ConditionAtTransfer AS [Tình trạng máy]
-                FROM TransferRecord tr
-                JOIN TransferDetail td ON tr.TransferID = td.TransferID
-                WHERE td.EquipmentID = '{_maThietBi}'
-                ORDER BY tr.TransferDate DESC";
+        SELECT 
+            tr.TransferDate AS [Ngày chuyển],
+            d1.DepartmentName AS [Từ Phòng/Khoa],
+            d2.DepartmentName AS [Đến Phòng/Khoa],
+            tr.Reason AS [Lý do luân chuyển],
+            td.ConditionAtTransfer AS [Tình trạng máy]
+        FROM TransferRecord tr
+        JOIN TransferDetail td ON tr.TransferID = td.TransferID
+        JOIN Department d1 ON tr.FromDepartmentID = d1.DepartmentID
+        JOIN Department d2 ON tr.ToDepartmentID = d2.DepartmentID
+        WHERE td.EquipmentID = '{_maThietBi}'
+        ORDER BY tr.TransferDate DESC";
 
             DataTable dt = DataProvider.Instance.ExecuteQuery(query);
             dgvLuanChuyen.DataSource = dt;
-
-            // Kích hoạt màu nền cho Header
             dgvLuanChuyen.EnableHeadersVisualStyles = false;
         }
 

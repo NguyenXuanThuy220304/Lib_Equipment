@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel;
+
 namespace Lib_Equipment
 {
     public partial class FrmQuanLySach : Form
@@ -30,6 +31,7 @@ namespace Lib_Equipment
 
             dgvSach.Columns["BookID"].HeaderText = "Mã Sách";
             dgvSach.Columns["Title"].HeaderText = "Tên sách";
+
             if (dgvSach.Columns.Contains("Price"))
             {
                 dgvSach.Columns["Price"].HeaderText = "Giá tiền";
@@ -38,6 +40,13 @@ namespace Lib_Equipment
             if (dgvSach.Columns.Contains("Rarity"))
             {
                 dgvSach.Columns["Rarity"].HeaderText = "Loại sách";
+            }
+            // MỚI THÊM: Hiện cột vị trí trên bảng cho Thủ thư dễ nhìn
+            if (dgvSach.Columns.Contains("CabinetLocation"))
+            {
+                dgvSach.Columns["CabinetLocation"].HeaderText = "Vị trí kệ sách";
+                dgvSach.Columns["CabinetLocation"].DefaultCellStyle.ForeColor = System.Drawing.Color.Red;
+                dgvSach.Columns["CabinetLocation"].DefaultCellStyle.Font = new System.Drawing.Font("Arial", 10, System.Drawing.FontStyle.Bold);
             }
         }
 
@@ -55,29 +64,35 @@ namespace Lib_Equipment
                 txtNamXuatBan.Text = row.Cells["PublishYear"].Value.ToString();
                 cboTheLoai.SelectedValue = row.Cells["CategoryID"].Value.ToString();
 
-                // === ĐÃ FIX LỖI: HÚT DỮ LIỆU TỪ 3 CỘT MỚI BẮN LÊN TEXTBOX ===
                 if (dgvSach.Columns.Contains("Price") && row.Cells["Price"].Value != null)
                     txtGiaSach.Text = row.Cells["Price"].Value.ToString();
 
                 if (dgvSach.Columns.Contains("BookType") && row.Cells["BookType"].Value != null)
                     cboLoaiSach.Text = row.Cells["BookType"].Value.ToString();
 
-                // Vì ô txtSoTrang bạn tạo sau bằng code chay, nên cần check null để tránh lỗi
                 if (dgvSach.Columns.Contains("PageCount") && row.Cells["PageCount"].Value != null && txtSoTrang != null)
                     txtSoTrang.Text = row.Cells["PageCount"].Value.ToString();
 
-                txtMaSach.Enabled = false; // Không cho sửa khóa chính
+                txtMaSach.Enabled = false;
             }
         }
 
+        // ====================================================================================
+        // ĐIỂM ĂN TIỀN LÀ ĐÂY: Nút Thêm sách tự động gọi AI tính toán vị trí
+        // ====================================================================================
         private void btnThem_Click(object sender, EventArgs e)
         {
-            if (SachBLL.Instance.ThemSach(txtMaSach.Text.Trim(), txtTenSach.Text.Trim(), txtTacGia.Text.Trim(), txtNhaXuatBan.Text.Trim(), txtNamXuatBan.Text.Trim(), cboTheLoai.SelectedValue.ToString(), txtGiaSach.Text.Trim(), cboLoaiSach.Text, txtSoTrang.Text.Trim(), out string msg))
+            string categoryId = cboTheLoai.SelectedValue.ToString();
+            string tenSach = txtTenSach.Text.Trim();
+
+            // Tự động sinh vị trí (Sẽ có dạng A1-001.1 nếu chèn vào giữa)
+            string viTriMoi = Lib_Equipment.Helpers.LocationHelper.GenerateNewBookLocation(categoryId, tenSach);
+
+            if (SachBLL.Instance.ThemSach(txtMaSach.Text.Trim(), tenSach, txtTacGia.Text.Trim(), txtNhaXuatBan.Text.Trim(), txtNamXuatBan.Text.Trim(), categoryId, txtGiaSach.Text.Trim(), cboLoaiSach.Text, txtSoTrang.Text.Trim(), viTriMoi, out string msg))
             {
-                MessageBox.Show(msg, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                LoadData(); btnLamMoi_Click(null, null);
+                MessageBox.Show($"{msg}\nVị trí: {viTriMoi}");
+                LoadData();
             }
-            else MessageBox.Show(msg, "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void btnSua_Click(object sender, EventArgs e)
@@ -89,21 +104,33 @@ namespace Lib_Equipment
             }
         }
 
-        // ĐÃ FIX: Khôi phục lại hàm btnXoa_Click
         private void btnXoa_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(selectedBookID)) return;
+            if (string.IsNullOrEmpty(selectedBookID))
+            {
+                MessageBox.Show("Vui lòng chọn đầu sách cần xóa!", "Thông báo");
+                return;
+            }
 
-            if (MessageBox.Show("Bạn có chắc chắn muốn xóa đầu sách này?", "Xác nhận", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            // Cảnh báo mạnh mẽ vì đây là xóa vĩnh viễn
+            DialogResult dr = MessageBox.Show($"CẢNH BÁO: Bạn đang xóa VĨNH VIỄN đầu sách '{selectedBookID}' và TOÀN BỘ bản sao liên quan.\nThao tác này không thể hoàn tác. Bạn có chắc chắn không?",
+                                              "Xác nhận xóa vĩnh viễn", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (dr == DialogResult.Yes)
             {
                 if (SachBLL.Instance.XoaSach(selectedBookID))
                 {
-                    MessageBox.Show("Đã xóa sách khỏi danh mục!", "Thông báo");
-                    LoadData();
+                    MessageBox.Show("Đã xóa vĩnh viễn đầu sách và giải phóng vị trí kệ!", "Thành công");
+                    LoadData(); // Load lại Grid để thấy vị trí đã trống
                     btnLamMoi_Click(null, null);
+                }
+                else
+                {
+                    MessageBox.Show("Lỗi hệ thống khi xóa dữ liệu!", "Lỗi");
                 }
             }
         }
+
         private void btnInPhieu_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(selectedBookID))
@@ -133,11 +160,9 @@ namespace Lib_Equipment
                     Excel.Worksheet xlWorksheet = (Excel.Worksheet)xlWorkbook.ActiveSheet;
                     xlWorksheet.Name = "PhieuDanSach";
 
-                    // ÉP CĂN GIỮA TOÀN BỘ SHEET (CẢ NGANG LẪN DỌC)
                     xlWorksheet.Cells.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
                     xlWorksheet.Cells.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter;
 
-                    // 1. Tạo Tiêu đề các cột (Dòng 1)
                     for (int j = 0; j < dtExport.Columns.Count; j++)
                     {
                         var cell = xlWorksheet.Cells[1, j + 1];
@@ -147,54 +172,42 @@ namespace Lib_Equipment
                         cell.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.LightGray);
                         cell.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
                     }
-                    xlWorksheet.Rows[1].RowHeight = 35; // Chiều cao dòng tiêu đề
+                    xlWorksheet.Rows[1].RowHeight = 35;
 
-                    // 2. Đổ dữ liệu sách (Từ dòng 2 trở đi)
                     for (int i = 0; i < dtExport.Rows.Count; i++)
                     {
                         for (int j = 0; j < dtExport.Columns.Count; j++)
                         {
                             var cell = xlWorksheet.Cells[i + 2, j + 1];
 
-                            if (j == 3) // CỘT 4: MÃ VẠCH (BARCODE)
+                            if (j == 3)
                             {
                                 string maVachGoc = dtExport.Rows[i][j].ToString();
-                                // Chèn thêm dấu * ở 2 đầu (Bắt buộc đối với font Code 39 để máy quét hiểu)
                                 cell.Value = $"*{maVachGoc}*";
-
-                                // Tên font trong máy bạn đang dùng (như trong ảnh là IDAutomation)
-                                // Nếu tên font trong máy bạn khác đi 1 chút, hãy sửa lại đoạn chữ màu đỏ bên dưới nhé!
                                 cell.Font.Name = "IDAutomationHC39M Free Version";
                                 cell.Font.Size = 12;
                             }
                             else
                             {
-                                // Các cột chữ bình thường
                                 cell.Value = dtExport.Rows[i][j].ToString();
                                 cell.Font.Name = "Arial";
                                 cell.Font.Size = 11;
                             }
 
-                            // Kẻ khung
                             cell.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
                         }
-
-                        // Chỉnh chiều cao dòng cực lớn (55) để hiện vừa mã vạch như trong ảnh
                         xlWorksheet.Rows[i + 2].RowHeight = 78;
                     }
 
-                    // 3. Set độ rộng (Column Width) cố định cho từng cột như ảnh mẫu
-                    xlWorksheet.Columns[1].ColumnWidth = 12; // Vị trí tủ
-                    xlWorksheet.Columns[2].ColumnWidth = 20; // Mã cuốn sách
-                    xlWorksheet.Columns[3].ColumnWidth = 16; // Năm xuất bản
-                    xlWorksheet.Columns[4].ColumnWidth = 40; // Mã vạch (Cần siêu rộng)
+                    xlWorksheet.Columns[1].ColumnWidth = 12;
+                    xlWorksheet.Columns[2].ColumnWidth = 20;
+                    xlWorksheet.Columns[3].ColumnWidth = 16;
+                    xlWorksheet.Columns[4].ColumnWidth = 40;
 
-                    // Lưu file
                     xlWorkbook.SaveAs(sfd.FileName);
                     xlWorkbook.Close();
                     xlApp.Quit();
 
-                    // Dọn dẹp RAM
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(xlWorksheet);
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(xlWorkbook);
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(xlApp);
@@ -211,7 +224,7 @@ namespace Lib_Equipment
                 }
             }
         }
-        // ĐÃ FIX: Khôi phục lại hàm btnLamMoi_Click
+
         private void btnLamMoi_Click(object sender, EventArgs e)
         {
             selectedBookID = "";

@@ -61,13 +61,15 @@ namespace Lib_Equipment
             {
                 string deptId = cboTuKhoa.SelectedValue.ToString();
 
+                // SỬA QUERY: Thêm điều kiện Condition IN (N'Tốt', N'Đang sử dụng')
                 string query = @"
-                    SELECT EquipmentID, EquipmentName, Condition 
-                    FROM Equipment 
-                    WHERE DepartmentID = @deptId AND (IsDeleted = 0 OR IsDeleted IS NULL)";
+            SELECT EquipmentID, EquipmentName, Condition 
+            FROM Equipment 
+            WHERE DepartmentID = @deptId 
+            AND (IsDeleted = 0 OR IsDeleted IS NULL)
+            AND Condition IN (N'Tốt', N'Đang sử dụng')"; // Luồng hợp lý: Máy hỏng không được luân chuyển
 
                 DataTable dt = DataProvider.Instance.ExecuteQuery(query, new SqlParameter[] { new SqlParameter("@deptId", deptId) });
-
                 dgvThietBi.DataSource = dt;
 
                 dgvThietBi.Columns["EquipmentID"].HeaderText = "Mã TB";

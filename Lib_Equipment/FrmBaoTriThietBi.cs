@@ -46,7 +46,28 @@ namespace Lib_Equipment
             dgvThietBi.Columns["EquipmentName"].HeaderText = "Tên TB";
             dgvThietBi.Columns["Condition"].HeaderText = "Tình trạng";
         }
+        // Thêm sự kiện này để khi máy sửa xong, Double Click là nó về trạng thái "Tốt"
+        private void dgvThietBi_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                string maTB = dgvThietBi.Rows[e.RowIndex].Cells["EquipmentID"].Value.ToString();
+                string tinhTrang = dgvThietBi.Rows[e.RowIndex].Cells["Condition"].Value.ToString();
 
+                if (tinhTrang == "Đang bảo trì")
+                {
+                    DialogResult dr = MessageBox.Show($"Xác nhận thiết bị {maTB} đã sửa xong và hoạt động tốt?", "Nghiệm thu", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (dr == DialogResult.Yes)
+                    {
+                        string sql = "UPDATE Equipment SET Condition = N'Tốt', UpdatedAt = GETDATE() WHERE EquipmentID = @id";
+                        DataProvider.Instance.ExecuteNonQuery(sql, new SqlParameter[] { new SqlParameter("@id", maTB) });
+
+                        MessageBox.Show("Đã đưa thiết bị về trạng thái sẵn sàng sử dụng!");
+                        LoadEquipment(); // Load lại lưới
+                    }
+                }
+            }
+        }
         private void dgvThietBi_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)

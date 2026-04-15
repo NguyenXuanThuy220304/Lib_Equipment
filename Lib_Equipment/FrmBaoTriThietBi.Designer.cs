@@ -50,7 +50,7 @@
             this.pnlBody.Controls.Add(this.gbThongTin);
             this.pnlBody.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlBody.Location = new System.Drawing.Point(0, 0);
-            this.pnlBody.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pnlBody.Margin = new System.Windows.Forms.Padding(4);
             this.pnlBody.Name = "pnlBody";
             this.pnlBody.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
             this.pnlBody.Size = new System.Drawing.Size(1267, 788);
@@ -80,7 +80,7 @@
             this.dgvThietBi.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvThietBi.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
             this.dgvThietBi.Location = new System.Drawing.Point(534, 25);
-            this.dgvThietBi.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dgvThietBi.Margin = new System.Windows.Forms.Padding(4);
             this.dgvThietBi.Name = "dgvThietBi";
             this.dgvThietBi.ReadOnly = true;
             this.dgvThietBi.RowHeadersVisible = false;
@@ -110,6 +110,7 @@
             this.dgvThietBi.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
             this.dgvThietBi.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
             this.dgvThietBi.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvThietBi_CellClick);
+            this.dgvThietBi.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvThietBi_CellDoubleClick);
             // 
             // gbThongTin
             // 
@@ -135,7 +136,7 @@
             this.gbThongTin.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.gbThongTin.ForeColor = System.Drawing.Color.White;
             this.gbThongTin.Location = new System.Drawing.Point(27, 25);
-            this.gbThongTin.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.gbThongTin.Margin = new System.Windows.Forms.Padding(4);
             this.gbThongTin.Name = "gbThongTin";
             this.gbThongTin.Size = new System.Drawing.Size(507, 738);
             this.gbThongTin.TabIndex = 0;
@@ -232,7 +233,7 @@
             this.btnThucHien.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.btnThucHien.ForeColor = System.Drawing.Color.White;
             this.btnThucHien.Location = new System.Drawing.Point(20, 591);
-            this.btnThucHien.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnThucHien.Margin = new System.Windows.Forms.Padding(4);
             this.btnThucHien.Name = "btnThucHien";
             this.btnThucHien.Size = new System.Drawing.Size(467, 55);
             this.btnThucHien.TabIndex = 8;
@@ -250,7 +251,7 @@
             this.cboHanhDong.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
             this.cboHanhDong.ItemHeight = 30;
             this.cboHanhDong.Location = new System.Drawing.Point(20, 428);
-            this.cboHanhDong.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.cboHanhDong.Margin = new System.Windows.Forms.Padding(4);
             this.cboHanhDong.Name = "cboHanhDong";
             this.cboHanhDong.Size = new System.Drawing.Size(465, 36);
             this.cboHanhDong.TabIndex = 6;
@@ -310,7 +311,7 @@
             this.dtpNgayBT.ForeColor = System.Drawing.Color.Black;
             this.dtpNgayBT.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dtpNgayBT.Location = new System.Drawing.Point(20, 218);
-            this.dtpNgayBT.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dtpNgayBT.Margin = new System.Windows.Forms.Padding(4);
             this.dtpNgayBT.MaxDate = new System.DateTime(9998, 12, 31, 0, 0, 0, 0);
             this.dtpNgayBT.MinDate = new System.DateTime(1753, 1, 1, 0, 0, 0, 0);
             this.dtpNgayBT.Name = "dtpNgayBT";
@@ -370,7 +371,7 @@
             this.ClientSize = new System.Drawing.Size(1267, 788);
             this.Controls.Add(this.pnlBody);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FrmBaoTriThietBi";
             this.Text = "Bảo Trì Thiết Bị";
             this.Load += new System.EventHandler(this.FrmBaoTriThietBi_Load);

@@ -1,4 +1,7 @@
-﻿using Lib_Equipment.Database;
+﻿using Lib_Equipment.BLL;
+using Lib_Equipment.DAO;
+using Lib_Equipment.DTO;
+using Lib_Equipment.Database;
 using System;
 using System.Data;
 using System.Data.SqlClient;
@@ -227,25 +230,58 @@ namespace Lib_Equipment
                 return;
             }
 
-            // Giao diện chờ
+            // ==========================================================
+            // 1. KIỂM TRA LUẬT MƯỢN (Giới hạn số lượng & Nợ quá hạn)
+            // ==========================================================
+            DataTable dtReader = DataProvider.Instance.ExecuteQuery("SELECT ReaderType, Status FROM Reader WHERE ReaderID = @id", new SqlParameter[] { new SqlParameter("@id", readerID) });
+            if (dtReader.Rows.Count == 0) return;
+
+            // Tạo đối tượng DTO để truyền vào BLL
+            DocGiaDTO docGia = new DocGiaDTO
+            {
+                ReaderID = this.readerID,
+                ReaderType = dtReader.Rows[0]["ReaderType"].ToString(),
+                Status = Convert.ToInt32(dtReader.Rows[0]["Status"])
+            };
+
+            // Kiểm tra thẻ khóa / nợ quá hạn
+            if (!MuonTraBLL.Instance.ValidateBorrow(docGia, out string message))
+            {
+                MessageBox.Show(message, "Vi phạm quy định", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+
+            // Kiểm tra hạn mức (Sinh viên: 6, Giảng viên: 9)
+            int currentBorrowed = MuonTraDAO.Instance.CountBorrowedBooks(readerID);
+            bool isVIP = docGia.ReaderType.Contains("Giảng viên");
+            int maxLimit = isVIP ? 9 : 6;
+
+            if (currentBorrowed + dtGioHang.Rows.Count > maxLimit)
+            {
+                MessageBox.Show($"Vượt quá hạn mức! Bạn là '{docGia.ReaderType}' chỉ được mượn tối đa {maxLimit} cuốn.\n\nĐang giữ: {currentBorrowed} cuốn.\nMuốn mượn thêm: {dtGioHang.Rows.Count} cuốn.", "Quá tải", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Lấy số ngày mượn tiêu chuẩn (30 hoặc 45)
+            int allowedDays = isVIP ? 45 : 30;
+
+            // ==========================================================
+            // 2. CHỐT ĐƠN VÀ LƯU DATABASE
+            // ==========================================================
             btnXacNhanPOS.Text = "ĐANG XỬ LÝ VÀ CHỜ AI ĐÁNH GIÁ...";
             btnXacNhanPOS.Enabled = false;
 
-            // 1. Đưa list sách cho AI đánh giá gu đọc sách
             string danhSachTenSach = "";
-            foreach (DataRow row in dtGioHang.Rows)
-            {
-                danhSachTenSach += row["Tên Sách"].ToString() + ", ";
-            }
+            foreach (DataRow row in dtGioHang.Rows) { danhSachTenSach += row["Tên Sách"].ToString() + ", "; }
             string aiPrompt = $"Độc giả {fullName} vừa quyết định mượn các sách sau: {danhSachTenSach}. Hãy viết 1 câu ngắn (dưới 25 chữ) nhận xét sự kết hợp sách này hoặc chúc họ học tập hiệu quả.";
             string aiMessage = await CallGeminiAPI(aiPrompt);
 
-            // 2. Lưu Database
             StringBuilder sbQuery = new StringBuilder();
             sbQuery.AppendLine("BEGIN TRY");
             sbQuery.AppendLine("BEGIN TRAN;");
 
-            sbQuery.AppendLine("INSERT INTO BorrowRecord (ReaderID, CreatedBy, BorrowDate, DueDate, Status, IsDeleted) VALUES (@readerId, NULL, GETDATE(), DATEADD(day, 14, GETDATE()), N'Đang mượn', 0);");
+            // Truyền biến @days vào DATEADD
+            sbQuery.AppendLine("INSERT INTO BorrowRecord (ReaderID, CreatedBy, BorrowDate, DueDate, Status, IsDeleted) VALUES (@readerId, NULL, GETDATE(), DATEADD(day, @days, GETDATE()), N'Đang mượn', 0);");
             sbQuery.AppendLine("DECLARE @newRecordId INT = SCOPE_IDENTITY();");
 
             foreach (DataRow row in dtGioHang.Rows)
@@ -259,19 +295,21 @@ namespace Lib_Equipment
             sbQuery.AppendLine("COMMIT TRAN;");
             sbQuery.AppendLine("END TRY BEGIN CATCH ROLLBACK TRAN; THROW; END CATCH");
 
-            SqlParameter[] param = { new SqlParameter("@readerId", readerID) };
+            // Truyền @days vào Parameters
+            SqlParameter[] param = {
+                new SqlParameter("@readerId", readerID),
+                new SqlParameter("@days", allowedDays)
+            };
 
             try
             {
-                object result = DataProvider.Instance.ExecuteScalar(sbQuery.ToString(), param);
-                string recordId = result.ToString();
-
+                string recordId = DataProvider.Instance.ExecuteScalar(sbQuery.ToString(), param).ToString();
                 MessageBox.Show($"Hoàn tất! Hệ thống đã ghi nhận phiếu mượn gồm {dtGioHang.Rows.Count} cuốn sách.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                // 3. Kích hoạt vẽ Ảnh Biên Lai (in luôn lời AI lên phiếu)
-                XuatPhieuRaAnh(recordId, readerID, fullName, dtGioHang, aiMessage);
+                // Truyền thêm allowedDays vào hàm xuất ảnh để in đúng hạn trả
+                XuatPhieuRaAnh(recordId, readerID, fullName, dtGioHang, aiMessage, allowedDays);
 
-                this.Close(); // Đóng form để sinh viên mang sách ra về
+                this.Close();
             }
             catch (Exception ex)
             {
@@ -284,7 +322,7 @@ namespace Lib_Equipment
         // ==========================================================
         // HÀM XUẤT ẢNH PNG (NHƯ GIẤY MÁY IN BILL THẬT)
         // ==========================================================
-        private void XuatPhieuRaAnh(string maPhieu, string maSV, string tenSV, DataTable gioHang, string loiChucAI)
+        private void XuatPhieuRaAnh(string maPhieu, string maSV, string tenSV, DataTable gioHang, string loiChucAI, int allowedDays)
         {
             try
             {
@@ -321,7 +359,10 @@ namespace Lib_Equipment
 
                         g.DrawString($"Mã phiếu: #{maPhieu}", fontBody, brush, xMargin, y); y += 30;
                         g.DrawString($"Ngày lập: {DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}", fontBody, brush, xMargin, y); y += 30;
-                        g.DrawString($"Hạn trả : {DateTime.Now.AddDays(14).ToString("dd/MM/yyyy")} (14 ngày)", fontHeader, brush, xMargin, y); y += 40;
+
+                        // IN HẠN TRẢ ĐÚNG THEO LUẬT (30 HOẶC 45)
+                        g.DrawString($"Hạn trả : {DateTime.Now.AddDays(allowedDays).ToString("dd/MM/yyyy")} ({allowedDays} ngày)", fontHeader, brush, xMargin, y); y += 40;
+
                         g.DrawString($"Độc giả : {tenSV} ({maSV})", fontBody, brush, xMargin, y); y += 40;
 
                         g.DrawLine(pen, xMargin, y, billWidth - xMargin, y); y += 15;

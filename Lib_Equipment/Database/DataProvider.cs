@@ -12,7 +12,7 @@ namespace Lib_Equipment.Database
     {
         // 1. Chuỗi kết nối đến CSDL Lib_EquipmentDB
         private readonly string connectionString = @"Data Source=(localdb)\mssqllocaldb;Initial Catalog=Lib_EquipmentDB;Integrated Security=True";
-
+        public string ConnectionString { get { return connectionString; } }
         // Mẫu Singleton Pattern: Giúp chỉ tạo 1 kết nối duy nhất trong suốt vòng đời phần mềm
         private static DataProvider instance;
         public static DataProvider Instance
@@ -77,15 +77,17 @@ namespace Lib_Equipment.Database
             object data = 0;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                using (SqlCommand command = new SqlCommand(query, connection))
+                connection.Open();
+                SqlCommand command = new SqlCommand(query, connection);
+                if (parameters != null)
                 {
-                    if (parameters != null)
-                    {
-                        command.Parameters.AddRange(parameters);
-                    }
-                    connection.Open();
-                    data = command.ExecuteScalar();
+                    command.Parameters.AddRange(parameters);
                 }
+                data = command.ExecuteScalar();
+
+                // THÊM DÒNG NÀY VÀO TRƯỚC KHI ĐÓNG KẾT NỐI
+                command.Parameters.Clear();
+                connection.Close();
             }
             return data;
         }

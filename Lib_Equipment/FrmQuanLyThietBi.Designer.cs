@@ -17,9 +17,9 @@
 
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.pnlControls = new Guna.UI2.WinForms.Guna2Panel();
             this.txtMaTB = new Guna.UI2.WinForms.Guna2TextBox();
             this.txtTenTB = new Guna.UI2.WinForms.Guna2TextBox();
@@ -28,13 +28,19 @@
             this.dtpNgayNhap = new Guna.UI2.WinForms.Guna2DateTimePicker();
             this.txtGiaTien = new Guna.UI2.WinForms.Guna2TextBox();
             this.cboTinhTrang = new Guna.UI2.WinForms.Guna2ComboBox();
+            this.pnlSearch = new Guna.UI2.WinForms.Guna2Panel();
+            this.txtSearch = new Guna.UI2.WinForms.Guna2TextBox();
+            this.btnDoSearch = new Guna.UI2.WinForms.Guna2Button();
             this.pnlAction = new Guna.UI2.WinForms.Guna2Panel();
+            this.btnBarcode = new Guna.UI2.WinForms.Guna2Button();
+            this.btnOpenSearch = new Guna.UI2.WinForms.Guna2Button();
             this.btnLamMoi = new Guna.UI2.WinForms.Guna2Button();
             this.btnXoa = new Guna.UI2.WinForms.Guna2Button();
             this.btnSua = new Guna.UI2.WinForms.Guna2Button();
             this.btnThem = new Guna.UI2.WinForms.Guna2Button();
             this.dgvThietBi = new Guna.UI2.WinForms.Guna2DataGridView();
             this.pnlControls.SuspendLayout();
+            this.pnlSearch.SuspendLayout();
             this.pnlAction.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvThietBi)).BeginInit();
             this.SuspendLayout();
@@ -50,8 +56,7 @@
             this.pnlControls.Controls.Add(this.txtGiaTien);
             this.pnlControls.Controls.Add(this.cboTinhTrang);
             this.pnlControls.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlControls.Location = new System.Drawing.Point(0, 0);
-            this.pnlControls.Margin = new System.Windows.Forms.Padding(4);
+            this.pnlControls.Location = new System.Drawing.Point(0, 197);
             this.pnlControls.Name = "pnlControls";
             this.pnlControls.Size = new System.Drawing.Size(1267, 197);
             this.pnlControls.TabIndex = 1;
@@ -63,7 +68,7 @@
             this.txtMaTB.DefaultText = "";
             this.txtMaTB.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.txtMaTB.Location = new System.Drawing.Point(40, 25);
-            this.txtMaTB.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.txtMaTB.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtMaTB.Name = "txtMaTB";
             this.txtMaTB.PlaceholderText = "Mã thiết bị (VD: TB_001)";
             this.txtMaTB.SelectedText = "";
@@ -77,7 +82,7 @@
             this.txtTenTB.DefaultText = "";
             this.txtTenTB.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.txtTenTB.Location = new System.Drawing.Point(427, 25);
-            this.txtTenTB.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.txtTenTB.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtTenTB.Name = "txtTenTB";
             this.txtTenTB.PlaceholderText = "Tên thiết bị";
             this.txtTenTB.SelectedText = "";
@@ -95,7 +100,6 @@
             this.cboLoaiTB.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
             this.cboLoaiTB.ItemHeight = 30;
             this.cboLoaiTB.Location = new System.Drawing.Point(40, 111);
-            this.cboLoaiTB.Margin = new System.Windows.Forms.Padding(4);
             this.cboLoaiTB.Name = "cboLoaiTB";
             this.cboLoaiTB.Size = new System.Drawing.Size(332, 36);
             this.cboLoaiTB.TabIndex = 3;
@@ -111,7 +115,6 @@
             this.cboKhoaPhong.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
             this.cboKhoaPhong.ItemHeight = 30;
             this.cboKhoaPhong.Location = new System.Drawing.Point(427, 111);
-            this.cboKhoaPhong.Margin = new System.Windows.Forms.Padding(4);
             this.cboKhoaPhong.Name = "cboKhoaPhong";
             this.cboKhoaPhong.Size = new System.Drawing.Size(332, 36);
             this.cboKhoaPhong.TabIndex = 4;
@@ -124,13 +127,12 @@
             this.dtpNgayNhap.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.dtpNgayNhap.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dtpNgayNhap.Location = new System.Drawing.Point(813, 25);
-            this.dtpNgayNhap.Margin = new System.Windows.Forms.Padding(4);
             this.dtpNgayNhap.MaxDate = new System.DateTime(9998, 12, 31, 0, 0, 0, 0);
             this.dtpNgayNhap.MinDate = new System.DateTime(1753, 1, 1, 0, 0, 0, 0);
             this.dtpNgayNhap.Name = "dtpNgayNhap";
             this.dtpNgayNhap.Size = new System.Drawing.Size(187, 49);
             this.dtpNgayNhap.TabIndex = 2;
-            this.dtpNgayNhap.Value = new System.DateTime(2026, 3, 14, 13, 52, 3, 242);
+            this.dtpNgayNhap.Value = new System.DateTime(2026, 4, 15, 11, 37, 47, 797);
             // 
             // txtGiaTien
             // 
@@ -139,7 +141,7 @@
             this.txtGiaTien.DefaultText = "";
             this.txtGiaTien.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.txtGiaTien.Location = new System.Drawing.Point(1027, 25);
-            this.txtGiaTien.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.txtGiaTien.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtGiaTien.Name = "txtGiaTien";
             this.txtGiaTien.PlaceholderText = "Giá nhập (VNĐ)";
             this.txtGiaTien.SelectedText = "";
@@ -162,25 +164,91 @@
             "Cần bảo trì",
             "Đã thanh lý"});
             this.cboTinhTrang.Location = new System.Drawing.Point(813, 111);
-            this.cboTinhTrang.Margin = new System.Windows.Forms.Padding(4);
             this.cboTinhTrang.Name = "cboTinhTrang";
             this.cboTinhTrang.Size = new System.Drawing.Size(412, 36);
             this.cboTinhTrang.StartIndex = 0;
             this.cboTinhTrang.TabIndex = 5;
             // 
+            // pnlSearch
+            // 
+            this.pnlSearch.BackColor = System.Drawing.Color.White;
+            this.pnlSearch.Controls.Add(this.txtSearch);
+            this.pnlSearch.Controls.Add(this.btnDoSearch);
+            this.pnlSearch.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlSearch.Location = new System.Drawing.Point(0, 0);
+            this.pnlSearch.Name = "pnlSearch";
+            this.pnlSearch.Size = new System.Drawing.Size(1267, 197);
+            this.pnlSearch.TabIndex = 10;
+            this.pnlSearch.Visible = false;
+            // 
+            // txtSearch
+            // 
+            this.txtSearch.BorderRadius = 22;
+            this.txtSearch.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtSearch.DefaultText = "";
+            this.txtSearch.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.txtSearch.Location = new System.Drawing.Point(330, 75);
+            this.txtSearch.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.txtSearch.Name = "txtSearch";
+            this.txtSearch.PlaceholderText = "Tìm mã, tên thiết bị, khoa hoặc phân loại...";
+            this.txtSearch.SelectedText = "";
+            this.txtSearch.Size = new System.Drawing.Size(500, 45);
+            this.txtSearch.TabIndex = 0;
+            this.txtSearch.TextOffset = new System.Drawing.Point(10, 0);
+            // 
+            // btnDoSearch
+            // 
+            this.btnDoSearch.BorderRadius = 22;
+            this.btnDoSearch.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
+            this.btnDoSearch.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+            this.btnDoSearch.ForeColor = System.Drawing.Color.White;
+            this.btnDoSearch.Location = new System.Drawing.Point(845, 75);
+            this.btnDoSearch.Name = "btnDoSearch";
+            this.btnDoSearch.Size = new System.Drawing.Size(120, 45);
+            this.btnDoSearch.TabIndex = 1;
+            this.btnDoSearch.Text = "TÌM KIẾM";
+            this.btnDoSearch.Click += new System.EventHandler(this.btnDoSearch_Click);
+            // 
             // pnlAction
             // 
             this.pnlAction.BackColor = System.Drawing.Color.White;
+            this.pnlAction.Controls.Add(this.btnBarcode);
+            this.pnlAction.Controls.Add(this.btnOpenSearch);
             this.pnlAction.Controls.Add(this.btnLamMoi);
             this.pnlAction.Controls.Add(this.btnXoa);
             this.pnlAction.Controls.Add(this.btnSua);
             this.pnlAction.Controls.Add(this.btnThem);
             this.pnlAction.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlAction.Location = new System.Drawing.Point(0, 197);
-            this.pnlAction.Margin = new System.Windows.Forms.Padding(4);
+            this.pnlAction.Location = new System.Drawing.Point(0, 394);
             this.pnlAction.Name = "pnlAction";
             this.pnlAction.Size = new System.Drawing.Size(1267, 86);
             this.pnlAction.TabIndex = 2;
+            // 
+            // btnBarcode
+            // 
+            this.btnBarcode.BorderRadius = 5;
+            this.btnBarcode.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(193)))), ((int)(((byte)(7)))));
+            this.btnBarcode.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnBarcode.ForeColor = System.Drawing.Color.Black;
+            this.btnBarcode.Location = new System.Drawing.Point(972, 12);
+            this.btnBarcode.Name = "btnBarcode";
+            this.btnBarcode.Size = new System.Drawing.Size(150, 55);
+            this.btnBarcode.TabIndex = 5;
+            this.btnBarcode.Text = "MÃ VẠCH";
+            this.btnBarcode.Click += new System.EventHandler(this.btnBarcode_Click);
+            // 
+            // btnOpenSearch
+            // 
+            this.btnOpenSearch.BorderRadius = 5;
+            this.btnOpenSearch.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(172)))), ((int)(((byte)(193)))));
+            this.btnOpenSearch.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnOpenSearch.ForeColor = System.Drawing.Color.White;
+            this.btnOpenSearch.Location = new System.Drawing.Point(784, 12);
+            this.btnOpenSearch.Name = "btnOpenSearch";
+            this.btnOpenSearch.Size = new System.Drawing.Size(160, 55);
+            this.btnOpenSearch.TabIndex = 4;
+            this.btnOpenSearch.Text = "TÌM KIẾM";
+            this.btnOpenSearch.Click += new System.EventHandler(this.btnOpenSearch_Click);
             // 
             // btnLamMoi
             // 
@@ -189,7 +257,6 @@
             this.btnLamMoi.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnLamMoi.ForeColor = System.Drawing.Color.White;
             this.btnLamMoi.Location = new System.Drawing.Point(600, 12);
-            this.btnLamMoi.Margin = new System.Windows.Forms.Padding(4);
             this.btnLamMoi.Name = "btnLamMoi";
             this.btnLamMoi.Size = new System.Drawing.Size(160, 55);
             this.btnLamMoi.TabIndex = 3;
@@ -203,7 +270,6 @@
             this.btnXoa.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnXoa.ForeColor = System.Drawing.Color.White;
             this.btnXoa.Location = new System.Drawing.Point(413, 12);
-            this.btnXoa.Margin = new System.Windows.Forms.Padding(4);
             this.btnXoa.Name = "btnXoa";
             this.btnXoa.Size = new System.Drawing.Size(160, 55);
             this.btnXoa.TabIndex = 2;
@@ -217,7 +283,6 @@
             this.btnSua.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnSua.ForeColor = System.Drawing.Color.White;
             this.btnSua.Location = new System.Drawing.Point(227, 12);
-            this.btnSua.Margin = new System.Windows.Forms.Padding(4);
             this.btnSua.Name = "btnSua";
             this.btnSua.Size = new System.Drawing.Size(160, 55);
             this.btnSua.TabIndex = 1;
@@ -231,7 +296,6 @@
             this.btnThem.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnThem.ForeColor = System.Drawing.Color.White;
             this.btnThem.Location = new System.Drawing.Point(40, 12);
-            this.btnThem.Margin = new System.Windows.Forms.Padding(4);
             this.btnThem.Name = "btnThem";
             this.btnThem.Size = new System.Drawing.Size(160, 55);
             this.btnThem.TabIndex = 0;
@@ -242,34 +306,33 @@
             // 
             this.dgvThietBi.AllowUserToAddRows = false;
             this.dgvThietBi.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.White;
-            this.dgvThietBi.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 10.5F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            this.dgvThietBi.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.White;
+            this.dgvThietBi.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            this.dgvThietBi.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.dgvThietBi.ColumnHeadersHeight = 40;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 10.5F);
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvThietBi.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvThietBi.DefaultCellStyle = dataGridViewCellStyle6;
             this.dgvThietBi.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvThietBi.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dgvThietBi.Location = new System.Drawing.Point(0, 283);
-            this.dgvThietBi.Margin = new System.Windows.Forms.Padding(4);
+            this.dgvThietBi.Location = new System.Drawing.Point(0, 480);
             this.dgvThietBi.Name = "dgvThietBi";
             this.dgvThietBi.ReadOnly = true;
             this.dgvThietBi.RowHeadersVisible = false;
             this.dgvThietBi.RowHeadersWidth = 51;
             this.dgvThietBi.RowTemplate.Height = 35;
-            this.dgvThietBi.Size = new System.Drawing.Size(1267, 505);
+            this.dgvThietBi.Size = new System.Drawing.Size(1267, 308);
             this.dgvThietBi.TabIndex = 3;
             this.dgvThietBi.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.White;
             this.dgvThietBi.ThemeStyle.AlternatingRowsStyle.Font = null;
@@ -293,7 +356,7 @@
             this.dgvThietBi.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
             this.dgvThietBi.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
             this.dgvThietBi.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvThietBi_CellClick);
-            this.dgvThietBi.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvBaoTri_CellDoubleClick);
+            this.dgvThietBi.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvThietBi_CellDoubleClick);
             // 
             // FrmQuanLyThietBi
             // 
@@ -304,12 +367,14 @@
             this.Controls.Add(this.dgvThietBi);
             this.Controls.Add(this.pnlAction);
             this.Controls.Add(this.pnlControls);
+            this.Controls.Add(this.pnlSearch);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FrmQuanLyThietBi";
             this.Text = "Quản lý Thiết bị";
             this.Load += new System.EventHandler(this.FrmQuanLyThietBi_Load);
+            this.Resize += new System.EventHandler(this.FrmQuanLyThietBi_Resize);
             this.pnlControls.ResumeLayout(false);
+            this.pnlSearch.ResumeLayout(false);
             this.pnlAction.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvThietBi)).EndInit();
             this.ResumeLayout(false);
@@ -331,5 +396,10 @@
         private Guna.UI2.WinForms.Guna2Button btnSua;
         private Guna.UI2.WinForms.Guna2Button btnXoa;
         private Guna.UI2.WinForms.Guna2Button btnLamMoi;
+        private Guna.UI2.WinForms.Guna2Panel pnlSearch;
+        private Guna.UI2.WinForms.Guna2TextBox txtSearch;
+        private Guna.UI2.WinForms.Guna2Button btnDoSearch;
+        private Guna.UI2.WinForms.Guna2Button btnOpenSearch;
+        private Guna.UI2.WinForms.Guna2Button btnBarcode;
     }
 }
