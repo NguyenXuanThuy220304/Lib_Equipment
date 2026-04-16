@@ -17,8 +17,10 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.pnlControls = new Guna.UI2.WinForms.Guna2Panel();
+            this.btnDebugMail = new Guna.UI2.WinForms.Guna2Button();
             this.btnDongBo = new Guna.UI2.WinForms.Guna2Button();
             this.txtMaDocGia = new Guna.UI2.WinForms.Guna2TextBox();
+            this.txtMail = new Guna.UI2.WinForms.Guna2TextBox();
             this.txtHoTen = new Guna.UI2.WinForms.Guna2TextBox();
             this.cboDonVi = new Guna.UI2.WinForms.Guna2ComboBox();
             this.cboLoaiDocGia = new Guna.UI2.WinForms.Guna2ComboBox();
@@ -28,8 +30,6 @@
             this.btnSua = new Guna.UI2.WinForms.Guna2Button();
             this.btnThem = new Guna.UI2.WinForms.Guna2Button();
             this.dgvDocGia = new Guna.UI2.WinForms.Guna2DataGridView();
-            this.btnDebugMail = new Guna.UI2.WinForms.Guna2Button();
-            this.txtMail = new Guna.UI2.WinForms.Guna2TextBox();
             this.pnlControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDocGia)).BeginInit();
             this.SuspendLayout();
@@ -54,6 +54,19 @@
             this.pnlControls.Name = "pnlControls";
             this.pnlControls.Size = new System.Drawing.Size(1267, 246);
             this.pnlControls.TabIndex = 1;
+            // 
+            // btnDebugMail
+            // 
+            this.btnDebugMail.BorderRadius = 5;
+            this.btnDebugMail.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.btnDebugMail.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnDebugMail.ForeColor = System.Drawing.Color.White;
+            this.btnDebugMail.Location = new System.Drawing.Point(965, 172);
+            this.btnDebugMail.Name = "btnDebugMail";
+            this.btnDebugMail.Size = new System.Drawing.Size(147, 49);
+            this.btnDebugMail.TabIndex = 9;
+            this.btnDebugMail.Text = "Debug mail";
+            this.btnDebugMail.Click += new System.EventHandler(this.btnDebugMail_Click);
             // 
             // btnDongBo
             // 
@@ -81,6 +94,20 @@
             this.txtMaDocGia.SelectedText = "";
             this.txtMaDocGia.Size = new System.Drawing.Size(267, 49);
             this.txtMaDocGia.TabIndex = 4;
+            // 
+            // txtMail
+            // 
+            this.txtMail.BorderRadius = 5;
+            this.txtMail.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtMail.DefaultText = "";
+            this.txtMail.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            this.txtMail.Location = new System.Drawing.Point(347, 98);
+            this.txtMail.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.txtMail.Name = "txtMail";
+            this.txtMail.PlaceholderText = "Email";
+            this.txtMail.SelectedText = "";
+            this.txtMail.Size = new System.Drawing.Size(333, 49);
+            this.txtMail.TabIndex = 5;
             // 
             // txtHoTen
             // 
@@ -257,33 +284,7 @@
             this.dgvDocGia.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
             this.dgvDocGia.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
             this.dgvDocGia.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvDocGia_CellClick);
-            // 
-            // btnDebugMail
-            // 
-            this.btnDebugMail.BorderRadius = 5;
-            this.btnDebugMail.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.btnDebugMail.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.btnDebugMail.ForeColor = System.Drawing.Color.White;
-            this.btnDebugMail.Location = new System.Drawing.Point(965, 172);
-            this.btnDebugMail.Name = "btnDebugMail";
-            this.btnDebugMail.Size = new System.Drawing.Size(147, 49);
-            this.btnDebugMail.TabIndex = 9;
-            this.btnDebugMail.Text = "Debug mail";
-            this.btnDebugMail.Click += new System.EventHandler(this.btnDebugMail_Click);
-            // 
-            // txtMail
-            // 
-            this.txtMail.BorderRadius = 5;
-            this.txtMail.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txtMail.DefaultText = "";
-            this.txtMail.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.txtMail.Location = new System.Drawing.Point(347, 98);
-            this.txtMail.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.txtMail.Name = "txtMail";
-            this.txtMail.PlaceholderText = "Email";
-            this.txtMail.SelectedText = "";
-            this.txtMail.Size = new System.Drawing.Size(333, 49);
-            this.txtMail.TabIndex = 5;
+            this.dgvDocGia.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvDocGia_CellDoubleClick);
             // 
             // FrmQuanLyDocGia
             // 

@@ -1,19 +1,20 @@
 ﻿using Lib_Equipment.BLL;
 using Lib_Equipment.DAO;
-using Lib_Equipment.DTO;
 using Lib_Equipment.Database;
+using Lib_Equipment.DTO;
+using Lib_Equipment.Helpers;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Data;
 using System.Data.SqlClient;
-using System.Windows.Forms;
-using System.Threading.Tasks;
-using System.Net.Http;
-using System.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Lib_Equipment
 {
@@ -112,20 +113,19 @@ namespace Lib_Equipment
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("==================================================");
-            sb.AppendLine("             PHIẾU MƯỢN SÁCH TẠM THỜI             ");
+            sb.AppendLine("              PHIẾU MƯỢN SÁCH TẠM THỜI             ");
             sb.AppendLine("==================================================");
             sb.AppendLine($" Độc giả: {fullName} ({readerID})");
-            sb.AppendLine($" Ngày   : {DateTime.Now.ToString("dd/MM/yyyy HH:mm")}");
+            sb.AppendLine($" Ngày    : {DateTime.Now.ToString("dd/MM/yyyy HH:mm")}");
             sb.AppendLine("--------------------------------------------------");
             sb.AppendLine(" STT | MÃ SÁCH       | TÊN SÁCH");
             sb.AppendLine("--------------------------------------------------");
 
-            // Đổ danh sách từ giỏ hàng vào phiếu
             for (int i = 0; i < dtGioHang.Rows.Count; i++)
             {
                 string ma = dtGioHang.Rows[i]["Mã Bản Sao"].ToString();
                 string ten = dtGioHang.Rows[i]["Tên Sách"].ToString();
-                if (ten.Length > 22) ten = ten.Substring(0, 19) + "..."; // Cắt chữ dài
+                if (ten.Length > 22) ten = ten.Substring(0, 19) + "...";
 
                 sb.AppendLine($" {i + 1,-3} | {ma,-13} | {ten}");
             }
@@ -134,9 +134,14 @@ namespace Lib_Equipment
             sb.AppendLine($" TỔNG ĐANG CHỜ MƯỢN: {dtGioHang.Rows.Count} CUỐN");
             sb.AppendLine("==================================================");
 
-            rtbPhieuMuonLive.Text = sb.ToString();
+            // Thêm hướng dẫn hủy
+            if (dtGioHang.Rows.Count > 0)
+            {
+                sb.AppendLine("");
+                sb.AppendLine(" 💡 Mẹo: Quét lại mã sách đã chọn để HỦY MƯỢN.");
+            }
 
-            // Tự động cuộn xuống dòng cuối cùng
+            rtbPhieuMuonLive.Text = sb.ToString();
             rtbPhieuMuonLive.SelectionStart = rtbPhieuMuonLive.Text.Length;
             rtbPhieuMuonLive.ScrollToCaret();
         }
@@ -166,22 +171,39 @@ namespace Lib_Equipment
 
                 if (string.IsNullOrEmpty(copyId)) return;
 
-                // 1. Kiểm tra xem sách đã quét vào giỏ chưa
+                // ==========================================================
+                // LOGIC MỚI: KIỂM TRA ĐỂ HỦY MƯỢN
+                // ==========================================================
+                DataRow foundRow = null;
                 foreach (DataRow row in dtGioHang.Rows)
                 {
-                    if (row["Mã Bản Sao"].ToString() == copyId)
+                    if (row["Mã Bản Sao"].ToString().ToUpper() == copyId.ToUpper())
                     {
-                        MessageBox.Show("Cuốn sách này đã nằm trong Phiếu mượn!", "Trùng lặp", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
+                        foundRow = row;
+                        break;
                     }
                 }
 
-                // 2. Kiểm tra CSDL
+                if (foundRow != null)
+                {
+                    string tenSachHuy = foundRow["Tên Sách"].ToString();
+                    DialogResult dr = MessageBox.Show($"Cuốn sách '{tenSachHuy}' đã có trong phiếu.\nBạn có muốn HỦY MƯỢN cuốn này không?",
+                                                     "Xác nhận hủy", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (dr == DialogResult.Yes)
+                    {
+                        dtGioHang.Rows.Remove(foundRow);
+                        CapNhatPhieuLive();
+                        return; // Kết thúc xử lý
+                    }
+                    return;
+                }
+
+                // --- Logic thêm mới sách (giữ nguyên của bạn) ---
                 string checkQuery = $@"
-                    SELECT b.Title, bc.Status 
-                    FROM BookCopy bc 
-                    JOIN Book b ON bc.BookID = b.BookID 
-                    WHERE bc.CopyID = @copyID AND bc.IsDeleted = 0";
+            SELECT b.Title, bc.Status 
+            FROM BookCopy bc 
+            JOIN Book b ON bc.BookID = b.BookID 
+            WHERE bc.CopyID = @copyID AND bc.IsDeleted = 0";
 
                 SqlParameter[] paramCheck = { new SqlParameter("@copyID", copyId) };
                 DataTable dtSach = DataProvider.Instance.ExecuteQuery(checkQuery, paramCheck);
@@ -193,18 +215,8 @@ namespace Lib_Equipment
 
                     if (trangThai == "Có sẵn")
                     {
-                        // Thêm vào giỏ hàng
                         dtGioHang.Rows.Add(copyId, tenSach);
-
-                        // Cập nhật lại giao diện phiếu Live
                         CapNhatPhieuLive();
-
-                        // Nếu có Label trạng thái, báo câu xanh lá
-                        if (this.Controls.ContainsKey("lblStatus"))
-                        {
-                            this.Controls["lblStatus"].Text = $"Đã đưa sách '{tenSach}' vào phiếu chờ.";
-                            this.Controls["lblStatus"].ForeColor = Color.Green;
-                        }
                     }
                     else
                     {
@@ -213,7 +225,7 @@ namespace Lib_Equipment
                 }
                 else
                 {
-                    MessageBox.Show("Mã vạch không hợp lệ hoặc sách không có trong hệ thống!", "Lỗi Quét", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Mã vạch không tồn tại!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 txtBarcodeScanner.Focus();
             }
@@ -229,6 +241,9 @@ namespace Lib_Equipment
                 MessageBox.Show("Phiếu mượn đang trống! Vui lòng quét mã sách trước.", "Thông báo");
                 return;
             }
+
+            // Lấy tên người dùng đang đăng nhập (hoặc mặc định là "admin" nếu chưa có)
+            string username = AppSession.Username ?? "Reader";
 
             // ==========================================================
             // 1. KIỂM TRA LUẬT MƯỢN (Giới hạn số lượng & Nợ quá hạn)
@@ -280,8 +295,8 @@ namespace Lib_Equipment
             sbQuery.AppendLine("BEGIN TRY");
             sbQuery.AppendLine("BEGIN TRAN;");
 
-            // Truyền biến @days vào DATEADD
-            sbQuery.AppendLine("INSERT INTO BorrowRecord (ReaderID, CreatedBy, BorrowDate, DueDate, Status, IsDeleted) VALUES (@readerId, NULL, GETDATE(), DATEADD(day, @days, GETDATE()), N'Đang mượn', 0);");
+            // ĐÃ SỬA: Thay đổi NULL thành @user để lưu tên người tạo phiếu
+            sbQuery.AppendLine("INSERT INTO BorrowRecord (ReaderID, CreatedBy, BorrowDate, DueDate, Status, IsDeleted) VALUES (@readerId, @user, GETDATE(), DATEADD(day, @days, GETDATE()), N'Đang mượn', 0);");
             sbQuery.AppendLine("DECLARE @newRecordId INT = SCOPE_IDENTITY();");
 
             foreach (DataRow row in dtGioHang.Rows)
@@ -295,11 +310,12 @@ namespace Lib_Equipment
             sbQuery.AppendLine("COMMIT TRAN;");
             sbQuery.AppendLine("END TRY BEGIN CATCH ROLLBACK TRAN; THROW; END CATCH");
 
-            // Truyền @days vào Parameters
+            // ĐÃ SỬA: Bổ sung tham số @user vào danh sách Parameters
             SqlParameter[] param = {
-                new SqlParameter("@readerId", readerID),
-                new SqlParameter("@days", allowedDays)
-            };
+        new SqlParameter("@readerId", readerID),
+        new SqlParameter("@days", allowedDays),
+        new SqlParameter("@user", username)
+    };
 
             try
             {

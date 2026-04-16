@@ -59,43 +59,41 @@ namespace Lib_Equipment.DAO
             sb.AppendLine("BEGIN TRY");
             sb.AppendLine("    BEGIN TRAN;");
 
-            // SỬ DỤNG SUBQUERY: Lấy UserID (int) từ Username (admin) 
-            // Điều này giải quyết lỗi nếu CreatedBy là INT, và vẫn chạy đúng nếu CreatedBy là NVARCHAR
+            // ĐÃ SỬA: Lưu trực tiếp tên người dùng (chuỗi) vào cột CreatedBy thay vì lấy ID số
             sb.AppendLine(@"
-                INSERT INTO BorrowRecord (ReaderID, CreatedBy, BorrowDate, DueDate, Status, IsDeleted) 
-                VALUES (@readerId, 
-                        (SELECT TOP 1 UserID FROM [User] WHERE Username = @user), 
-                        GETDATE(), @dueDate, N'Đang mượn', 0);");
+        INSERT INTO BorrowRecord (ReaderID, CreatedBy, BorrowDate, DueDate, Status, IsDeleted) 
+        VALUES (@readerId, @user, GETDATE(), @dueDate, N'Đang mượn', 0);");
 
             sb.AppendLine("    DECLARE @newRecordId INT = SCOPE_IDENTITY();");
 
-            sb.AppendLine($@"
-                INSERT INTO BorrowDetail (RecordID, CopyID, FineAmount, IsWarnedDay4, IsWarnedDay31) 
-                VALUES (@newRecordId, @copyId, 0, 0, 0);");
+            sb.AppendLine(@"
+        INSERT INTO BorrowDetail (RecordID, CopyID, FineAmount, IsWarnedDay4, IsWarnedDay31) 
+        VALUES (@newRecordId, @copyId, 0, 0, 0);");
 
-            sb.AppendLine($"    UPDATE BookCopy SET Status = N'Đang mượn' WHERE CopyID = @copyId;");
+            sb.AppendLine("    UPDATE BookCopy SET Status = N'Đang mượn' WHERE CopyID = @copyId;");
 
+            // Trả về mã phiếu vừa được tạo
             sb.AppendLine("    SELECT @newRecordId;");
 
             sb.AppendLine("    COMMIT TRAN;");
             sb.AppendLine("END TRY BEGIN CATCH IF @@TRANCOUNT > 0 ROLLBACK TRAN; THROW; END CATCH");
 
             SqlParameter[] param = {
-                new SqlParameter("@readerId", readerId),
-                new SqlParameter("@copyId", copyId),
-                new SqlParameter("@dueDate", dueDate),
-                new SqlParameter("@user", createdBy)
-            };
+        new SqlParameter("@readerId", readerId),
+        new SqlParameter("@copyId", copyId),
+        new SqlParameter("@dueDate", dueDate),
+        new SqlParameter("@user", createdBy) // Biến createdBy truyền thẳng vào luôn
+    };
 
             try
             {
-                // CHÚ Ý: Gọi đúng 2 tham số theo file DataProvider bạn gửi
+                // Chạy ExecuteScalar để lấy được ID của phiếu mượn (để sau này in phiếu nếu cần)
                 object result = DataProvider.Instance.ExecuteScalar(sb.ToString(), param);
-                return result != null ? Convert.ToInt32(result) : -1;
+                return result != null ? Convert.ToInt32(result) : 0;
             }
-            catch (Exception ex)
+            catch
             {
-                throw new Exception("Lỗi thực thi SQL: " + ex.Message);
+                throw; // Ném lỗi ra ngoài cho Form xử lý hiển thị thông báo
             }
         }
 

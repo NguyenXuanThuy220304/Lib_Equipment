@@ -4,6 +4,7 @@ using Lib_Equipment.Database;
 using Lib_Equipment.Helpers;
 using System;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -13,7 +14,10 @@ namespace Lib_Equipment
     {
         private string selectedReaderID = "";
 
-        public FrmQuanLyDocGia() { InitializeComponent(); }
+        public FrmQuanLyDocGia()
+        {
+            InitializeComponent();
+        }
 
         private void FrmQuanLyDocGia_Load(object sender, EventArgs e)
         {
@@ -22,8 +26,7 @@ namespace Lib_Equipment
             cboDonVi.DisplayMember = "DepartmentName";
             cboDonVi.ValueMember = "DepartmentID";
 
-            // 2. TỰ ĐỘNG QUÉT HỆ THỐNG (Thay thế nút Debug Mail)
-            // Chúng ta bọc trong try-catch để nếu mất mạng/lỗi Mail thì Form vẫn mở được bình thường
+            // 2. TỰ ĐỘNG QUÉT HỆ THỐNG
             try
             {
                 // Quét gửi mail nhắc nhở & xử lý kỷ luật (Ngày 3, Ngày 31)
@@ -34,14 +37,20 @@ namespace Lib_Equipment
             // 3. Hiển thị dữ liệu (RefreshGrid đã có sẵn lệnh AutoUpdateDebt)
             RefreshGrid();
         }
+
         private void LoadData()
         {
             dgvDocGia.DataSource = DocGiaBLL.Instance.LayDanhSachDocGia();
             dgvDocGia.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            DocGiaDAO.Instance.AutoUpdateDebt();
+
+            // GIỮ NGUYÊN LOGIC CỦA BẠN: Tự động update nợ
+            //DocGiaDAO.Instance.AutoUpdateDebt();
             RefreshGrid();
-            if (dgvDocGia.Columns.Contains("Công nợ (VNĐ)")) dgvDocGia.Columns["Công nợ (VNĐ)"].DefaultCellStyle.Format = "N0";
+
+            if (dgvDocGia.Columns.Contains("Công nợ (VNĐ)"))
+                dgvDocGia.Columns["Công nợ (VNĐ)"].DefaultCellStyle.Format = "N0";
         }
+
         private void dgvDocGia_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
             foreach (DataGridViewRow row in dgvDocGia.Rows)
@@ -62,6 +71,7 @@ namespace Lib_Equipment
                 }
             }
         }
+
         private void dgvDocGia_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -108,13 +118,15 @@ namespace Lib_Equipment
                 MessageBox.Show(msg, "Thông báo lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
         private void btnSua_Click(object sender, EventArgs e)
         {
             string deptId = cboDonVi.SelectedValue?.ToString() ?? "";
             int status = cboTrangThai.Text.Contains("Hoạt động") ? 1 : 0;
             if (DocGiaBLL.Instance.SuaDocGia(selectedReaderID, txtHoTen.Text.Trim(), deptId, cboLoaiDocGia.Text, status, txtMail.Text))
             {
-                MessageBox.Show("Cập nhật thành công!", "Thông báo"); LoadData();
+                MessageBox.Show("Cập nhật thành công!", "Thông báo");
+                LoadData();
             }
         }
 
@@ -125,7 +137,9 @@ namespace Lib_Equipment
             {
                 if (DocGiaBLL.Instance.XoaDocGia(selectedReaderID))
                 {
-                    MessageBox.Show("Đã xóa độc giả!", "Thông báo"); LoadData(); btnLamMoi_Click(null, null);
+                    MessageBox.Show("Đã xóa độc giả!", "Thông báo");
+                    LoadData();
+                    btnLamMoi_Click(null, null);
                 }
             }
         }
@@ -137,32 +151,72 @@ namespace Lib_Equipment
             if (cboLoaiDocGia.Items.Count > 0) cboLoaiDocGia.SelectedIndex = 0;
             if (cboTrangThai.Items.Count > 0) cboTrangThai.SelectedIndex = 0;
         }
+
         private void RefreshGrid()
         {
             try
             {
-                // 1. Phải chạy cái này trước để SQL tính toán lại (người trả sách rồi sẽ được mở khóa ở đây)
-                DocGiaDAO.Instance.AutoUpdateDebt();
+                // =====================================================================
+                // THUẬT TOÁN TỰ ĐỘNG KHÓA / MỞ KHÓA TÀI KHOẢN (THAY THẾ HÀM CŨ)
+                // =====================================================================
+                string sqlUpdateStatus = @"
+            -- 1. TẠM KHÓA (Status = 0) những ai đang có sách trễ hạn (từ 1 ngày trở lên)
+            UPDATE Reader 
+            SET Status = 0 
+            WHERE ReaderID IN (
+                SELECT DISTINCT br.ReaderID 
+                FROM BorrowRecord br 
+                JOIN BorrowDetail bd ON br.RecordID = bd.RecordID 
+                WHERE bd.ReturnDate IS NULL AND CAST(br.DueDate AS DATE) < CAST(GETDATE() AS DATE)
+            );
 
-                // 2. Sau đó mới SELECT dữ liệu lên
+            -- 2. CẤM VĨNH VIỄN (IsPermanentlyBanned = 1) những ai trễ quá 30 ngày
+            UPDATE Reader 
+            SET IsPermanentlyBanned = 1, Status = 0 
+            WHERE ReaderID IN (
+                SELECT DISTINCT br.ReaderID 
+                FROM BorrowRecord br 
+                JOIN BorrowDetail bd ON br.RecordID = bd.RecordID 
+                WHERE bd.ReturnDate IS NULL AND DATEDIFF(day, br.DueDate, GETDATE()) > 30
+            );
+
+            -- 3. TỰ ĐỘNG MỞ KHÓA (Status = 1) cho những ai ĐÃ TRẢ HẾT sách quá hạn
+            -- (Và đảm bảo họ không nằm trong danh sách đen Cấm vĩnh viễn)
+            UPDATE Reader 
+            SET Status = 1 
+            WHERE Status = 0 
+            AND ISNULL(IsPermanentlyBanned, 0) = 0  -- ĐÃ VÁ LỖI DBNULL TẠI ĐÂY
+            AND ReaderID NOT IN (
+                SELECT DISTINCT br.ReaderID 
+                FROM BorrowRecord br 
+                JOIN BorrowDetail bd ON br.RecordID = bd.RecordID 
+                WHERE bd.ReturnDate IS NULL AND CAST(br.DueDate AS DATE) < CAST(GETDATE() AS DATE)
+            );
+        ";
+                // Chạy lệnh tự động cập nhật trạng thái trước khi lấy dữ liệu
+                DataProvider.Instance.ExecuteNonQuery(sqlUpdateStatus, null);
+
+                // =====================================================================
+                // LẤY DỮ LIỆU ĐÃ CẬP NHẬT LÊN LƯỚI
+                // =====================================================================
                 string query = @"SELECT ReaderID AS [Mã Độc giả], 
-                               FullName AS [Họ và tên], 
-                               DepartmentID AS [Khoa/Viện], 
-                               ReaderType AS [Loại thẻ], 
-                               Email, 
-                               AcademicDebt AS [Công nợ (VNĐ)],
-                               CASE 
-                                  WHEN IsPermanentlyBanned = 1 THEN N'CẤM VĨNH VIỄN' 
-                                  WHEN Status = 1 THEN N'Hoạt động' 
-                                  ELSE N'Đang bị khóa' 
-                               END AS [Trạng thái]
-                        FROM Reader 
-                        WHERE IsDeleted = 0 OR IsDeleted IS NULL";
+                       FullName AS [Họ và tên], 
+                       DepartmentID AS [Khoa/Viện], 
+                       ReaderType AS [Loại thẻ], 
+                       Email, 
+                       AcademicDebt AS [Công nợ (VNĐ)],
+                       CASE 
+                          WHEN IsPermanentlyBanned = 1 THEN N'CẤM VĨNH VIỄN' 
+                          WHEN Status = 1 THEN N'Hoạt động' 
+                          ELSE N'Đang bị khóa' 
+                       END AS [Trạng thái]
+                FROM Reader 
+                WHERE IsDeleted = 0 OR IsDeleted IS NULL";
 
                 DataTable dt = DataProvider.Instance.ExecuteQuery(query);
                 dgvDocGia.DataSource = dt;
 
-                // 3. Tô màu trực quan (giữ nguyên logic của bạn)
+                // Tô màu trực quan cho Độc giả
                 foreach (DataGridViewRow row in dgvDocGia.Rows)
                 {
                     string trangThai = row.Cells["Trạng thái"].Value?.ToString();
@@ -191,7 +245,8 @@ namespace Lib_Equipment
             if (MessageBox.Show("Hệ thống sẽ cấp tài khoản đăng nhập cho toàn bộ Độc giả chưa có tài khoản. Tiếp tục?", "Đồng bộ", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 int countUsers = DocGiaBLL.Instance.DongBoHeThong();
-                MessageBox.Show($"Hoàn tất!\nĐã tạo mới {countUsers} tài khoản.", "Thành công"); LoadData();
+                MessageBox.Show($"Hoàn tất!\nĐã tạo mới {countUsers} tài khoản.", "Thành công");
+                LoadData();
             }
         }
 
@@ -220,6 +275,23 @@ namespace Lib_Equipment
             {
                 btnDebugMail.Text = "GỬI MAIL NHẮC NHỞ";
                 btnDebugMail.Enabled = true;
+            }
+        }
+
+        // TÍNH NĂNG MỚI: KÍCH ĐÚP CHUỘT MỞ HỒ SƠ LƯU VẾT
+        private void dgvDocGia_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                string readerID = dgvDocGia.Rows[e.RowIndex].Cells["Mã Độc giả"].Value.ToString();
+                string fullName = dgvDocGia.Rows[e.RowIndex].Cells["Họ và tên"].Value.ToString();
+
+                // Mở Form Hồ Sơ Độc Giả siêu xịn
+                FrmHoSoDocGia frmProfile = new FrmHoSoDocGia(readerID, fullName);
+                frmProfile.ShowDialog();
+
+                // Refresh lại Grid sau khi tắt Form Hồ Sơ (lỡ như có thủ thư vừa trừ/thêm nợ)
+                RefreshGrid();
             }
         }
     }

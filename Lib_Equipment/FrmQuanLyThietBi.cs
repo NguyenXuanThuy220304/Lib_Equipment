@@ -11,9 +11,18 @@ namespace Lib_Equipment
     {
         private string selectedEquipmentID = "";
 
+        // Dùng Timer để tạo độ "Nhạy" cho Live Search, chống giật lag UI
+        private Timer searchTimer;
+
         public FrmQuanLyThietBi()
         {
             InitializeComponent();
+            dgvThietBi.DataError += (s, e) => { e.ThrowException = false; };
+
+            // Cài đặt Timer cho Tìm kiếm (0.3 giây sau khi ngừng gõ sẽ tự động tìm)
+            searchTimer = new Timer();
+            searchTimer.Interval = 300;
+            searchTimer.Tick += SearchTimer_Tick;
         }
 
         private void FrmQuanLyThietBi_Load(object sender, EventArgs e)
@@ -22,17 +31,17 @@ namespace Lib_Equipment
             LoadComboboxKhoaPhong();
             LoadData();
             AdjustSearchLayout();
+
             pnlSearch.Visible = false;
             pnlControls.Visible = true;
             CheckMaintenanceAlert();
         }
+
         private void FrmQuanLyThietBi_Resize(object sender, EventArgs e)
         {
             AdjustSearchLayout();
         }
-        // =======================================================
-        // 1. TẢI DỮ LIỆU & ĐỊNH DẠNG
-        // =======================================================
+
         private void LoadComboboxLoaiTB()
         {
             string query = "SELECT CategoryID, CategoryName FROM EquipmentCategory WHERE IsDeleted = 0 OR IsDeleted IS NULL";
@@ -63,7 +72,6 @@ namespace Lib_Equipment
             }
             if (dgvThietBi.Columns.Contains("Condition")) dgvThietBi.Columns["Condition"].HeaderText = "Tình Trạng";
 
-            // LUÔN LUÔN ẨN CÁC CỘT ID ĐỂ TRÁNH LỖI KHI CLICK
             if (dgvThietBi.Columns.Contains("CategoryID")) dgvThietBi.Columns["CategoryID"].Visible = false;
             if (dgvThietBi.Columns.Contains("DepartmentID")) dgvThietBi.Columns["DepartmentID"].Visible = false;
         }
@@ -84,26 +92,38 @@ namespace Lib_Equipment
         }
 
         // =======================================================
-        // 2. TÌM KIẾM (HỖ TRỢ VIẾT TẮT)
+        // TÍNH NĂNG TÌM KIẾM LIVE SIÊU TỐC + TÌM VIẾT TẮT (FUZZY)
         // =======================================================
-        private void btnOpenSearch_Click(object sender, EventArgs e)
+        private void btnTimKiem_Click(object sender, EventArgs e)
         {
             pnlControls.Visible = false;
             pnlSearch.Visible = true;
-            btnOpenSearch.Visible = false;
             txtSearch.Focus();
         }
 
-        private void btnDoSearch_Click(object sender, EventArgs e)
+        private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            string keyword = txtSearch.Text.Trim();
-            if (string.IsNullOrEmpty(keyword)) { LoadData(); return; }
+            // Reset lại thời gian đợi mỗi khi gõ phím mới
+            searchTimer.Stop();
+            searchTimer.Start();
+        }
 
-            // Thuật toán: Biến "DH" thành "%D%H%" để tìm kiếm viết tắt
+        private void SearchTimer_Tick(object sender, EventArgs e)
+        {
+            searchTimer.Stop(); // Dừng timer để thực hiện truy vấn
+
+            string keyword = txtSearch.Text.Trim();
+            if (string.IsNullOrEmpty(keyword))
+            {
+                LoadData();
+                return;
+            }
+
+            // Thuật toán: Biến "MT" thành "%M%T%" để tìm kiếm viết tắt
             string fuzzyKey = "%";
             foreach (char c in keyword) { fuzzyKey += c + "%"; }
 
-            // Tìm kiếm trên chuỗi kết hợp (Tên + Loại)
+            // Tìm kiếm trực tiếp bằng SQL để hỗ trợ viết tắt hoàn hảo nhất
             string query = @"
                 SELECT e.EquipmentID, e.EquipmentName, c.CategoryName, d.DepartmentName, 
                        e.ImportDate, e.PurchasePrice, e.Condition,
@@ -113,7 +133,7 @@ namespace Lib_Equipment
                 LEFT JOIN Department d ON e.DepartmentID = d.DepartmentID
                 WHERE (e.IsDeleted = 0 OR e.IsDeleted IS NULL)
                 AND (
-                    (e.EquipmentName + ' ' + ISNULL(c.CategoryName, '')) LIKE @fuzzy
+                    (e.EquipmentName + ' ' + ISNULL(c.CategoryName, '') + ' ' + ISNULL(d.DepartmentName, '')) LIKE @fuzzy
                     OR e.EquipmentID LIKE @normal
                 )";
 
@@ -123,22 +143,33 @@ namespace Lib_Equipment
             };
 
             dgvThietBi.DataSource = DataProvider.Instance.ExecuteQuery(query, param);
-            FormatGrid();
+            FormatGrid(); // Luôn format lại cột sau khi nạp data mới
         }
 
         private void btnLamMoi_Click(object sender, EventArgs e)
         {
-            pnlControls.Visible = true;
             pnlSearch.Visible = false;
-            btnOpenSearch.Visible = true;
+            pnlControls.Visible = true;
+            txtSearch.Clear();
+
             selectedEquipmentID = "";
             txtMaTB.Enabled = true;
-            txtMaTB.Clear(); txtTenTB.Clear(); txtGiaTien.Clear(); txtSearch.Clear();
+            txtMaTB.Clear(); txtTenTB.Clear(); txtGiaTien.Clear();
+            if (cboLoaiTB.Items.Count > 0) cboLoaiTB.SelectedIndex = 0;
+            if (cboKhoaPhong.Items.Count > 0) cboKhoaPhong.SelectedIndex = 0;
+            if (cboTinhTrang.Items.Count > 0) cboTinhTrang.SelectedIndex = 0;
+
             LoadData();
         }
 
+        private void AdjustSearchLayout()
+        {
+            int startX = (pnlSearch.Width - txtSearch.Width) / 2;
+            txtSearch.Location = new Point(startX, (pnlSearch.Height - txtSearch.Height) / 2);
+        }
+
         // =======================================================
-        // 3. MÃ VẠCH (MỞ FORM MỚI)
+        // MÃ VẠCH & CLICK DATA
         // =======================================================
         private void btnBarcode_Click(object sender, EventArgs e)
         {
@@ -147,15 +178,10 @@ namespace Lib_Equipment
                 MessageBox.Show("Vui lòng chọn một thiết bị từ danh sách để xem mã vạch!", "Thông báo");
                 return;
             }
-
-            // SỬA DÒNG NÀY: Truyền thêm txtTenTB.Text vào tham số thứ 2
             FrmBarcodeViewer barcodeForm = new FrmBarcodeViewer(selectedEquipmentID, txtTenTB.Text);
             barcodeForm.ShowDialog();
         }
 
-        // =======================================================
-        // 4. CLICK & DOUBLE CLICK
-        // =======================================================
         private void dgvThietBi_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -166,12 +192,8 @@ namespace Lib_Equipment
                 txtMaTB.Text = selectedEquipmentID;
                 txtTenTB.Text = row.Cells["EquipmentName"].Value.ToString();
 
-                // Gán giá trị Combobox an toàn
-                if (dgvThietBi.Columns.Contains("CategoryID"))
-                    cboLoaiTB.SelectedValue = row.Cells["CategoryID"].Value;
-
-                if (dgvThietBi.Columns.Contains("DepartmentID"))
-                    cboKhoaPhong.SelectedValue = row.Cells["DepartmentID"].Value;
+                if (dgvThietBi.Columns.Contains("CategoryID")) cboLoaiTB.SelectedValue = row.Cells["CategoryID"].Value;
+                if (dgvThietBi.Columns.Contains("DepartmentID")) cboKhoaPhong.SelectedValue = row.Cells["DepartmentID"].Value;
 
                 txtGiaTien.Text = row.Cells["PurchasePrice"].Value.ToString();
                 cboTinhTrang.Text = row.Cells["Condition"].Value.ToString();
@@ -191,7 +213,7 @@ namespace Lib_Equipment
         }
 
         // =======================================================
-        // 5. CÁC THAO TÁC NGHIỆP VỤ (THÊM, SỬA, XÓA, CẢNH BÁO)
+        // THÊM, SỬA, XÓA & BẢO TRÌ
         // =======================================================
         private void btnThem_Click(object sender, EventArgs e)
         {
@@ -231,16 +253,7 @@ namespace Lib_Equipment
             MessageBox.Show("Cập nhật thành công!");
             LoadData();
         }
-        private void AdjustSearchLayout()
-        {
-            // Căn giữa Group tìm kiếm (Thanh Search + Nút Tìm)
-            // Giả sử tổng chiều rộng của 2 cái là 630px (500 search + 10 gap + 120 button)
-            int totalWidth = txtSearch.Width + 15 + btnDoSearch.Width;
-            int startX = (pnlSearch.Width - totalWidth) / 2;
 
-            txtSearch.Location = new Point(startX, (pnlSearch.Height - txtSearch.Height) / 2);
-            btnDoSearch.Location = new Point(txtSearch.Right + 15, txtSearch.Location.Y);
-        }
         private void btnXoa_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(selectedEquipmentID)) return;

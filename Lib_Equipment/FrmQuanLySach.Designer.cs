@@ -13,9 +13,9 @@
         #region Windows Form Designer generated code
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
             this.pnlControls = new Guna.UI2.WinForms.Guna2Panel();
             this.txtMaSach = new Guna.UI2.WinForms.Guna2TextBox();
             this.txtTenSach = new Guna.UI2.WinForms.Guna2TextBox();
@@ -29,11 +29,15 @@
             this.btnXoa = new Guna.UI2.WinForms.Guna2Button();
             this.btnSua = new Guna.UI2.WinForms.Guna2Button();
             this.btnThem = new Guna.UI2.WinForms.Guna2Button();
-            this.btnInPhieu = new Guna.UI2.WinForms.Guna2Button(); // Khởi tạo nút in phiếu
+            this.btnInPhieu = new Guna.UI2.WinForms.Guna2Button();
             this.lblSoTrang = new System.Windows.Forms.Label();
             this.txtSoTrang = new System.Windows.Forms.TextBox();
+            this.btnTimKiem = new Guna.UI2.WinForms.Guna2Button();
+            this.pnlSearch = new Guna.UI2.WinForms.Guna2Panel();
+            this.txtSearch = new Guna.UI2.WinForms.Guna2TextBox();
             this.dgvSach = new Guna.UI2.WinForms.Guna2DataGridView();
             this.pnlControls.SuspendLayout();
+            this.pnlSearch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSach)).BeginInit();
             this.SuspendLayout();
             // 
@@ -52,9 +56,11 @@
             this.pnlControls.Controls.Add(this.btnXoa);
             this.pnlControls.Controls.Add(this.btnSua);
             this.pnlControls.Controls.Add(this.btnThem);
-            this.pnlControls.Controls.Add(this.btnInPhieu); // Thêm nút in phiếu vào Panel
+            this.pnlControls.Controls.Add(this.btnInPhieu);
             this.pnlControls.Controls.Add(this.lblSoTrang);
             this.pnlControls.Controls.Add(this.txtSoTrang);
+            this.pnlControls.Controls.Add(this.btnTimKiem);
+            this.pnlControls.Controls.Add(this.pnlSearch);
             this.pnlControls.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlControls.Location = new System.Drawing.Point(0, 0);
             this.pnlControls.Name = "pnlControls";
@@ -89,7 +95,7 @@
             this.txtTenSach.Size = new System.Drawing.Size(350, 42);
             this.txtTenSach.TabIndex = 1;
             // 
-            // cboTheLoai
+            // cboTheLoai (ĐÃ ĐƯA VỀ CHUẨN ĐỂ KHÔNG LỖI)
             // 
             this.cboTheLoai.BackColor = System.Drawing.Color.Transparent;
             this.cboTheLoai.BorderRadius = 5;
@@ -263,29 +269,67 @@
             this.txtSoTrang.Size = new System.Drawing.Size(100, 30);
             this.txtSoTrang.TabIndex = 13;
             // 
+            // btnTimKiem
+            // 
+            this.btnTimKiem.BorderRadius = 5;
+            this.btnTimKiem.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(172)))), ((int)(((byte)(193)))));
+            this.btnTimKiem.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnTimKiem.ForeColor = System.Drawing.Color.White;
+            this.btnTimKiem.Location = new System.Drawing.Point(720, 200);
+            this.btnTimKiem.Name = "btnTimKiem";
+            this.btnTimKiem.Size = new System.Drawing.Size(130, 40);
+            this.btnTimKiem.TabIndex = 15;
+            this.btnTimKiem.Text = "TÌM KIẾM";
+            this.btnTimKiem.Click += new System.EventHandler(this.btnTimKiem_Click);
+            // 
+            // pnlSearch
+            // 
+            this.pnlSearch.BackColor = System.Drawing.Color.White;
+            this.pnlSearch.Controls.Add(this.txtSearch);
+            this.pnlSearch.Location = new System.Drawing.Point(0, 0);
+            this.pnlSearch.Name = "pnlSearch";
+            this.pnlSearch.Size = new System.Drawing.Size(950, 190);
+            this.pnlSearch.TabIndex = 16;
+            this.pnlSearch.Visible = false;
+            // 
+            // txtSearch
+            // 
+            this.txtSearch.BorderRadius = 20;
+            this.txtSearch.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtSearch.DefaultText = "";
+            this.txtSearch.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.txtSearch.Location = new System.Drawing.Point(200, 70);
+            this.txtSearch.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
+            this.txtSearch.Name = "txtSearch";
+            this.txtSearch.PlaceholderText = "Nhập tên sách hoặc thể loại để tìm nhanh...";
+            this.txtSearch.SelectedText = "";
+            this.txtSearch.Size = new System.Drawing.Size(550, 45);
+            this.txtSearch.TabIndex = 0;
+            this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
+            // 
             // dgvSach
             // 
             this.dgvSach.AllowUserToAddRows = false;
             this.dgvSach.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.White;
-            this.dgvSach.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 10.5F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvSach.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle13.BackColor = System.Drawing.Color.White;
+            this.dgvSach.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle14.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
+            dataGridViewCellStyle14.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            dataGridViewCellStyle14.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvSach.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle14;
             this.dgvSach.ColumnHeadersHeight = 40;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 10.5F);
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvSach.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle15.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle15.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            dataGridViewCellStyle15.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            dataGridViewCellStyle15.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle15.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            dataGridViewCellStyle15.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvSach.DefaultCellStyle = dataGridViewCellStyle15;
             this.dgvSach.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvSach.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
             this.dgvSach.Location = new System.Drawing.Point(0, 250);
@@ -329,11 +373,12 @@
             this.Load += new System.EventHandler(this.FrmQuanLySach_Load);
             this.pnlControls.ResumeLayout(false);
             this.pnlControls.PerformLayout();
+            this.pnlSearch.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvSach)).EndInit();
             this.ResumeLayout(false);
-
         }
         #endregion
+
         private System.Windows.Forms.TextBox txtSoTrang;
         private System.Windows.Forms.Label lblSoTrang;
         private Guna.UI2.WinForms.Guna2Panel pnlControls;
@@ -351,5 +396,8 @@
         private Guna.UI2.WinForms.Guna2TextBox txtGiaSach;
         private Guna.UI2.WinForms.Guna2ComboBox cboLoaiSach;
         private Guna.UI2.WinForms.Guna2Button btnInPhieu;
+        private Guna.UI2.WinForms.Guna2Panel pnlSearch;
+        private Guna.UI2.WinForms.Guna2TextBox txtSearch;
+        private Guna.UI2.WinForms.Guna2Button btnTimKiem;
     }
 }

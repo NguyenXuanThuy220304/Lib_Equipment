@@ -292,6 +292,9 @@
     <Compile Include="frmConfirmPopUp.Designer.cs">
       <DependentUpon>frmConfirmPopUp.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmHoSoDocGia.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FrmHoSoThietBi.cs">
       <SubType>Form</SubType>
     </Compile>

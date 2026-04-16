@@ -219,7 +219,7 @@ namespace Lib_Equipment
             });
             try
             {
-                DocGiaDAO.Instance.AutoUpdateDebt();
+                //DocGiaDAO.Instance.AutoUpdateDebt();
                 // Sau đó mới load dữ liệu lên các bảng
             }
             catch

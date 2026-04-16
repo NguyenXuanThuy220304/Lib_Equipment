@@ -39,6 +39,7 @@
             this.gbDanhSach = new Guna.UI2.WinForms.Guna2GroupBox();
             this.dgvDangMuon = new Guna.UI2.WinForms.Guna2DataGridView();
             this.lblTitleRight = new System.Windows.Forms.Label();
+            this.txtTimKiemSachTra = new Guna.UI2.WinForms.Guna2TextBox(); // Ô QUÉT MÃ MỚI
             this.pnlLeft.SuspendLayout();
             this.gbThaoTac.SuspendLayout();
             this.gbDocGia.SuspendLayout();
@@ -293,6 +294,7 @@
             // 
             this.gbDanhSach.BorderColor = System.Drawing.Color.LightGray;
             this.gbDanhSach.BorderRadius = 10;
+            this.gbDanhSach.Controls.Add(this.txtTimKiemSachTra); // ADD TEXTBOX TÌM KIẾM
             this.gbDanhSach.Controls.Add(this.dgvDangMuon);
             this.gbDanhSach.Controls.Add(this.lblTitleRight);
             this.gbDanhSach.CustomBorderColor = System.Drawing.Color.White;
@@ -305,6 +307,23 @@
             this.gbDanhSach.Padding = new System.Windows.Forms.Padding(20, 74, 20, 18);
             this.gbDanhSach.Size = new System.Drawing.Size(1070, 923);
             this.gbDanhSach.TabIndex = 0;
+            // 
+            // txtTimKiemSachTra (Ô SCAN MÃ VẠCH)
+            // 
+            this.txtTimKiemSachTra.BorderRadius = 18;
+            this.txtTimKiemSachTra.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtTimKiemSachTra.DefaultText = "";
+            this.txtTimKiemSachTra.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            this.txtTimKiemSachTra.ForeColor = System.Drawing.Color.Black;
+            this.txtTimKiemSachTra.Location = new System.Drawing.Point(680, 12);
+            this.txtTimKiemSachTra.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.txtTimKiemSachTra.Name = "txtTimKiemSachTra";
+            this.txtTimKiemSachTra.PlaceholderForeColor = System.Drawing.Color.Gray;
+            this.txtTimKiemSachTra.PlaceholderText = "Quét mã vạch sách để trả nhanh...";
+            this.txtTimKiemSachTra.SelectedText = "";
+            this.txtTimKiemSachTra.Size = new System.Drawing.Size(350, 42);
+            this.txtTimKiemSachTra.TabIndex = 2;
+            this.txtTimKiemSachTra.TextChanged += new System.EventHandler(this.txtTimKiemSachTra_TextChanged);
             // 
             // dgvDangMuon
             // 
@@ -423,5 +442,6 @@
         private Guna.UI2.WinForms.Guna2GroupBox gbDanhSach;
         private System.Windows.Forms.Label lblTitleRight;
         private Guna.UI2.WinForms.Guna2DataGridView dgvDangMuon;
+        private Guna.UI2.WinForms.Guna2TextBox txtTimKiemSachTra;
     }
 }
