@@ -276,5 +276,15 @@ namespace Lib_Equipment
             }
             catch { }
         }
+
+        private void btnInQR_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(selectedEquipmentID))
+            {
+                MessageBox.Show("Vui lòng chọn một thiết bị từ danh sách!", "Thông báo");
+                return;
+            }
+            new FrmQRThietBi(selectedEquipmentID, txtTenTB.Text).ShowDialog();
+        }
     }
 }
