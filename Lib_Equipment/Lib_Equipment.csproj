@@ -442,6 +442,7 @@
     <Compile Include="FrmTroLyAI.Designer.cs">
       <DependentUpon>FrmTroLyAI.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\AIChatService.cs" />
     <Compile Include="Helpers\AppSession.cs" />
     <Compile Include="Helpers\EmailHelper.cs" />
     <Compile Include="Helpers\LocationHelper.cs" />

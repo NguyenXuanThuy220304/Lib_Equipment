@@ -1,291 +1,269 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Data;
+﻿using System;
 using System.Drawing;
-using System.IO;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Linq;
-using Lib_Equipment.Database;
+using Lib_Equipment.BLL;
 
 namespace Lib_Equipment
 {
     public partial class FrmTroLyAI : Form
     {
-        private bool _isThinking = false;
-        private CheckBox _chkDebugMode;
-        private string _currentRole = "";
+        // ═══════════════════════════════════════════════════════
+        // BIẾN PHÂN QUYỀN — truyền vào từ form đăng nhập
+        // ═══════════════════════════════════════════════════════
+        private readonly string _role;
+        private readonly string _readerID;
+        private bool _isFirstMessage = true;
 
-        // NỘI QUY THƯ VIỆN - AI SẼ ĐỌC Ở ĐÂY ĐỂ TRẢ LỜI CÁC CÂU HỎI VỀ THÔNG TIN
-        private readonly string _libraryRules = @"
-- Mở cửa: Từ 7h00 đến 17h00, Thứ 2 đến Thứ 6.
-- Quy định mượn: Sinh viên mượn tối đa 14 ngày. Giảng viên 21 ngày.
-- Xử phạt: Quá hạn phạt 2.000đ/ngày. Làm mất/hỏng đền 200% giá trị.
-- Điều kiện: Không được mượn sách nếu đang nợ phí.
-- Nếu người dùng chào hỏi, hãy chào lại một cách lịch sự và thân thiện.
-";
+        // Màu bubble theo người gửi
+        private readonly Color COLOR_USER_BG = Color.FromArgb(0, 120, 212);
+        private readonly Color COLOR_USER_TEXT = Color.White;
+        private readonly Color COLOR_AI_BG = Color.White;
+        private readonly Color COLOR_AI_TEXT = Color.FromArgb(18, 24, 38);
+        private readonly Color COLOR_TIME = Color.FromArgb(160, 170, 185);
+        private readonly Color COLOR_LABEL_USER = Color.FromArgb(0, 120, 212);
+        private readonly Color COLOR_LABEL_AI = Color.FromArgb(52, 211, 153);
 
-        public FrmTroLyAI(string userRole = "Admin")
+        // ═══════════════════════════════════════════════════════
+        // CONSTRUCTOR — nhận Role và ReaderID từ màn hình đăng nhập
+        // ═══════════════════════════════════════════════════════
+        public FrmTroLyAI(string role = "Admin", string readerID = null)
         {
             InitializeComponent();
-            _currentRole = userRole;
-            SetupDebugCheckbox();
+            _role = role;
+            _readerID = readerID;
 
-            // ĐỔI TÊN TIÊU ĐỀ TRÊN GIAO DIỆN THEO QUYỀN (SỬA LỖI LÚC NÀO CŨNG HIỆN ADMIN)
-            Control lbl = this.Controls.Find("lblTitle", true).FirstOrDefault()
-                       ?? this.Controls.Find("label1", true).FirstOrDefault(); // Đề phòng bạn đặt tên label là label1
-            if (lbl != null)
-            {
-                lbl.Text = "Trợ Lý UNETI " + _currentRole.ToUpper();
-            }
-
-            this.Load += (s, e) => {
-                if (!string.IsNullOrEmpty(AiSessionMemory.RtfChatHistory))
-                    rtbChatHistory.Rtf = AiSessionMemory.RtfChatHistory;
-                else
-                {
-                    AppendText("🤖 UNETI AI: ", Color.FromArgb(0, 120, 212), FontStyle.Bold);
-                    AppendText($"Hệ thống Thông minh sẵn sàng. Quyền truy cập: [{_currentRole.ToUpper()}]. Bạn cần tra cứu tài liệu hay hỗ trợ thông tin gì?\n\n", Color.FromArgb(32, 33, 36), FontStyle.Regular);
-                }
-            };
+            SetupByRole();
+            ShowWelcomeMessage();
         }
 
-        private void SetupDebugCheckbox()
+        // ═══════════════════════════════════════════════════════
+        // CÀI ĐẶT GIAO DIỆN THEO VAI TRÒ
+        // ═══════════════════════════════════════════════════════
+        private void SetupByRole()
         {
-            _chkDebugMode = new CheckBox { Text = "🛠 Xem Debug AI", AutoSize = true, Font = new Font("Segoe UI", 10, FontStyle.Italic), ForeColor = Color.DimGray, Cursor = Cursors.Hand };
-            if (this.Controls.ContainsKey("pnlTopTitle"))
+            switch (_role)
             {
-                var topPanel = this.Controls["pnlTopTitle"];
-                _chkDebugMode.Location = new Point(topPanel.Width - 180, 15);
-                _chkDebugMode.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-                topPanel.Controls.Add(_chkDebugMode);
+                case "LIBRARIAN":
+                    lblRoleName.Text = "Thủ Thư";
+                    lblHeaderTitle.Text = "Trợ Lý Thư Viện";
+                    lblAvatarIcon.Text = "📚";
+                    pnlAvatarWrap.BackColor = Color.FromArgb(26, 75, 132);
+                    btnSend.FillColor = Color.FromArgb(26, 75, 132);
+                    pnlInputBox.CustomBorderColor = Color.FromArgb(26, 75, 132);
+                    UpdateSuggestButtons("📚 Sách mượn nhiều nhất?", "⚠️ Ai đang quá hạn?", "📊 Thống kê hôm nay?");
+                    break;
+
+                case "Reader":
+                    lblRoleName.Text = "Độc Giả";
+                    lblHeaderTitle.Text = "Trợ Lý Độc Giả";
+                    lblAvatarIcon.Text = "🎓";
+                    pnlAvatarWrap.BackColor = Color.FromArgb(16, 137, 62);
+                    btnSend.FillColor = Color.FromArgb(16, 137, 62);
+                    pnlInputBox.CustomBorderColor = Color.FromArgb(16, 137, 62);
+                    UpdateSuggestButtons("📖 Tôi đang mượn sách gì?", "⏰ Sách nào sắp đến hạn?", "🔍 Tìm sách theo thể loại?");
+                    break;
+
+                case "ASSET_MANAGER":
+                    lblRoleName.Text = "Cán Bộ Thiết Bị";
+                    lblHeaderTitle.Text = "Trợ Lý Thiết Bị";
+                    lblAvatarIcon.Text = "🔧";
+                    pnlAvatarWrap.BackColor = Color.FromArgb(162, 84, 18);
+                    btnSend.FillColor = Color.FromArgb(162, 84, 18);
+                    pnlInputBox.CustomBorderColor = Color.FromArgb(162, 84, 18);
+                    UpdateSuggestButtons("🔧 Thiết bị cần bảo trì?", "❌ Thiết bị đang hỏng?", "📋 Lịch bảo trì tuần này?");
+                    break;
+
+                default: // Admin
+                    lblRoleName.Text = "Quản Trị Viên";
+                    lblHeaderTitle.Text = "Trợ Lý AI UNETI";
+                    lblAvatarIcon.Text = "🤖";
+                    pnlAvatarWrap.BackColor = Color.FromArgb(0, 120, 212);
+                    UpdateSuggestButtons("📚 Sách mượn nhiều nhất?", "⚠️ Thiết bị cần bảo trì?", "📊 Tổng quan hệ thống?");
+                    break;
             }
         }
 
+        private void UpdateSuggestButtons(string t1, string t2, string t3)
+        {
+            btnSuggest1.Text = t1;
+            btnSuggest2.Text = t2;
+            btnSuggest3.Text = t3;
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // TIN NHẮN CHÀO MỪNG
+        // ═══════════════════════════════════════════════════════
+        private void ShowWelcomeMessage()
+        {
+            string msg;
+            switch (_role)
+            {
+                case "LIBRARIAN":
+                    msg = "Xin chào Thủ thư! 👋\n\nTôi có thể giúp bạn:\n• Tra cứu sách và tình trạng bản sao\n• Xem danh sách độc giả quá hạn / nợ phạt\n• Thống kê lượt mượn và sách phổ biến\n\nBạn cần tra cứu gì không?";
+                    break;
+                case "Reader":
+                    msg = "Xin chào bạn đọc! 📖\n\nTôi có thể giúp bạn:\n• Xem sách đang mượn và ngày trả\n• Kiểm tra tiền phạt (nếu có)\n• Tìm kiếm sách theo thể loại\n\nBạn cần hỗ trợ gì?";
+                    break;
+                case "ASSET_MANAGER":
+                    msg = "Xin chào Cán bộ! 🔧\n\nTôi có thể giúp bạn:\n• Kiểm tra tình trạng thiết bị\n• Nhắc lịch bảo trì sắp đến\n• Thống kê thiết bị hỏng / cần sửa\n\nBạn muốn kiểm tra gì?";
+                    break;
+                default:
+                    msg = "Xin chào Admin! 🛡️\n\nTôi có toàn quyền truy cập hệ thống:\n• Thống kê thư viện & thiết bị\n• Báo cáo tổng hợp\n• Cảnh báo bất thường\n\nBạn cần xem báo cáo gì hôm nay?";
+                    break;
+            }
+            AppendAIBubble(msg);
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // SỰ KIỆN GỬI TIN NHẮN
+        // ═══════════════════════════════════════════════════════
         private async void btnSend_Click(object sender, EventArgs e)
         {
-            string question = txtQuestion.Text.Trim();
-            if (string.IsNullOrEmpty(question) || _isThinking) return;
+            await SendMessage();
+        }
 
-            AppendText("👤 Bạn: ", Color.FromArgb(100, 100, 100), FontStyle.Bold);
-            AppendText(question + "\n\n", Color.FromArgb(32, 33, 36), FontStyle.Regular);
-            txtQuestion.Clear();
+        private void txtQuestion_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter && !e.Shift)
+            {
+                e.SuppressKeyPress = true;
+                btnSend_Click(null, null);
+            }
+        }
 
-            _isThinking = true;
-            btnSend.Enabled = false;
-            var thinkingTask = ShowThinkingAnimation();
-            await ProcessLocalAI(question);
-            _isThinking = false;
-            btnSend.Enabled = true;
+        // Click vào gợi ý → tự điền vào ô nhập
+        private void btnSuggest_Click(object sender, EventArgs e)
+        {
+            var btn = sender as Guna.UI2.WinForms.Guna2Button;
+            if (btn == null) return;
+
+            // Bỏ icon emoji ở đầu
+            string text = btn.Text;
+            if (text.Length > 2) text = text.Substring(2).Trim();
+            txtQuestion.Text = text;
             txtQuestion.Focus();
         }
 
-        private async Task ShowThinkingAnimation()
+        private async Task SendMessage()
         {
-            int baseLen = 0;
-            this.Invoke(new Action(() => {
-                AppendText("🤖 UNETI AI: ", Color.FromArgb(0, 120, 212), FontStyle.Bold);
-                AppendText("Đang phân tích", Color.Gray, FontStyle.Italic);
-                baseLen = rtbChatHistory.TextLength;
-            }));
-            int dots = 0;
-            while (_isThinking)
-            {
-                this.Invoke(new Action(() => {
-                    rtbChatHistory.Select(baseLen, rtbChatHistory.TextLength - baseLen);
-                    rtbChatHistory.SelectedText = "";
-                    dots = (dots % 3) + 1;
-                    rtbChatHistory.AppendText(new string('.', dots));
-                }));
-                await Task.Delay(400);
-            }
-            this.Invoke(new Action(() => {
-                int startDelete = baseLen - 15;
-                if (startDelete >= 0 && rtbChatHistory.TextLength >= startDelete)
-                {
-                    rtbChatHistory.Select(startDelete, rtbChatHistory.TextLength - startDelete);
-                    rtbChatHistory.SelectedText = "";
-                }
-            }));
-        }
+            string question = txtQuestion.Text.Trim();
+            if (string.IsNullOrEmpty(question)) return;
 
-        private async Task ProcessLocalAI(string question)
-        {
+            // Hiện tin nhắn người dùng
+            AppendUserBubble(question);
+            txtQuestion.Clear();
+
+            // Khóa input, hiện typing
+            SetInputEnabled(false);
+            pnlTypingIndicator.Visible = true;
+
             try
             {
-                // ==================================================
-                // BƯỚC 1: PHÂN LOẠI CÂU HỎI THÀNH 3 NHÓM (SÁCH, THIẾT BỊ, THÔNG TIN)
-                // ==================================================
-                string extractPrompt = $@"Nhiệm vụ: Phân loại câu hỏi thuộc SÁCH, THIETBI, hay THONGTIN (hỏi nội quy, giờ mở cửa, luật mượn, chào hỏi).
-Ví dụ 1: 'tìm sách C#' -> KETQUA: SACH|C#
-Ví dụ 2: 'cho xem máy chiếu' -> KETQUA: THIETBI|máy chiếu
-Ví dụ 3: 'luật mượn sách thế nào' -> KETQUA: THONGTIN|luật mượn sách
-Ví dụ 4: 'xin chào' -> KETQUA: THONGTIN|xin chào
-
-Câu hỏi: '{question}'
-Chỉ in ra đúng 1 dòng KETQUA:";
-
-                string aiResultRaw = await SendToOllamaAPI(extractPrompt, 50, 0.0f);
-
-                string target = "SACH";
-                string keyword = question;
-
-                if (aiResultRaw.Contains("|"))
-                {
-                    string[] parts = aiResultRaw.Split(new[] { '|' }, 2);
-                    string category = parts[0].ToUpper();
-
-                    if (category.Contains("THIETBI") || category.Contains("THIẾT BỊ")) target = "THIETBI";
-                    else if (category.Contains("THONGTIN") || category.Contains("THÔNG TIN")) target = "THONGTIN";
-                    else target = "SACH";
-
-                    keyword = parts[1].Trim().Replace("'", "");
-                }
-                else
-                {
-                    // Fallback nếu AI trả lời lỗi
-                    if (question.ToLower().Contains("luật") || question.ToLower().Contains("nội quy") || question.ToLower().Contains("chào") || question.ToLower().Contains("phạt")) target = "THONGTIN";
-                    else if (question.ToLower().Contains("thiết bị") || question.ToLower().Contains("máy")) target = "THIETBI";
-                }
-
-                // Chặn quyền Quản lý thiết bị tìm sách (Nhưng vẫn cho phép hỏi THONGTIN)
-                if (_currentRole == "ThietBi" && target == "SACH") target = "THIETBI";
-
-                if (_chkDebugMode.Checked)
-                {
-                    AppendText($"   [DEBUG - AI Bóc tách]: {aiResultRaw} -> Chọn nhóm: {target}\n", Color.DarkOrange, FontStyle.Italic);
-                }
-
-                string dataText = "";
-
-                // ==================================================
-                // BƯỚC 2: XỬ LÝ THEO TỪNG NHÓM (CÓ DATABASE VÀ KHÔNG DATABASE)
-                // ==================================================
-                if (target == "THONGTIN")
-                {
-                    // [NHÓM THÔNG TIN]: GỌI AI TRẢ LỜI NHƯ NHÂN VIÊN CSKH DỰA VÀO NỘI QUY CÓ SẴN
-                    if (_chkDebugMode.Checked) AppendText("   [DEBUG]: Câu hỏi dạng thông tin, AI sẽ trả lời tự do không dùng Database.\n\n", Color.Teal, FontStyle.Italic);
-
-                    string chatPrompt = $@"Bạn là Trợ lý CSKH Thư viện UNETI. Hãy trả lời câu hỏi sau một cách lịch sự, thân thiện và ngắn gọn dựa vào nội quy sau.
-NỘI QUY THƯ VIỆN:
-{_libraryRules}
-
-Câu hỏi người dùng: {question}
-TRẢ LỜI BẰNG TIẾNG VIỆT:";
-
-                    // Cho AI sáng tạo 1 chút (temp=0.3) và cho phép trả lời dài (250 tokens)
-                    dataText = await SendToOllamaAPI(chatPrompt, 250, 0.3f);
-                }
-                else
-                {
-                    // [NHÓM SÁCH VÀ THIẾT BỊ]: TẠO LỆNH SQL VÀ TRUY VẤN
-                    string sql = "";
-                    if (target == "SACH")
-                    {
-                        sql = $"SELECT b.Title AS [Tên Sách], b.CabinetLocation AS [Vị trí], c.CategoryName AS [Thể Loại], b.Author AS [Tác Giả] FROM Book b JOIN BookCategory c ON b.CategoryID = c.CategoryID WHERE b.Title LIKE N'%{keyword}%' OR c.CategoryName LIKE N'%{keyword}%'";
-                    }
-                    else
-                    {
-                        sql = $"SELECT e.EquipmentName AS [Tên Thiết Bị], e.Condition AS [Tình Trạng], c.CategoryName AS [Loại] FROM Equipment e JOIN EquipmentCategory c ON e.CategoryID = c.CategoryID WHERE e.EquipmentName LIKE N'%{keyword}%' OR c.CategoryName LIKE N'%{keyword}%'";
-                    }
-
-                    if (_chkDebugMode.Checked) AppendText($"   [DEBUG - C# Sinh SQL]: {sql}\n", Color.Teal, FontStyle.Italic);
-
-                    try
-                    {
-                        DataTable dt = DataProvider.Instance.ExecuteQuery(sql);
-                        if (dt != null && dt.Rows.Count > 0)
-                        {
-                            dataText = $"Đây là thông tin {(target == "SACH" ? "Sách" : "Thiết bị")} bạn cần tìm:\n" + ConvertDataTableToText(dt);
-                        }
-                        else
-                        {
-                            dataText = $"Xin lỗi, hệ thống không tìm thấy {(target == "SACH" ? "sách" : "thiết bị")} nào khớp với từ khóa '{keyword}'.";
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        dataText = "Lỗi kết nối truy xuất cơ sở dữ liệu.";
-                        if (_chkDebugMode.Checked) AppendText($"   [DEBUG - LỖI SQL]: {ex.Message}\n", Color.Red, FontStyle.Italic);
-                    }
-                }
-
-                _isThinking = false;
-                await Task.Delay(400);
-
-                // IN KẾT QUẢ RA MÀN HÌNH CHAT
-                this.Invoke(new Action(() => {
-                    AppendText("🤖 UNETI AI: ", Color.FromArgb(0, 120, 212), FontStyle.Bold);
-                    AppendText(dataText.Replace("```", "").Trim() + "\n\n", Color.Black, FontStyle.Regular);
-                    AiSessionMemory.RtfChatHistory = rtbChatHistory.Rtf;
-                }));
+                string answer = await AIChatService.AskAsync(question, _role, _readerID);
+                pnlTypingIndicator.Visible = false;
+                AppendAIBubble(answer);
             }
             catch (Exception ex)
             {
-                _isThinking = false;
-                AppendText("⚠️ Lỗi AI: " + ex.Message + "\n\n", Color.Red, FontStyle.Italic);
+                pnlTypingIndicator.Visible = false;
+                AppendAIBubble("⚠️ Không thể kết nối đến AI. Lỗi: " + ex.Message);
             }
-        }
-
-        // ==================================================
-        // HÀM GỌI API ĐƯỢC TỐI ƯU HÓA (CHO CẢ CHẾ ĐỘ CHAT VÀ SQL)
-        // ==================================================
-        private async Task<string> SendToOllamaAPI(string prompt, int maxTokens = 50, float temp = 0.0f)
-        {
-            using (HttpClient client = new HttpClient())
+            finally
             {
-                client.Timeout = TimeSpan.FromMinutes(2);
-                var payload = new
-                {
-                    model = "uneti-bot",
-                    prompt = prompt,
-                    stream = false,
-                    options = new
-                    {
-                        temperature = temp,      // temp = 0 khi tách từ khóa, temp = 0.3 khi trả lời chat
-                        top_k = 1,
-                        num_predict = maxTokens  // Giới hạn độ dài trả lời
-                    }
-                };
-                var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
-
-                var response = await client.PostAsync("http://localhost:11434/api/generate", content);
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadAsStringAsync();
-                    return JObject.Parse(result)["response"]?.ToString() ?? "";
-                }
-                return "";
+                SetInputEnabled(true);
+                txtQuestion.Focus();
             }
         }
 
-        private string ConvertDataTableToText(DataTable dt)
+        private void SetInputEnabled(bool enabled)
         {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < Math.Min(dt.Rows.Count, 15); i++)
-            {
-                sb.Append("  • ");
-                foreach (DataColumn col in dt.Columns)
-                {
-                    sb.Append($"{col.ColumnName}: {dt.Rows[i][col]} | ");
-                }
-                if (sb.Length > 3) sb.Length -= 3;
-                sb.AppendLine();
-            }
-            return sb.ToString();
+            btnSend.Enabled = enabled;
+            txtQuestion.Enabled = enabled;
+            btnSend.FillColor = enabled
+                ? GetRoleColor()
+                : Color.FromArgb(180, 185, 195);
         }
 
-        private void AppendText(string text, Color color, FontStyle style)
+        // ═══════════════════════════════════════════════════════
+        // VẼ BUBBLE TIN NHẮN VÀO RICHTEXTBOX
+        // ═══════════════════════════════════════════════════════
+
+        private void AppendUserBubble(string message)
         {
-            if (rtbChatHistory.InvokeRequired) { rtbChatHistory.Invoke(new Action(() => AppendText(text, color, style))); return; }
-            rtbChatHistory.SelectionStart = rtbChatHistory.TextLength;
-            rtbChatHistory.SelectionColor = color;
-            rtbChatHistory.SelectionFont = new Font("Segoe UI", 11.5F, style);
-            rtbChatHistory.AppendText(text);
+            string time = DateTime.Now.ToString("HH:mm");
+
+            // Thêm khoảng cách
+            AppendText("\n", Color.Transparent, 6);
+
+            // Label "Bạn  HH:mm" — căn phải
+            AppendText("                                                                    ", Color.Transparent, 4);
+            AppendText($"Bạn  {time}\n", COLOR_LABEL_USER, 9, FontStyle.Bold);
+
+            // Bubble nội dung (giả lập bằng indent + màu)
+            AppendText("        ", Color.Transparent, 4); // indent trái
+            AppendText($" {message} \n", COLOR_USER_TEXT, 11,
+                       FontStyle.Regular, COLOR_USER_BG, true);
+
             rtbChatHistory.ScrollToCaret();
+        }
+
+        private void AppendAIBubble(string message)
+        {
+            string time = DateTime.Now.ToString("HH:mm");
+
+            AppendText("\n", Color.Transparent, 6);
+
+            // Label "🤖 AI  HH:mm"
+            AppendText($"🤖 AI  {time}\n", COLOR_LABEL_AI, 9, FontStyle.Bold);
+
+            // Bubble nội dung
+            AppendText($" {message} \n", COLOR_AI_TEXT, 11,
+                       FontStyle.Regular, COLOR_AI_BG, false);
+
+            rtbChatHistory.ScrollToCaret();
+        }
+
+        /// <summary>
+        /// Hàm helper: thêm text có màu chữ, font, màu nền vào RichTextBox
+        /// </summary>
+        private void AppendText(string text, Color foreColor, float fontSize,
+                                FontStyle style = FontStyle.Regular,
+                                Color? bgColor = null, bool isUser = false)
+        {
+            rtbChatHistory.SelectionStart = rtbChatHistory.TextLength;
+            rtbChatHistory.SelectionLength = 0;
+
+            rtbChatHistory.SelectionFont = new Font("Segoe UI", fontSize, style);
+
+            if (foreColor != Color.Transparent)
+                rtbChatHistory.SelectionColor = foreColor;
+
+            if (bgColor.HasValue)
+                rtbChatHistory.SelectionBackColor = bgColor.Value;
+            else
+                rtbChatHistory.SelectionBackColor = Color.FromArgb(245, 247, 250);
+
+            // Căn phải nếu là tin nhắn user
+            rtbChatHistory.SelectionAlignment = isUser
+                ? HorizontalAlignment.Right
+                : HorizontalAlignment.Left;
+
+            rtbChatHistory.AppendText(text);
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // HELPER: màu accent theo role
+        // ═══════════════════════════════════════════════════════
+        private Color GetRoleColor()
+        {
+            switch (_role)
+            {
+                case "LIBRARIAN": return Color.FromArgb(26, 75, 132);
+                case "Reader": return Color.FromArgb(16, 137, 62);
+                case "ASSET_MANAGER": return Color.FromArgb(162, 84, 18);
+                default: return Color.FromArgb(0, 120, 212);
+            }
         }
     }
 }

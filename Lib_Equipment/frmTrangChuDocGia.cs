@@ -76,7 +76,7 @@ namespace Lib_Equipment
         private void btnAI_Click(object sender, EventArgs e)
         {
             lblSectionTitle.Text = "🤖 Trợ lý AI UNETI - Hỗ trợ thông minh";
-            OpenChildForm(new FrmTroLyAI("DocGia")); // Mở Form AI
+            OpenChildForm(new FrmTroLyAI("Reader", currentReaderID));
         }
 
         private void OpenChildForm(Form childForm)
