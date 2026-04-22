@@ -6,6 +6,9 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Windows.Forms;
 
 namespace Lib_Equipment
@@ -76,17 +79,32 @@ namespace Lib_Equipment
         {
             if (e.RowIndex >= 0)
             {
-                selectedReaderID = dgvDocGia.Rows[e.RowIndex].Cells["Mã Độc giả"].Value.ToString();
+                DataGridViewRow row = dgvDocGia.Rows[e.RowIndex];
+
+                // 1. Gán các thông tin chữ
+                selectedReaderID = row.Cells["Mã Độc giả"].Value?.ToString();
                 txtMaDocGia.Text = selectedReaderID;
-                txtHoTen.Text = dgvDocGia.Rows[e.RowIndex].Cells["Họ và tên"].Value.ToString();
-                cboDonVi.Text = dgvDocGia.Rows[e.RowIndex].Cells["Khoa/Viện"].Value.ToString();
-                txtMail.Text = dgvDocGia.Rows[e.RowIndex].Cells["Email"].Value.ToString();
-                cboLoaiDocGia.Text = dgvDocGia.Rows[e.RowIndex].Cells["Loại thẻ"].Value.ToString();
-                cboTrangThai.Text = dgvDocGia.Rows[e.RowIndex].Cells["Trạng thái"].Value.ToString();
+                txtHoTen.Text = row.Cells["Họ và tên"].Value?.ToString();
+                txtMail.Text = row.Cells["Email"].Value?.ToString();
+
+                // 2. TÌM TÊN KHOA TRONG COMBOBOX (Quan trọng nhất)
+                string tenKhoaTrenBang = row.Cells["Khoa/Viện"].Value?.ToString();
+                // Lệnh này sẽ tìm đúng cái tên khoa đó trong danh sách của ComboBox
+                int index = cboDonVi.FindStringExact(tenKhoaTrenBang);
+                if (index != -1)
+                {
+                    cboDonVi.SelectedIndex = index;
+                }
+
+                // 3. Các thông tin khác
+                cboLoaiDocGia.Text = row.Cells["Loại thẻ"].Value?.ToString();
+
+                string trangThai = row.Cells["Trạng thái"].Value?.ToString();
+                cboTrangThai.Text = (trangThai == "CẤM VĨNH VIỄN") ? "Khóa" : trangThai;
+
                 txtMaDocGia.Enabled = false;
             }
         }
-
         private void btnThem_Click(object sender, EventArgs e)
         {
             string deptId = cboDonVi.SelectedValue?.ToString() ?? "";
@@ -199,19 +217,21 @@ namespace Lib_Equipment
                 // =====================================================================
                 // LẤY DỮ LIỆU ĐÃ CẬP NHẬT LÊN LƯỚI
                 // =====================================================================
-                string query = @"SELECT ReaderID AS [Mã Độc giả], 
-                       FullName AS [Họ và tên], 
-                       DepartmentID AS [Khoa/Viện], 
-                       ReaderType AS [Loại thẻ], 
-                       Email, 
-                       AcademicDebt AS [Công nợ (VNĐ)],
+                // Thay đổi câu query để lấy Tên khoa thay vì Mã khoa
+                string query = @"SELECT r.ReaderID AS [Mã Độc giả], 
+                       r.FullName AS [Họ và tên], 
+                       d.DepartmentName AS [Khoa/Viện], -- Lấy tên thay vì mã
+                       r.ReaderType AS [Loại thẻ], 
+                       r.Email, 
+                       r.AcademicDebt AS [Công nợ (VNĐ)],
                        CASE 
-                          WHEN IsPermanentlyBanned = 1 THEN N'CẤM VĨNH VIỄN' 
-                          WHEN Status = 1 THEN N'Hoạt động' 
+                          WHEN r.IsPermanentlyBanned = 1 THEN N'CẤM VĨNH VIỄN' 
+                          WHEN r.Status = 1 THEN N'Hoạt động' 
                           ELSE N'Đang bị khóa' 
                        END AS [Trạng thái]
-                FROM Reader 
-                WHERE IsDeleted = 0 OR IsDeleted IS NULL";
+                FROM Reader r
+                LEFT JOIN Department d ON r.DepartmentID = d.DepartmentID -- Join với bảng Khoa
+                WHERE r.IsDeleted = 0 OR r.IsDeleted IS NULL";
 
                 DataTable dt = DataProvider.Instance.ExecuteQuery(query);
                 dgvDocGia.DataSource = dt;
@@ -277,7 +297,141 @@ namespace Lib_Equipment
                 btnDebugMail.Enabled = true;
             }
         }
+        //In thẻ
+        private void btnInThe_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(selectedReaderID))
+            {
+                MessageBox.Show("Vui lòng chọn một độc giả từ danh sách để in thẻ!", "Thông báo");
+                return;
+            }
 
+            // Lấy thông tin từ các ô nhập liệu
+            string name = txtHoTen.Text;
+            string id = selectedReaderID;
+            string dept = cboDonVi.Text;
+            string type = cboLoaiDocGia.Text;
+            string email = txtMail.Text;
+
+            XuatTheThuVien(id, name, dept, type, email);
+        }
+
+        // 2. Hàm vẽ và xuất thẻ "Luxury"
+        private void XuatTheThuVien(string id, string name, string dept, string type, string email)
+        {
+            try
+            {
+                // Kích thước thẻ chuẩn ISO (Pixel 300 DPI)
+                int width = 1011;
+                int height = 638;
+
+                using (Bitmap bmp = new Bitmap(width, height))
+                {
+                    using (Graphics g = Graphics.FromImage(bmp))
+                    {
+                        g.SmoothingMode = SmoothingMode.AntiAlias;
+                        g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+                        g.Clear(Color.White);
+
+                        // --- 1. BO GÓC VÀ HEADER ---
+                        GraphicsPath path = new GraphicsPath();
+                        int radius = 40;
+                        path.AddArc(0, 0, radius, radius, 180, 90);
+                        path.AddArc(width - radius, 0, radius, radius, 270, 90);
+                        path.AddArc(width - radius, height - radius, radius, radius, 0, 90);
+                        path.AddArc(0, height - radius, radius, radius, 90, 90);
+                        path.CloseAllFigures();
+                        g.SetClip(path);
+
+                        // Header màu xanh UNETI
+                        LinearGradientBrush headerBrush = new LinearGradientBrush(new Point(0, 0), new Point(width, 140), Color.FromArgb(0, 51, 102), Color.FromArgb(0, 82, 165));
+                        g.FillRectangle(headerBrush, 0, 0, width, 140);
+
+                        // Font Times New Roman cho Header
+                        g.DrawString("THƯ VIỆN ĐẠI HỌC UNETI", new Font("Times New Roman", 32, FontStyle.Bold), Brushes.White, 40, 25);
+                        g.DrawString("UNIVERSITY OF ECONOMICS - TECHNOLOGY FOR INDUSTRIES", new Font("Times New Roman", 13), Brushes.LightGray, 40, 85);
+                        g.DrawString("LIBRARY CARD", new Font("Times New Roman", 13, FontStyle.Italic), Brushes.Khaki, 830, 20);
+
+                        // --- 2. VẼ MÃ VẠCH LÊN ĐẦU (Dưới Header) ---
+                        int xInfoStart = 350; // Điểm bắt đầu của khối thông tin bên phải
+                        int barcodeWidth = 620;
+                        int barcodeHeight = 100;
+                        int yBarcode = 160;
+
+                        Rectangle rectBarcode = new Rectangle(xInfoStart, yBarcode, barcodeWidth, barcodeHeight);
+                        g.FillRectangle(Brushes.White, rectBarcode);
+                        g.DrawRectangle(new Pen(Color.Black, 1), rectBarcode);
+
+                        // Vẽ vạch (Barcode Engine giả lập)
+                        Random rnd = new Random(id.GetHashCode());
+                        int currentX = rectBarcode.X + 15;
+                        while (currentX < rectBarcode.Right - 15)
+                        {
+                            int w = rnd.Next(2, 6);
+                            if (currentX + w > rectBarcode.Right - 15) break;
+                            g.FillRectangle(Brushes.Black, currentX, rectBarcode.Y + 10, w, rectBarcode.Height - 35);
+                            currentX += w + rnd.Next(1, 4);
+                        }
+                        // Mã số dưới mã vạch giữ OCR cho máy dễ đọc hoặc đổi Times tùy bạn (ở đây tớ để TNR 14)
+                        g.DrawString(id, new Font("Times New Roman", 14, FontStyle.Bold), Brushes.Black, xInfoStart + (barcodeWidth / 2) - 40, yBarcode + barcodeHeight - 22);
+
+                        // --- 3. VẼ ẢNH THẺ ĐẦY BÊN TRÁI ---
+                        int imgWidth = 280;
+                        int imgHeight = 370;
+                        int yContentStart = 160;
+                        g.DrawRectangle(new Pen(Color.FromArgb(200, 200, 200), 2), 40, yContentStart, imgWidth, imgHeight);
+                        g.FillRectangle(new SolidBrush(Color.FromArgb(252, 252, 252)), 41, yContentStart + 1, imgWidth - 2, imgHeight - 2);
+                        g.DrawString("ẢNH THẺ 3x4", new Font("Times New Roman", 16, FontStyle.Italic), Brushes.Silver, 95, yContentStart + 160);
+
+                        // --- 4. THÔNG TIN VĂN BẢN (TIMES NEW ROMAN - SIZE 16) ---
+                        // Thiết lập font đồng nhất theo ý bạn
+                        Font fontInfo = new Font("Times New Roman", 16, FontStyle.Bold);
+                        Font fontLabel = new Font("Times New Roman", 13, FontStyle.Regular);
+                        Brush labelBrush = Brushes.DimGray;
+                        Brush infoBrush = Brushes.Black;
+
+                        int yTextStart = 280;
+                        int lineGap = 85;
+
+                        // 1. Mã Sinh Viên
+                        g.DrawString("MÃ SINH VIÊN:", fontLabel, labelBrush, xInfoStart, yTextStart);
+                        g.DrawString(id, fontInfo, infoBrush, xInfoStart, yTextStart + 25);
+
+                        // 2. Họ và tên
+                        g.DrawString("HỌ VÀ TÊN:", fontLabel, labelBrush, xInfoStart, yTextStart + lineGap);
+                        g.DrawString(name.ToUpper(), fontInfo, infoBrush, xInfoStart, yTextStart + lineGap + 25);
+
+                        // 3. Khoa / Viện
+                        g.DrawString("KHOA / VIỆN:", fontLabel, labelBrush, xInfoStart, yTextStart + (lineGap * 2));
+                        // Dùng RectangleF để tự động xuống dòng nếu tên khoa dài
+                        RectangleF rectDept = new RectangleF(xInfoStart, yTextStart + (lineGap * 2) + 25, width - xInfoStart - 40, 70);
+                        g.DrawString(dept, fontInfo, infoBrush, rectDept);
+
+                        // 4. Email
+                        g.DrawString("EMAIL:", fontLabel, labelBrush, xInfoStart, yTextStart + (lineGap * 3));
+                        string displayEmail = string.IsNullOrEmpty(email) ? "Chưa cập nhật" : email;
+                        g.DrawString(displayEmail, fontInfo, infoBrush, xInfoStart, yTextStart + (lineGap * 3) + 25);
+
+                        // Trang trí thêm đường kẻ mỏng ở đáy thẻ cho Luxury
+                        g.DrawLine(new Pen(Color.FromArgb(0, 51, 102), 3), 40, height - 35, width - 40, height - 35);
+
+                        // Dòng ghi chú nhỏ - Dịch xuống cách đáy 25px
+                        g.DrawString("Thẻ có giá trị sử dụng trong suốt quá trình học tập và công tác tại trường.",
+                                     new Font("Times New Roman", 10, FontStyle.Italic),
+                                     Brushes.Gray, 40, height - 25);
+                    }
+
+                    // --- 5. LƯU VÀ MỞ FILE ---
+                    string folderPath = Path.Combine(Application.StartupPath, "TheThuVien_Uneti");
+                    if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+                    string filePath = Path.Combine(folderPath, $"Card_TNR_{id}.png");
+                    bmp.Save(filePath, ImageFormat.Png);
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(filePath) { UseShellExecute = true });
+                }
+            }
+            catch (Exception ex) { MessageBox.Show("Lỗi in thẻ: " + ex.Message); }
+        }
+        //end
         // TÍNH NĂNG MỚI: KÍCH ĐÚP CHUỘT MỞ HỒ SƠ LƯU VẾT
         private void dgvDocGia_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {

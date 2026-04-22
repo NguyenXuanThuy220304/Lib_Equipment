@@ -413,7 +413,7 @@ namespace Lib_Equipment
 
             DataTable dt = (DataTable)dgvSach.DataSource;
             if (dt != null) dt.DefaultView.RowFilter = "";
-
+            txtMaSach.Clear();
             selectedBookID = "";
             txtTenSach.Clear(); txtTacGia.Clear();
             txtNhaXuatBan.Clear(); txtNamXuatBan.Clear(); txtGiaSach.Clear();

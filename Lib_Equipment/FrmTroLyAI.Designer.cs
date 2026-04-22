@@ -6,109 +6,124 @@
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null)) { components.Dispose(); }
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
             base.Dispose(disposing);
         }
 
         private void InitializeComponent()
         {
-            this.pnlTop = new System.Windows.Forms.Panel();
-            this.lblTitle = new System.Windows.Forms.Label();
             this.rtbChatHistory = new System.Windows.Forms.RichTextBox();
+            this.pnlBottom = new System.Windows.Forms.Panel();
             this.txtQuestion = new Guna.UI2.WinForms.Guna2TextBox();
             this.btnSend = new Guna.UI2.WinForms.Guna2Button();
-            this.pnlTop.SuspendLayout();
+            this.pnlTopTitle = new System.Windows.Forms.Panel();
+            this.lblTitle = new System.Windows.Forms.Label();
+            this.pnlBottom.SuspendLayout();
+            this.pnlTopTitle.SuspendLayout();
             this.SuspendLayout();
             // 
-            // pnlTop
+            // rtbChatHistory
             // 
-            this.pnlTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.pnlTop.Controls.Add(this.lblTitle);
-            this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlTop.Location = new System.Drawing.Point(0, 0);
-            this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(800, 60);
-            this.pnlTop.TabIndex = 0;
+            this.rtbChatHistory.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.rtbChatHistory.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtbChatHistory.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtbChatHistory.Font = new System.Drawing.Font("Segoe UI", 11.5F);
+            this.rtbChatHistory.Location = new System.Drawing.Point(20, 75);
+            this.rtbChatHistory.Name = "rtbChatHistory";
+            this.rtbChatHistory.ReadOnly = true;
+            this.rtbChatHistory.Size = new System.Drawing.Size(1060, 545);
+            this.rtbChatHistory.TabIndex = 0;
+            this.rtbChatHistory.Text = "";
+            // 
+            // pnlBottom
+            // 
+            this.pnlBottom.BackColor = System.Drawing.Color.White;
+            this.pnlBottom.Controls.Add(this.txtQuestion);
+            this.pnlBottom.Controls.Add(this.btnSend);
+            this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlBottom.Location = new System.Drawing.Point(20, 620);
+            this.pnlBottom.Name = "pnlBottom";
+            this.pnlBottom.Padding = new System.Windows.Forms.Padding(0, 10, 0, 5);
+            this.pnlBottom.Size = new System.Drawing.Size(1060, 80);
+            this.pnlBottom.TabIndex = 1;
+            // 
+            // txtQuestion
+            // 
+            this.txtQuestion.BorderRadius = 20;
+            this.txtQuestion.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtQuestion.DefaultText = "";
+            this.txtQuestion.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtQuestion.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.txtQuestion.Location = new System.Drawing.Point(0, 10);
+            this.txtQuestion.Margin = new System.Windows.Forms.Padding(4, 5, 15, 5);
+            this.txtQuestion.Name = "txtQuestion";
+            this.txtQuestion.PasswordChar = '\0';
+            this.txtQuestion.PlaceholderText = "Nhập câu hỏi về nghiệp vụ hoặc dữ liệu UNETI...";
+            this.txtQuestion.SelectedText = "";
+            this.txtQuestion.Size = new System.Drawing.Size(890, 65);
+            this.txtQuestion.TabIndex = 0;
+            this.txtQuestion.TextOffset = new System.Drawing.Point(10, 0);
+            // 
+            // btnSend
+            // 
+            this.btnSend.BorderRadius = 20;
+            this.btnSend.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnSend.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(120)))), ((int)(((byte)(212)))));
+            this.btnSend.Font = new System.Drawing.Font("Segoe UI Semibold", 11F, System.Drawing.FontStyle.Bold);
+            this.btnSend.ForeColor = System.Drawing.Color.White;
+            this.btnSend.Location = new System.Drawing.Point(905, 10);
+            this.btnSend.Name = "btnSend";
+            this.btnSend.Size = new System.Drawing.Size(155, 65);
+            this.btnSend.TabIndex = 1;
+            this.btnSend.Text = "Gửi";
+            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
+            // 
+            // pnlTopTitle
+            // 
+            this.pnlTopTitle.Controls.Add(this.lblTitle);
+            this.pnlTopTitle.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlTopTitle.Location = new System.Drawing.Point(20, 20);
+            this.pnlTopTitle.Name = "pnlTopTitle";
+            this.pnlTopTitle.Size = new System.Drawing.Size(1060, 55);
+            this.pnlTopTitle.TabIndex = 2;
             // 
             // lblTitle
             // 
             this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            this.lblTitle.ForeColor = System.Drawing.Color.White;
-            this.lblTitle.Location = new System.Drawing.Point(20, 15);
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
+            this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(33)))), ((int)(((byte)(36)))));
+            this.lblTitle.Location = new System.Drawing.Point(-5, 5);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(374, 30);
+            this.lblTitle.Size = new System.Drawing.Size(325, 41);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "✨ TRỢ LÝ AI THƯ VIỆN UNETI";
-            // 
-            // rtbChatHistory
-            // 
-            this.rtbChatHistory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.rtbChatHistory.BackColor = System.Drawing.Color.White;
-            this.rtbChatHistory.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.rtbChatHistory.Font = new System.Drawing.Font("Segoe UI", 11.5F);
-            this.rtbChatHistory.Location = new System.Drawing.Point(20, 80);
-            this.rtbChatHistory.Name = "rtbChatHistory";
-            this.rtbChatHistory.ReadOnly = true;
-            this.rtbChatHistory.Size = new System.Drawing.Size(760, 420);
-            this.rtbChatHistory.TabIndex = 1;
-            this.rtbChatHistory.Text = "🤖 Trợ lý AI: Xin chào Thủ thư! Tôi có thể giúp gì cho bạn hôm nay? (Ví dụ: Hãy gợi ý cho tôi 5 cuốn sách về lập trình C#...)\n";
-            // 
-            // txtQuestion
-            // 
-            this.txtQuestion.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtQuestion.BorderRadius = 20;
-            this.txtQuestion.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txtQuestion.DefaultText = "";
-            this.txtQuestion.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.txtQuestion.ForeColor = System.Drawing.Color.Black;
-            this.txtQuestion.Location = new System.Drawing.Point(20, 520);
-            this.txtQuestion.Margin = new System.Windows.Forms.Padding(4);
-            this.txtQuestion.Name = "txtQuestion";
-            this.txtQuestion.PlaceholderText = "Nhập câu hỏi của bạn tại đây...";
-            this.txtQuestion.Size = new System.Drawing.Size(620, 50);
-            this.txtQuestion.TabIndex = 2;
-            this.txtQuestion.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtQuestion_KeyDown);
-            // 
-            // btnSend
-            // 
-            this.btnSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSend.BorderRadius = 20;
-            this.btnSend.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
-            this.btnSend.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnSend.ForeColor = System.Drawing.Color.White;
-            this.btnSend.Location = new System.Drawing.Point(650, 520);
-            this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(130, 50);
-            this.btnSend.TabIndex = 3;
-            this.btnSend.Text = "GỬI (Enter)";
-            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
+            this.lblTitle.Text = "Trợ Lý UNETI ADMIN";
             // 
             // FrmTroLyAI
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(244)))), ((int)(((byte)(247)))));
-            this.ClientSize = new System.Drawing.Size(800, 600);
-            this.Controls.Add(this.btnSend);
-            this.Controls.Add(this.txtQuestion);
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(1100, 720);
             this.Controls.Add(this.rtbChatHistory);
-            this.Controls.Add(this.pnlTop);
+            this.Controls.Add(this.pnlTopTitle);
+            this.Controls.Add(this.pnlBottom);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FrmTroLyAI";
-            this.Text = "Trợ lý AI";
-            this.pnlTop.ResumeLayout(false);
-            this.pnlTop.PerformLayout();
+            this.Padding = new System.Windows.Forms.Padding(20);
+            this.pnlBottom.ResumeLayout(false);
+            this.pnlTopTitle.ResumeLayout(false);
+            this.pnlTopTitle.PerformLayout();
             this.ResumeLayout(false);
         }
 
-        private System.Windows.Forms.Panel pnlTop;
-        private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.RichTextBox rtbChatHistory;
+        private System.Windows.Forms.Panel pnlBottom;
         private Guna.UI2.WinForms.Guna2TextBox txtQuestion;
         private Guna.UI2.WinForms.Guna2Button btnSend;
+        private System.Windows.Forms.Panel pnlTopTitle;
+        private System.Windows.Forms.Label lblTitle;
     }
 }

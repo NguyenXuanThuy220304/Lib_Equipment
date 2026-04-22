@@ -63,6 +63,26 @@ namespace Lib_Equipment.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap analytics {
+            get {
+                object obj = ResourceManager.GetObject("analytics", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Logo_ĐH_Kinh_tế_Kỹ_thuật_Công_nghiệp___UNETI {
+            get {
+                object obj = ResourceManager.GetObject("Logo ĐH Kinh tế Kỹ thuật Công nghiệp - UNETI", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap logo_u {
             get {
                 object obj = ResourceManager.GetObject("logo_u", resourceCulture);

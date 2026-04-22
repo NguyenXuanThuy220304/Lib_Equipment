@@ -138,8 +138,35 @@
             this.tabBaoTri.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvBaoTri)).EndInit();
             this.ResumeLayout(false);
-        }
+            //
+            //
+            //
+            // Khai báo thêm ở phần trên cùng của InitializeComponent:
+            this.tabDinhKy = new System.Windows.Forms.TabPage();
+            this.rtbDinhKy = new System.Windows.Forms.RichTextBox();
+            // THÊM DÒNG NÀY VÀO:
+            this.tabControlHoSo.Controls.Add(this.tabDinhKy);
 
+            // --- CẤU HÌNH TAB ĐỊNH KỲ ---
+            this.tabDinhKy.Controls.Add(this.rtbDinhKy);
+            this.tabDinhKy.Location = new System.Drawing.Point(4, 29);
+            this.tabDinhKy.Name = "tabDinhKy";
+            this.tabDinhKy.Padding = new System.Windows.Forms.Padding(15);
+            this.tabDinhKy.Size = new System.Drawing.Size(792, 337);
+            this.tabDinhKy.Text = " ⏰ Cảnh báo Định kỳ ";
+            this.tabDinhKy.UseVisualStyleBackColor = true;
+
+            // --- CẤU HÌNH Ô TEXT BOX LUXURY ---
+            this.rtbDinhKy.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(252)))), ((int)(((byte)(255)))));
+            this.rtbDinhKy.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtbDinhKy.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtbDinhKy.Location = new System.Drawing.Point(15, 15);
+            this.rtbDinhKy.Name = "rtbDinhKy";
+            this.rtbDinhKy.ReadOnly = true;
+            this.rtbDinhKy.Size = new System.Drawing.Size(762, 307);
+            this.rtbDinhKy.TabIndex = 0;
+            this.rtbDinhKy.Text = "";
+        }
         private System.Windows.Forms.Panel pnlTop;
         private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.Label lblTenThietBi;
@@ -148,5 +175,7 @@
         private System.Windows.Forms.DataGridView dgvLuanChuyen;
         private System.Windows.Forms.TabPage tabBaoTri;
         private System.Windows.Forms.DataGridView dgvBaoTri;
+        private System.Windows.Forms.TabPage tabDinhKy;
+        private System.Windows.Forms.RichTextBox rtbDinhKy;
     }
 }

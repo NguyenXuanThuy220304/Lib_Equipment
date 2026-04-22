@@ -82,7 +82,7 @@ namespace Lib_Equipment
             dgvThietBi.Columns.Add(cmbActual);
 
             // Căn chỉnh checkbox Header (Select All)
-            dgvThietBi.Controls.Add(headerCheckBox);
+            //dgvThietBi.Controls.Add(headerCheckBox);
             UpdateHeaderCheckBoxLocation();
         }
         private void UpdateHeaderCheckBoxLocation()
@@ -96,10 +96,10 @@ namespace Lib_Equipment
         {
             if (cboTuKhoa.SelectedValue != null && cboTuKhoa.SelectedValue is string)
             {
-                // Thêm điều kiện NOT IN (Đang bảo trì, Đã thanh lý)
+                // Thêm điều kiện NOT IN (Đang bảo trì, Đề xuất thanh lý)
                 string sql = @"SELECT EquipmentID, EquipmentName, Condition FROM Equipment 
                        WHERE DepartmentID = @dept AND IsDeleted = 0 
-                       AND Condition NOT IN (N'Đang bảo trì', N'Đã thanh lý')";
+                       AND Condition NOT IN (N'Đang bảo trì', N'Đề xuất thanh lý')";
 
                 DataTable dt = DataProvider.Instance.ExecuteQuery(sql, new SqlParameter[] { new SqlParameter("@dept", cboTuKhoa.SelectedValue.ToString()) });
 
@@ -149,6 +149,8 @@ namespace Lib_Equipment
                     int newId = Convert.ToInt32(DataProvider.Instance.ExecuteScalar(sqlRec, p1));
 
                     // Bước 2: Lưu chi tiết & Cập nhật tình trạng MỚI sau khi CB thiết bị xác nhận
+                    bool isToKho = cboDenKhoa.Text.ToLower().Contains("kho") && !cboDenKhoa.Text.ToLower().Contains("khoa");
+
                     foreach (DataGridViewRow row in dgvThietBi.Rows)
                     {
                         if (Convert.ToBoolean(row.Cells["chkSelect"].Value))
@@ -156,14 +158,27 @@ namespace Lib_Equipment
                             string eid = row.Cells["EquipmentID"].Value.ToString();
                             string verifiedStatus = row.Cells["ActualCondition"].Value.ToString();
 
-                            // Nếu về Kho thì set lại trạng thái đúng như CB xác nhận
-                            string targetStatus = verifiedStatus;
-                            // Nếu sang Khoa khác và máy vẫn 'Tốt' thì chuyển thành 'Đang sử dụng'
-                            if (!cboDenKhoa.Text.ToLower().Contains("kho") && verifiedStatus == "Tốt")
-                                targetStatus = "Đang sử dụng";
+                            string targetStatus = verifiedStatus; // Mặc định là giữ nguyên đánh giá của cán bộ
+
+                            // ======================================================================
+                            // LOGIC TỰ ĐỘNG ĐỔI TRẠNG THÁI THÔNG MINH NẾU MÁY KHÔNG HỎNG
+                            // ======================================================================
+                            if (verifiedStatus == "Tốt" || verifiedStatus == "Đang sử dụng")
+                            {
+                                if (isToKho)
+                                {
+                                    targetStatus = "Tốt"; // Nhập kho cất đi -> Trạng thái sẵn sàng "Tốt"
+                                }
+                                else
+                                {
+                                    targetStatus = "Đang sử dụng"; // Giao cho Khoa viện -> Bắt đầu "Đang sử dụng"
+                                }
+                            }
+                            // (Nếu verifiedStatus là "Hỏng nhẹ", "Cần bảo trì"... thì targetStatus tự động giữ nguyên lỗi đó)
 
                             string sqlDet = $@"INSERT INTO TransferDetail (TransferID, EquipmentID, ConditionAtTransfer) VALUES ({newId}, '{eid}', N'{verifiedStatus}');
-                                               UPDATE Equipment SET DepartmentID = '{cboDenKhoa.SelectedValue}', Condition = N'{targetStatus}', UpdatedAt = GETDATE() WHERE EquipmentID = '{eid}';";
+                           UPDATE Equipment SET DepartmentID = '{cboDenKhoa.SelectedValue}', Condition = N'{targetStatus}', UpdatedAt = GETDATE() WHERE EquipmentID = '{eid}';";
+
                             DataProvider.Instance.ExecuteNonQuery(sqlDet, null);
                         }
                     }
@@ -180,10 +195,10 @@ namespace Lib_Equipment
         // 5. PDF 3 BÊN: GIAO - NHẬN - CÁN BỘ THIẾT BỊ XÁC NHẬN
         private void XuatBienBanSmartPDF(string tu, string den)
         {
-            bool isReturn = den.ToLower().Contains("kho");
+            bool isReturn = den.ToLower().Contains("kho") && !den.ToLower().Contains("khoa");
+
             string fileName = isReturn ? "Bien_Ban_Thu_Hoi.pdf" : "Bien_Ban_Ban_Giao.pdf";
             SaveFileDialog sfd = new SaveFileDialog { Filter = "PDF Files|*.pdf", FileName = fileName, OverwritePrompt = false };
-
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 try

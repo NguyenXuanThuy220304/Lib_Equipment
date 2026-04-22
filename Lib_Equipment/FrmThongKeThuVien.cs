@@ -1,11 +1,13 @@
 ﻿using Lib_Equipment.BLL;
+using Lib_Equipment.Database;
 using System;
 using System.Data;
 using System.Drawing;
+using System.IO;
+using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
-using OfficeOpenXml;
-using System.IO;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace Lib_Equipment
 {
@@ -18,228 +20,325 @@ namespace Lib_Equipment
 
         private void FrmThongKeThuVien_Load(object sender, EventArgs e)
         {
-            LoadChartTopSach();
-            LoadChartTrangThaiKho();
-            LoadDanhSachDen();
-            LoadTheTongQuan();
+            FormatAllGrids();
+
+            // 1. Tải Dashboard (Thẻ số liệu & Biểu đồ)
+            LoadDashboardData();
+
+            // 2. Tải dữ liệu vào Lưới để chuẩn bị Xuất Excel
+            LoadDataToGrids();
+
+            // Mặc định chọn tab Dashboard
+            btnMenuDashboard.Checked = true;
         }
 
-        // ==========================================================
-        // 1. THẺ TỔNG QUAN
-        // ==========================================================
-        private void LoadTheTongQuan()
+        // ========================================================
+        // 0. SỰ KIỆN MENU ICON MỚI (BO GÓC LUXURY)
+        // ========================================================
+        private void btnMenuDashboard_CheckedChanged(object sender, EventArgs e) { if (btnMenuDashboard.Checked) tabControlThongKe.SelectedIndex = 0; }
+        private void btnMenuTopSach_CheckedChanged(object sender, EventArgs e) { if (btnMenuTopSach.Checked) tabControlThongKe.SelectedIndex = 1; }
+        private void btnMenuKhoSach_CheckedChanged(object sender, EventArgs e) { if (btnMenuKhoSach.Checked) tabControlThongKe.SelectedIndex = 2; }
+        private void btnMenuBlacklist_CheckedChanged(object sender, EventArgs e) { if (btnMenuBlacklist.Checked) tabControlThongKe.SelectedIndex = 3; }
+
+        // ========================================================
+        // 1. DASHBOARD - THẺ SỐ LIỆU & BIỂU ĐỒ
+        // ========================================================
+        private void LoadDashboardData()
         {
-            // Lấy dữ liệu qua BLL, không dùng SQL ở đây nữa
-            decimal tongPhat = ThongKeThuVienBLL.Instance.TinhTongTienPhatDuKien();
-
-            Label lblTongPhat = new Label();
-            lblTongPhat.Text = $"💰 TỔNG TIỀN PHẠT DỰ KIẾN THU: {tongPhat:N0} VNĐ";
-            lblTongPhat.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
-            lblTongPhat.ForeColor = Color.FromArgb(192, 57, 43);
-            lblTongPhat.AutoSize = true;
-            lblTongPhat.Location = new Point(10, 15);
-
-            pnlTop.Controls.Add(lblTongPhat);
-        }
-
-        // ==========================================================
-        // 2. BIỂU ĐỒ CỘT
-        // ==========================================================
-        private void LoadChartTopSach()
-        {
-            // Lấy dữ liệu qua BLL
-            DataTable dt = ThongKeThuVienBLL.Instance.LayDuLieuTopSach();
-
-            chartTopSach.Series.Clear();
-            chartTopSach.Titles.Clear();
-            chartTopSach.Legends.Clear();
-
-            Title title = new Title("TOP 10 ĐẦU SÁCH MƯỢN NHIỀU NHẤT");
-            title.Font = new Font("Segoe UI", 14, FontStyle.Bold);
-            title.ForeColor = Color.FromArgb(41, 128, 185);
-            chartTopSach.Titles.Add(title);
-
-            Legend legend = new Legend("Legend1");
-            legend.Enabled = true;
-            legend.Docking = Docking.Bottom;
-            legend.Alignment = StringAlignment.Center;
-            legend.Font = new Font("Segoe UI", 9);
-            legend.IsTextAutoFit = true;
-            chartTopSach.Legends.Add(legend);
-
-            Series series = new Series("TopSach");
-            series.ChartType = SeriesChartType.Column;
-            series.IsValueShownAsLabel = true;
-            series.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-            series.IsVisibleInLegend = false;
-
-            chartTopSach.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
-            chartTopSach.ChartAreas[0].AxisY.MajorGrid.LineColor = Color.Gainsboro;
-            chartTopSach.ChartAreas[0].AxisX.LabelStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-
-            for (int i = 0; i < dt.Rows.Count; i++)
+            try
             {
-                string tenDayDu = dt.Rows[i]["TenSach"].ToString();
-                double luotMuon = Convert.ToDouble(dt.Rows[i]["LuotMuon"]);
-                string maNgan = "S" + (i + 1);
+                // 1.1. THẺ SỐ LIỆU TỔNG QUAN (Đã khớp 100% với CSDL SQL.sql)
+                string sqlTongQuan = @"
+                    DECLARE @TongSach INT, @TongDocGia INT, @DangMuon INT;
+                    
+                    -- Đếm tổng số bản sao sách vật lý
+                    SELECT @TongSach = ISNULL(COUNT(*), 0) FROM BookCopy WHERE IsDeleted = 0 OR IsDeleted IS NULL; 
+                    
+                    -- Đếm tổng số độc giả
+                    SELECT @TongDocGia = ISNULL(COUNT(*), 0) FROM Reader WHERE IsDeleted = 0 OR IsDeleted IS NULL;
+                    
+                    -- Đếm số sách đang được mượn (chưa trả)
+                    SELECT @DangMuon = ISNULL(COUNT(*), 0) FROM BorrowDetail WHERE ReturnDate IS NULL;
+                    
+                    SELECT @TongSach AS TongSach, @TongDocGia AS TongDocGia, @DangMuon AS DangMuon;
+                ";
 
-                int ptIdx = series.Points.AddXY(maNgan, luotMuon);
+                try
+                {
+                    DataTable dtTongQuan = DataProvider.Instance.ExecuteQuery(sqlTongQuan);
+                    if (dtTongQuan.Rows.Count > 0)
+                    {
+                        lblTongSach.Text = dtTongQuan.Rows[0]["TongSach"].ToString();
+                        lblTongDocGia.Text = dtTongQuan.Rows[0]["TongDocGia"].ToString();
+                        lblDangMuon.Text = dtTongQuan.Rows[0]["DangMuon"].ToString();
+                    }
+                }
+                catch (Exception ex) { MessageBox.Show("Lỗi lấy thẻ số liệu: " + ex.Message); }
 
-                series.Points[ptIdx].LegendText = maNgan + ": " + tenDayDu;
-                series.Points[ptIdx].IsVisibleInLegend = true;
-                series.Points[ptIdx].Color = GetColorByOrder(i);
+                // Tiền phạt lấy từ BLL
+                decimal tongPhat = ThongKeThuVienBLL.Instance.TinhTongTienPhatDuKien();
+                lblTongPhat.Text = tongPhat.ToString("N0") + " đ";
+
+                // 1.2. BIỂU ĐỒ CỘT (TOP SÁCH)
+                DataTable dtTopSach = ThongKeThuVienBLL.Instance.LayDuLieuTopSach();
+                chartTopSach.Series.Clear();
+                Series seriesCol = new Series("TopSach");
+                seriesCol.ChartType = SeriesChartType.Column;
+                seriesCol.IsValueShownAsLabel = true;
+                seriesCol.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+
+                for (int i = 0; i < dtTopSach.Rows.Count; i++)
+                {
+                    string tenSach = dtTopSach.Rows[i]["TenSach"].ToString();
+                    if (tenSach.Length > 15) tenSach = tenSach.Substring(0, 15) + "..."; // Cắt ngắn tên nếu quá dài
+                    int ptIdx = seriesCol.Points.AddXY(tenSach, Convert.ToDouble(dtTopSach.Rows[i]["LuotMuon"]));
+                    seriesCol.Points[ptIdx].Color = GetColorByOrder(i);
+                }
+                chartTopSach.Series.Add(seriesCol);
+                chartTopSach.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+                chartTopSach.Titles.Clear();
+                chartTopSach.Titles.Add(new Title("TOP 10 SÁCH MƯỢN NHIỀU NHẤT", Docking.Top, new Font("Segoe UI", 14, FontStyle.Bold), Color.FromArgb(26, 75, 132)));
+
+                // 1.3. BIỂU ĐỒ TRÒN (TRẠNG THÁI KHO)
+                DataTable dtTrangThai = ThongKeThuVienBLL.Instance.LayDuLieuTrangThaiKho();
+                chartTrangThai.Series.Clear();
+                Series seriesPie = new Series("Trạng thái");
+                seriesPie.ChartType = SeriesChartType.Doughnut;
+                seriesPie.IsValueShownAsLabel = true;
+                seriesPie.LabelForeColor = Color.White;
+                seriesPie.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+
+                foreach (DataRow row in dtTrangThai.Rows)
+                {
+                    string status = row["TrangThai"].ToString();
+                    int pt = seriesPie.Points.AddXY(status, Convert.ToInt32(row["SoLuong"]));
+                    if (status == "Có sẵn") seriesPie.Points[pt].Color = Color.FromArgb(46, 204, 113);
+                    else if (status == "Đang mượn") seriesPie.Points[pt].Color = Color.FromArgb(241, 196, 15);
+                    else if (status == "Hỏng") seriesPie.Points[pt].Color = Color.FromArgb(230, 126, 34);
+                    else seriesPie.Points[pt].Color = Color.FromArgb(231, 76, 60);
+                }
+                chartTrangThai.Series.Add(seriesPie);
+                chartTrangThai.Titles.Clear();
+                chartTrangThai.Titles.Add(new Title("TỶ LỆ KHO SÁCH", Docking.Top, new Font("Segoe UI", 14, FontStyle.Bold), Color.FromArgb(26, 75, 132)));
             }
-
-            chartTopSach.Series.Add(series);
-            chartTopSach.Invalidate();
+            catch (Exception ex) { MessageBox.Show("Lỗi load Dashboard: " + ex.Message); }
         }
 
         private Color GetColorByOrder(int i)
         {
-            Color[] palette = {
-                Color.FromArgb(52, 152, 219), Color.FromArgb(46, 204, 113),
-                Color.FromArgb(155, 89, 182), Color.FromArgb(241, 196, 15),
-                Color.FromArgb(231, 76, 60), Color.FromArgb(26, 188, 156),
-                Color.FromArgb(52, 73, 94), Color.FromArgb(230, 126, 34),
-                Color.FromArgb(149, 165, 166), Color.FromArgb(127, 140, 141)
-            };
+            Color[] palette = { Color.FromArgb(52, 152, 219), Color.FromArgb(46, 204, 113), Color.FromArgb(155, 89, 182), Color.FromArgb(241, 196, 15), Color.FromArgb(231, 76, 60) };
             return palette[i % palette.Length];
         }
 
-        // ==========================================================
-        // 3. BIỂU ĐỒ BÁNH
-        // ==========================================================
-        private void LoadChartTrangThaiKho()
+        // ========================================================
+        // 2. CẤU HÌNH LƯỚI & ĐỔ DỮ LIỆU
+        // ========================================================
+        private void FormatAllGrids()
         {
-            // Lấy dữ liệu qua BLL
-            DataTable dt = ThongKeThuVienBLL.Instance.LayDuLieuTrangThaiKho();
-
-            chartTrangThai.Series.Clear();
-            chartTrangThai.Titles.Clear();
-            chartTrangThai.Titles.Add("TỶ LỆ TRẠNG THÁI KHO SÁCH");
-            chartTrangThai.Titles[0].Font = new Font("Segoe UI", 12, FontStyle.Bold);
-
-            Series series = new Series("Trạng thái");
-            series.ChartType = SeriesChartType.Doughnut;
-            series["DoughnutRadius"] = "50";
-            series.IsValueShownAsLabel = true;
-            series.Label = "#VALX: #PERCENT{P0}";
-            series.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-
-            foreach (DataRow row in dt.Rows)
+            DataGridView[] grids = { dgvTopSach, dgvKhoSach, dgvBlacklist };
+            foreach (var dgv in grids)
             {
-                string status = row["TrangThai"].ToString();
-                int val = Convert.ToInt32(row["SoLuong"]);
-                int ptIdx = series.Points.AddXY(status, val);
-
-                if (status == "Có sẵn") series.Points[ptIdx].Color = Color.FromArgb(46, 204, 113);
-                else if (status == "Đang mượn") series.Points[ptIdx].Color = Color.FromArgb(241, 196, 15);
-                else if (status == "Hỏng") series.Points[ptIdx].Color = Color.FromArgb(230, 126, 34);
-                else if (status == "Mất") series.Points[ptIdx].Color = Color.FromArgb(231, 76, 60);
+                dgv.AllowUserToAddRows = false; dgv.ReadOnly = true;
+                dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+                dgv.BackgroundColor = Color.White; dgv.BorderStyle = BorderStyle.None;
+                dgv.EnableHeadersVisualStyles = false;
+                dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(26, 75, 132);
+                dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+                dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+                dgv.ColumnHeadersHeight = 45;
+                dgv.DefaultCellStyle.Font = new Font("Segoe UI", 11F);
+                dgv.RowTemplate.Height = 40;
             }
-            chartTrangThai.Series.Add(series);
-            chartTrangThai.Legends[0].Font = new Font("Segoe UI", 10);
+
+            // Cấu hình màu đỏ riêng cho Blacklist
+            dgvBlacklist.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(192, 57, 43);
         }
 
-        // ==========================================================
-        // 4. LƯỚI DANH SÁCH ĐEN
-        // ==========================================================
-        private void LoadDanhSachDen()
+        // ========================================================
+        // HÀM MỚI ĐƯỢC THÊM VÀO: TỰ ĐỘNG VẼ HEADER CHO BẢNG
+        // ========================================================
+        private void AddHeaderAboveGrid(DataGridView dgv, string titleText, string panelName, Color? titleColor = null)
         {
-            // Lấy dữ liệu qua BLL
-            DataTable dt = ThongKeThuVienBLL.Instance.LayDuLieuDanhSachDen();
-            dgvBlacklist.DataSource = dt;
-
-            dgvBlacklist.EnableHeadersVisualStyles = false;
-            dgvBlacklist.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(192, 57, 43);
-            dgvBlacklist.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            dgvBlacklist.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10.5F, FontStyle.Bold);
-            dgvBlacklist.ColumnHeadersHeight = 45;
-
-            if (dgvBlacklist.Columns.Contains("Tiền phạt dự kiến (VNĐ)"))
+            if (dgv.Parent != null && !dgv.Parent.Controls.ContainsKey(panelName))
             {
-                foreach (DataGridViewRow row in dgvBlacklist.Rows)
+                Guna.UI2.WinForms.Guna2Panel pnlHeader = new Guna.UI2.WinForms.Guna2Panel();
+                pnlHeader.Name = panelName;
+                pnlHeader.Height = 60;
+                pnlHeader.Dock = DockStyle.Top;
+                pnlHeader.FillColor = Color.FromArgb(240, 248, 255);
+                pnlHeader.CustomBorderColor = Color.LightGray;
+                pnlHeader.CustomBorderThickness = new Padding(0, 0, 0, 2);
+
+                Label lblTitle = new Label();
+                lblTitle.Text = titleText;
+                lblTitle.Font = new Font("Segoe UI", 15, FontStyle.Bold);
+                lblTitle.ForeColor = titleColor ?? Color.FromArgb(0, 51, 102);
+                lblTitle.Dock = DockStyle.Fill;
+                lblTitle.TextAlign = ContentAlignment.MiddleCenter;
+                lblTitle.BackColor = Color.Transparent;
+
+                pnlHeader.Controls.Add(lblTitle);
+                dgv.Parent.Controls.Add(pnlHeader);
+                pnlHeader.SendToBack();
+            }
+        }
+
+        private void LoadDataToGrids()
+        {
+            try
+            {
+                // Gọi hàm vẽ Tiêu đề cho 3 bảng vừa mới thêm
+                AddHeaderAboveGrid(dgvTopSach, "TOP 10 SÁCH MƯỢN NHIỀU NHẤT", "HeaderTopSach");
+                AddHeaderAboveGrid(dgvKhoSach, "TÌNH TRẠNG KHO SÁCH", "HeaderKhoSach");
+                AddHeaderAboveGrid(dgvBlacklist, "DANH SÁCH ĐEN ĐỘC GIẢ NỢ PHẠT", "HeaderBlacklist", Color.FromArgb(192, 57, 43));
+
+                // Dùng chung dữ liệu từ BLL để đổ vào Grid
+                dgvTopSach.DataSource = ThongKeThuVienBLL.Instance.LayDuLieuTopSach();
+                dgvKhoSach.DataSource = ThongKeThuVienBLL.Instance.LayDuLieuTrangThaiKho();
+
+                DataTable dtBlacklist = ThongKeThuVienBLL.Instance.LayDuLieuDanhSachDen();
+                dgvBlacklist.DataSource = dtBlacklist;
+
+                if (dgvBlacklist.Columns.Contains("Tiền phạt dự kiến (VNĐ)"))
                 {
-                    row.Cells["Tiền phạt dự kiến (VNĐ)"].Style.Format = "N0";
-                    row.Cells["Tiền phạt dự kiến (VNĐ)"].Style.ForeColor = Color.Red;
-                    row.Cells["Tiền phạt dự kiến (VNĐ)"].Style.Font = new Font("Segoe UI", 10.5F, FontStyle.Bold);
+                    dgvBlacklist.Columns["Tiền phạt dự kiến (VNĐ)"].DefaultCellStyle.Format = "N0";
+                    dgvBlacklist.Columns["Tiền phạt dự kiến (VNĐ)"].DefaultCellStyle.ForeColor = Color.Red;
+                    dgvBlacklist.Columns["Tiền phạt dự kiến (VNĐ)"].DefaultCellStyle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
                 }
             }
+            catch (Exception ex) { MessageBox.Show("Lỗi tải dữ liệu lưới: " + ex.Message); }
         }
 
-        // ==========================================================
-        // 5. XUẤT EXCEL
-        // ==========================================================
-        private void btnXuatExcelThuVien_Click(object sender, EventArgs e)
+        // ========================================================
+        // 3. XUẤT EXCEL CHỐNG LỖI TUYỆT ĐỐI 100% (DÙNG XML SPREADSHEET NATIVE)
+        // Không dùng Interop, bỏ qua mọi lỗi của MS Office
+        // ========================================================
+        private void btnXuatExcelAll_Click(object sender, EventArgs e)
         {
-            if (dgvBlacklist.Rows.Count == 0)
+            if (dgvTopSach.Rows.Count == 0 && dgvKhoSach.Rows.Count == 0 && dgvBlacklist.Rows.Count == 0)
             {
-                MessageBox.Show("Không có dữ liệu độc giả quá hạn để xuất!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Chưa có dữ liệu để xuất báo cáo!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Title = "Lưu báo cáo Danh sách đen";
-            sfd.Filter = "Excel Workbook (*.xlsx)|*.xlsx";
-            sfd.FileName = $"BaoCao_DanhSachDen_{DateTime.Now:ddMMyyyy}.xlsx";
+            sfd.Filter = "Excel File (*.xls)|*.xls";
+            sfd.Title = "Lưu báo cáo Thống kê Thư viện";
+            sfd.FileName = "BaoCao_ThuVien_" + DateTime.Now.ToString("ddMMyyyy_HHmm") + ".xls";
 
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
-                    Microsoft.Office.Interop.Excel._Application app = new Microsoft.Office.Interop.Excel.Application();
-                    Microsoft.Office.Interop.Excel._Workbook workbook = app.Workbooks.Add(Type.Missing);
-                    Microsoft.Office.Interop.Excel._Worksheet worksheet = null;
-                    app.Visible = false;
-
-                    worksheet = workbook.Sheets["Sheet1"];
-                    worksheet = workbook.ActiveSheet;
-                    worksheet.Name = "DanhSachDen";
-
-                    worksheet.Cells[1, 1] = "BÁO CÁO DANH SÁCH ĐỘC GIẢ NỢ SÁCH QUÁ HẠN";
-                    worksheet.Range[worksheet.Cells[1, 1], worksheet.Cells[1, 4]].Merge();
-                    worksheet.Range[worksheet.Cells[1, 1], worksheet.Cells[1, 4]].Font.Bold = true;
-                    worksheet.Range[worksheet.Cells[1, 1], worksheet.Cells[1, 4]].Font.Size = 14;
-                    worksheet.Range[worksheet.Cells[1, 1], worksheet.Cells[1, 4]].Font.Color = ColorTranslator.ToOle(Color.Red);
-                    worksheet.Range[worksheet.Cells[1, 1], worksheet.Cells[1, 4]].HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
-
-                    for (int i = 1; i < dgvBlacklist.Columns.Count + 1; i++)
+                    // Tự tay Code C# biên dịch ra cấu trúc lõi của file Excel
+                    using (StreamWriter sw = new StreamWriter(sfd.FileName, false, Encoding.UTF8))
                     {
-                        worksheet.Cells[3, i] = dgvBlacklist.Columns[i - 1].HeaderText;
-                        worksheet.Cells[3, i].Font.Bold = true;
-                        worksheet.Cells[3, i].Interior.Color = ColorTranslator.ToOle(Color.LightGray);
-                        worksheet.Cells[3, i].Borders.LineStyle = Microsoft.Office.Interop.Excel.XlLineStyle.xlContinuous;
+                        sw.WriteLine("<?xml version=\"1.0\"?>");
+                        sw.WriteLine("<?mso-application progid=\"Excel.Sheet\"?>");
+                        sw.WriteLine("<Workbook xmlns=\"urn:schemas-microsoft-com:office:spreadsheet\"");
+                        sw.WriteLine(" xmlns:o=\"urn:schemas-microsoft-com:office:office\"");
+                        sw.WriteLine(" xmlns:x=\"urn:schemas-microsoft-com:office:excel\"");
+                        sw.WriteLine(" xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\">");
+
+                        // ĐỊNH NGHĨA MÀU SẮC (STYLES)
+                        sw.WriteLine(" <Styles>");
+                        sw.WriteLine("  <Style ss:ID=\"Title\">");
+                        sw.WriteLine("   <Font ss:Bold=\"1\" ss:Size=\"16\" ss:Color=\"#1A4B84\"/>");
+                        sw.WriteLine("   <Alignment ss:Horizontal=\"Center\" ss:Vertical=\"Center\"/>");
+                        sw.WriteLine("  </Style>");
+
+                        sw.WriteLine("  <Style ss:ID=\"HeaderBlue\">");
+                        sw.WriteLine("   <Font ss:Bold=\"1\" ss:Color=\"#FFFFFF\"/>");
+                        sw.WriteLine("   <Interior ss:Color=\"#1A4B84\" ss:Pattern=\"Solid\"/>");
+                        sw.WriteLine("   <Borders><Border ss:Position=\"Bottom\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/><Border ss:Position=\"Left\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/><Border ss:Position=\"Right\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/><Border ss:Position=\"Top\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/></Borders>");
+                        sw.WriteLine("  </Style>");
+
+                        sw.WriteLine("  <Style ss:ID=\"HeaderRed\">");
+                        sw.WriteLine("   <Font ss:Bold=\"1\" ss:Color=\"#FFFFFF\"/>");
+                        sw.WriteLine("   <Interior ss:Color=\"#C0392B\" ss:Pattern=\"Solid\"/>");
+                        sw.WriteLine("   <Borders><Border ss:Position=\"Bottom\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/><Border ss:Position=\"Left\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/><Border ss:Position=\"Right\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/><Border ss:Position=\"Top\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/></Borders>");
+                        sw.WriteLine("  </Style>");
+
+                        sw.WriteLine("  <Style ss:ID=\"NormalCell\">");
+                        sw.WriteLine("   <Borders><Border ss:Position=\"Bottom\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/><Border ss:Position=\"Left\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/><Border ss:Position=\"Right\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/><Border ss:Position=\"Top\" ss:LineStyle=\"Continuous\" ss:Weight=\"1\"/></Borders>");
+                        sw.WriteLine("  </Style>");
+                        sw.WriteLine(" </Styles>");
+
+                        // TẠO 3 SHEET BẰNG CODE
+                        WriteGridToXml(sw, dgvTopSach, "Top_Sach", "TOP 10 SÁCH MƯỢN NHIỀU NHẤT", "HeaderBlue");
+                        WriteGridToXml(sw, dgvKhoSach, "Kho_Sach", "TÌNH TRẠNG KHO SÁCH", "HeaderBlue");
+                        WriteGridToXml(sw, dgvBlacklist, "DanhSach_Den", "DANH SÁCH ĐEN ĐỘC GIẢ NỢ", "HeaderRed");
+
+                        sw.WriteLine("</Workbook>");
                     }
 
-                    for (int i = 0; i < dgvBlacklist.Rows.Count; i++)
-                    {
-                        for (int j = 0; j < dgvBlacklist.Columns.Count; j++)
-                        {
-                            worksheet.Cells[i + 4, j + 1] = dgvBlacklist.Rows[i].Cells[j].Value?.ToString();
-                            worksheet.Cells[i + 4, j + 1].Borders.LineStyle = Microsoft.Office.Interop.Excel.XlLineStyle.xlContinuous;
-                        }
-                    }
-
-                    worksheet.Columns.AutoFit();
-
-                    workbook.SaveAs(sfd.FileName);
-                    workbook.Close();
-                    app.Quit();
-
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet);
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(workbook);
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(app);
-
-                    if (MessageBox.Show("Xuất báo cáo Excel thành công! Mở file ngay?", "Hoàn tất", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                    if (MessageBox.Show("Xuất báo cáo thành công tuyệt đối!\nBạn có muốn mở file ngay bây giờ không?", "Hoàn tất", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                     {
                         System.Diagnostics.Process.Start(sfd.FileName);
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Lỗi xuất Excel (Lưu ý máy phải cài sẵn MS Office): \n" + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Lỗi ghi file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        // HÀM HỖ TRỢ BIÊN DỊCH LƯỚI THÀNH XML
+        private void WriteGridToXml(StreamWriter sw, DataGridView dgv, string sheetName, string title, string headerStyle)
+        {
+            if (dgv.Rows.Count == 0) return;
+
+            sw.WriteLine($" <Worksheet ss:Name=\"{sheetName}\">");
+            sw.WriteLine("  <Table>");
+
+            // Thiết lập độ rộng cột
+            for (int i = 0; i < dgv.Columns.Count; i++)
+            {
+                sw.WriteLine("   <Column ss:AutoFitWidth=\"1\" ss:Width=\"150\"/>");
+            }
+
+            // Dòng 1
+            sw.WriteLine("   <Row>");
+            sw.WriteLine("    <Cell><Data ss:Type=\"String\">TRƯỜNG ĐH KINH TẾ - KỸ THUẬT CÔNG NGHIỆP</Data></Cell>");
+            sw.WriteLine("   </Row>");
+            sw.WriteLine("   <Row></Row>");
+
+            // Dòng 3 (Tiêu đề)
+            sw.WriteLine("   <Row ss:Height=\"25\">");
+            sw.WriteLine($"    <Cell ss:MergeAcross=\"{dgv.Columns.Count - 1}\" ss:StyleID=\"Title\"><Data ss:Type=\"String\">{title}</Data></Cell>");
+            sw.WriteLine("   </Row>");
+            sw.WriteLine("   <Row></Row>");
+
+            // Cột Header
+            sw.WriteLine("   <Row ss:Height=\"20\">");
+            for (int i = 0; i < dgv.Columns.Count; i++)
+            {
+                string headerText = dgv.Columns[i].HeaderText.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
+                sw.WriteLine($"    <Cell ss:StyleID=\"{headerStyle}\"><Data ss:Type=\"String\">{headerText}</Data></Cell>");
+            }
+            sw.WriteLine("   </Row>");
+
+            // Data
+            for (int i = 0; i < dgv.Rows.Count; i++)
+            {
+                sw.WriteLine("   <Row>");
+                for (int j = 0; j < dgv.Columns.Count; j++)
+                {
+                    string val = dgv.Rows[i].Cells[j].Value?.ToString() ?? "";
+                    val = val.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;"); // Lọc ký tự đặc biệt chống lỗi
+                    sw.WriteLine($"    <Cell ss:StyleID=\"NormalCell\"><Data ss:Type=\"String\">{val}</Data></Cell>");
+                }
+                sw.WriteLine("   </Row>");
+            }
+
+            sw.WriteLine("  </Table>");
+            sw.WriteLine(" </Worksheet>");
+        }
+
+        private void btnMenuTopSach_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

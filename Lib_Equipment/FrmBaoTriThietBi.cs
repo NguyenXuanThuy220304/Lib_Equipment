@@ -3,6 +3,7 @@ using Lib_Equipment.Helpers;
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Lib_Equipment
@@ -18,13 +19,15 @@ namespace Lib_Equipment
         {
             LoadEquipment();
             LoadNextID();
-            txtMaTB.ReadOnly = true;
             txtTenTB.ReadOnly = true;
             txtMaPhieu.Enabled = false;
-
+            txtTenTB.BackColor = Color.WhiteSmoke;
+            txtMaPhieu.Text = "BT_" + DateTime.Now.ToString("yyyyMMdd_HHmm");
+            txtMaPhieu.ReadOnly = true;
+            txtMaTB.Focus();
             cboHanhDong.Items.Clear();
             cboHanhDong.Items.Add("Đang bảo trì");
-            cboHanhDong.Items.Add("Đã thanh lý");
+            cboHanhDong.Items.Add("Đề xuất thanh lý");
             cboHanhDong.StartIndex = 0;
         }
 
@@ -135,6 +138,107 @@ namespace Lib_Equipment
             txtVendor.Clear();
             txtCost.Clear();
             txtDescription.Clear();
+        }
+        double tempGiaNhap = 0;
+        DateTime tempNgayNhap = DateTime.Now; // Biến lưu ngày nhập thiết bị
+
+        // 1. HÀM TÍNH GIÁ THANH LÝ (Theo đúng công thức mới)
+        private double TinhGiaThanhLy(double giaGoc, DateTime ngayNhap, double chiPhiSua)
+        {
+            int soNam = DateTime.Now.Year - ngayNhap.Year;
+            if (soNam < 0) soNam = 0;
+
+            double tiLeThuHoi = 0;
+
+            // 0-5 năm: 5% | 5-10 năm: 10% | > 10 năm: 15%
+            if (soNam <= 5) tiLeThuHoi = 0.05;
+            else if (soNam <= 10) tiLeThuHoi = 0.10;
+            else tiLeThuHoi = 0.15;
+
+            // Giá thanh lý = (Tỷ lệ * Giá nhập) + 10% phí bảo trì
+            double giaThanhLy = (giaGoc * tiLeThuHoi) + (chiPhiSua * 0.25);
+
+            // Đảm bảo giá thu hồi không bị âm (nếu phí sửa quá cao thì cùng lắm là cho không đồng nát)
+            return giaThanhLy > 0 ? giaThanhLy : 0;
+        }
+
+        // 2. LOGIC KIỂM TRA THỜI GIAN NHẬP LÂU KHI BẮN MÃ MÁY
+        private void txtMaTB_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                string maTB = txtMaTB.Text.Trim();
+                if (string.IsNullOrEmpty(maTB)) return;
+
+                string query = "SELECT EquipmentName, Condition, PurchasePrice, ImportDate FROM Equipment WHERE EquipmentID = @id";
+                try
+                {
+                    DataTable dt = DataProvider.Instance.ExecuteQuery(query, new SqlParameter[] { new SqlParameter("@id", maTB) });
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        txtTenTB.Text = dt.Rows[0]["EquipmentName"].ToString();
+
+                        double.TryParse(dt.Rows[0]["PurchasePrice"].ToString(), out tempGiaNhap);
+                        tempNgayNhap = Convert.ToDateTime(dt.Rows[0]["ImportDate"]);
+
+                        int soNamSuDung = DateTime.Now.Year - tempNgayNhap.Year;
+                        string condition = dt.Rows[0]["Condition"].ToString();
+
+                        // ĐIỀU KIỆN 1: Nếu thời gian nhập quá lâu (ví dụ > 10 năm) -> Tự động đề xuất thanh lý
+                        if (soNamSuDung >= 10)
+                        {
+                            cboHanhDong.Text = "Đề xuất thanh lý";
+                            txtDescription.Text = $"Máy đã sử dụng {soNamSuDung} năm. Đạt niên hạn thanh lý.";
+                            txtDescription.ForeColor = Color.DarkOrange;
+                        }
+                        else if (condition == "Hỏng" || condition == "Cần bảo trì")
+                        {
+                            cboHanhDong.Text = "Đang bảo trì";
+                            txtDescription.Clear();
+                        }
+
+                        txtCost.Focus();
+                        txtCost.Clear();
+                    }
+                    else { MessageBox.Show("Mã thiết bị không tồn tại!"); }
+                }
+                catch (Exception ex) { MessageBox.Show("Lỗi: " + ex.Message); }
+            }
+        }
+
+        // 3. LOGIC KIỂM TRA CHI PHÍ BẢO TRÌ QUÁ 50%
+        private void txtCost_TextChanged(object sender, EventArgs e)
+        {
+            if (double.TryParse(txtCost.Text, out double chiPhiSua))
+            {
+                // ĐIỀU KIỆN 2: Chi phí bảo trì >= 50% giá trị sản phẩm
+                if (tempGiaNhap > 0 && chiPhiSua >= (tempGiaNhap / 2))
+                {
+                    // Sửa chữ "Đã thanh lý" thành "Đề xuất thanh lý"
+                    cboHanhDong.Text = "Đề xuất thanh lý";
+
+                    double giaThanhLy = TinhGiaThanhLy(tempGiaNhap, tempNgayNhap, chiPhiSua);
+                    int soNam = DateTime.Now.Year - tempNgayNhap.Year;
+
+                    txtDescription.Text = $"--- ĐỀ XUẤT THANH LÝ ---\r\n" +
+                                         $"- Lý do: Phí sửa chữa quá 50% nguyên giá.\r\n" +
+                                         $"- Tuổi thọ: {soNam} năm\r\n" +
+                                         $"- Giá trị đề xuất bán: {giaThanhLy:N0} VNĐ";
+                    txtDescription.ForeColor = Color.Red;
+                }
+                else
+                {
+                    // Nếu người dùng xóa bớt số 0 đi (tiền sửa lại rẻ) thì quay về trạng thái bảo trì
+                    if (cboHanhDong.Text == "Đề xuất thanh lý" && txtDescription.Text.Contains("Phí sửa chữa quá 50%"))
+                    {
+                        cboHanhDong.Text = "Đang bảo trì";
+                        txtDescription.Text = "";
+                        txtDescription.ForeColor = Color.Black;
+                    }
+                }
+            }
         }
     }
 }

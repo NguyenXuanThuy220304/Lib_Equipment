@@ -6,39 +6,33 @@
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
+            if (disposing && (components != null)) components.Dispose();
             base.Dispose(disposing);
         }
-
-        #region Windows Form Designer generated code
 
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.guna2Elipse1 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
-            this.guna2ShadowForm1 = new Guna.UI2.WinForms.Guna2ShadowForm(this.components);
-            this.pnlHeader = new Guna.UI2.WinForms.Guna2Panel();
+            this.pnlTop = new Guna.UI2.WinForms.Guna2Panel();
+            this.btnAutoBorrow = new Guna.UI2.WinForms.Guna2Button();
+            this.btnLichSu = new Guna.UI2.WinForms.Guna2Button();
+            this.btnSearch = new Guna.UI2.WinForms.Guna2Button();
+            this.txtSearch = new Guna.UI2.WinForms.Guna2TextBox();
+            this.pnlDebtCard = new Guna.UI2.WinForms.Guna2Panel();
+            this.btnPay = new Guna.UI2.WinForms.Guna2Button();
             this.lblCongNo = new System.Windows.Forms.Label();
+            this.lblWelcome = new System.Windows.Forms.Label();
+            this.guna2ControlBox3 = new Guna.UI2.WinForms.Guna2ControlBox();
             this.guna2ControlBox2 = new Guna.UI2.WinForms.Guna2ControlBox();
             this.guna2ControlBox1 = new Guna.UI2.WinForms.Guna2ControlBox();
-            this.lblWelcome = new System.Windows.Forms.Label();
-            this.txtSearch = new Guna.UI2.WinForms.Guna2TextBox();
-            this.btnSearch = new Guna.UI2.WinForms.Guna2Button();
-            this.btnLichSu = new Guna.UI2.WinForms.Guna2Button();
-            this.pnlBarcodeCard = new Guna.UI2.WinForms.Guna2Panel();
-            this.lblBarcodeTitle = new System.Windows.Forms.Label();
-            this.lblBarcodeDesc = new System.Windows.Forms.Label();
-            this.lblGridTitle = new System.Windows.Forms.Label();
-            this.dgvMain = new Guna.UI2.WinForms.Guna2DataGridView();
-            this.pnlHeader.SuspendLayout();
-            this.pnlBarcodeCard.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvMain)).BeginInit();
+            this.flpBooks = new System.Windows.Forms.FlowLayoutPanel();
+            this.pnlContent = new Guna.UI2.WinForms.Guna2Panel();
+            this.lblSectionTitle = new System.Windows.Forms.Label();
+            this.btnAI = new Guna.UI2.WinForms.Guna2Button();
+            this.pnlTop.SuspendLayout();
+            this.pnlDebtCard.SuspendLayout();
+            this.pnlContent.SuspendLayout();
             this.SuspendLayout();
             // 
             // guna2Elipse1
@@ -46,263 +40,254 @@
             this.guna2Elipse1.BorderRadius = 15;
             this.guna2Elipse1.TargetControl = this;
             // 
-            // guna2ShadowForm1
+            // pnlTop
             // 
-            this.guna2ShadowForm1.TargetForm = this;
+            this.pnlTop.BackColor = System.Drawing.Color.White;
+            this.pnlTop.Controls.Add(this.btnAI);
+            this.pnlTop.Controls.Add(this.btnAutoBorrow);
+            this.pnlTop.Controls.Add(this.btnLichSu);
+            this.pnlTop.Controls.Add(this.btnSearch);
+            this.pnlTop.Controls.Add(this.txtSearch);
+            this.pnlTop.Controls.Add(this.pnlDebtCard);
+            this.pnlTop.Controls.Add(this.lblWelcome);
+            this.pnlTop.Controls.Add(this.guna2ControlBox3);
+            this.pnlTop.Controls.Add(this.guna2ControlBox2);
+            this.pnlTop.Controls.Add(this.guna2ControlBox1);
+            this.pnlTop.CustomBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(235)))), ((int)(((byte)(235)))));
+            this.pnlTop.CustomBorderThickness = new System.Windows.Forms.Padding(0, 0, 0, 2);
+            this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlTop.Location = new System.Drawing.Point(0, 0);
+            this.pnlTop.Name = "pnlTop";
+            this.pnlTop.Size = new System.Drawing.Size(1400, 217);
+            this.pnlTop.TabIndex = 0;
             // 
-            // pnlHeader
+            // btnAutoBorrow
             // 
-            this.pnlHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
-            this.pnlHeader.Controls.Add(this.lblCongNo);
-            this.pnlHeader.Controls.Add(this.guna2ControlBox2);
-            this.pnlHeader.Controls.Add(this.guna2ControlBox1);
-            this.pnlHeader.Controls.Add(this.lblWelcome);
-            this.pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlHeader.Location = new System.Drawing.Point(0, 0);
-            this.pnlHeader.Margin = new System.Windows.Forms.Padding(4);
-            this.pnlHeader.Name = "pnlHeader";
-            this.pnlHeader.Size = new System.Drawing.Size(1400, 86);
-            this.pnlHeader.TabIndex = 0;
+            this.btnAutoBorrow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAutoBorrow.BorderRadius = 22;
+            this.btnAutoBorrow.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnAutoBorrow.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(102)))), ((int)(((byte)(0)))));
+            this.btnAutoBorrow.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.btnAutoBorrow.ForeColor = System.Drawing.Color.White;
+            this.btnAutoBorrow.Location = new System.Drawing.Point(1060, 137);
+            this.btnAutoBorrow.Name = "btnAutoBorrow";
+            this.btnAutoBorrow.Size = new System.Drawing.Size(305, 63);
+            this.btnAutoBorrow.TabIndex = 5;
+            this.btnAutoBorrow.Text = " TỰ ĐỘNG MƯỢN SÁCH";
+            // 
+            // btnLichSu
+            // 
+            this.btnLichSu.BorderRadius = 22;
+            this.btnLichSu.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnLichSu.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.btnLichSu.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnLichSu.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.btnLichSu.Location = new System.Drawing.Point(769, 137);
+            this.btnLichSu.Name = "btnLichSu";
+            this.btnLichSu.Size = new System.Drawing.Size(140, 63);
+            this.btnLichSu.TabIndex = 4;
+            this.btnLichSu.Text = "LỊCH SỬ";
+            // 
+            // btnSearch
+            // 
+            this.btnSearch.BorderRadius = 22;
+            this.btnSearch.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnSearch.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
+            this.btnSearch.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnSearch.ForeColor = System.Drawing.Color.White;
+            this.btnSearch.Location = new System.Drawing.Point(615, 137);
+            this.btnSearch.Name = "btnSearch";
+            this.btnSearch.Size = new System.Drawing.Size(148, 63);
+            this.btnSearch.TabIndex = 3;
+            this.btnSearch.Text = "TÌM KIẾM";
+            // 
+            // txtSearch
+            // 
+            this.txtSearch.BorderRadius = 22;
+            this.txtSearch.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtSearch.DefaultText = "";
+            this.txtSearch.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.txtSearch.Location = new System.Drawing.Point(37, 137);
+            this.txtSearch.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.txtSearch.Name = "txtSearch";
+            this.txtSearch.PlaceholderText = "🔍 Nhập tên sách, môn học hoặc tác giả...";
+            this.txtSearch.SelectedText = "";
+            this.txtSearch.Size = new System.Drawing.Size(571, 63);
+            this.txtSearch.TabIndex = 2;
+            this.txtSearch.TextOffset = new System.Drawing.Point(10, 0);
+            // 
+            // pnlDebtCard
+            // 
+            this.pnlDebtCard.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlDebtCard.BorderRadius = 15;
+            this.pnlDebtCard.Controls.Add(this.btnPay);
+            this.pnlDebtCard.Controls.Add(this.lblCongNo);
+            this.pnlDebtCard.CustomBorderColor = System.Drawing.Color.LightGray;
+            this.pnlDebtCard.CustomBorderThickness = new System.Windows.Forms.Padding(1);
+            this.pnlDebtCard.FillColor = System.Drawing.Color.White;
+            this.pnlDebtCard.Location = new System.Drawing.Point(914, 46);
+            this.pnlDebtCard.Name = "pnlDebtCard";
+            this.pnlDebtCard.Size = new System.Drawing.Size(451, 64);
+            this.pnlDebtCard.TabIndex = 1;
+            // 
+            // btnPay
+            // 
+            this.btnPay.BackColor = System.Drawing.Color.Transparent;
+            this.btnPay.BorderRadius = 10;
+            this.btnPay.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnPay.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
+            this.btnPay.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnPay.ForeColor = System.Drawing.Color.White;
+            this.btnPay.Location = new System.Drawing.Point(301, 16);
+            this.btnPay.Name = "btnPay";
+            this.btnPay.Size = new System.Drawing.Size(130, 36);
+            this.btnPay.TabIndex = 1;
+            this.btnPay.Text = "Thanh toán";
+            this.btnPay.Visible = false;
             // 
             // lblCongNo
             // 
             this.lblCongNo.AutoSize = true;
-            this.lblCongNo.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            this.lblCongNo.ForeColor = System.Drawing.Color.White;
-            this.lblCongNo.Location = new System.Drawing.Point(26, 44);
-            this.lblCongNo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblCongNo.BackColor = System.Drawing.Color.Transparent;
+            this.lblCongNo.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.lblCongNo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.lblCongNo.Location = new System.Drawing.Point(15, 16);
             this.lblCongNo.Name = "lblCongNo";
-            this.lblCongNo.Size = new System.Drawing.Size(91, 37);
-            this.lblCongNo.TabIndex = 3;
-            this.lblCongNo.Text = "Số dư";
-            this.lblCongNo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblCongNo.Size = new System.Drawing.Size(196, 28);
+            this.lblCongNo.TabIndex = 0;
+            this.lblCongNo.Text = "Tài khoản sạch (0đ)";
+            // 
+            // lblWelcome
+            // 
+            this.lblWelcome.AutoSize = true;
+            this.lblWelcome.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
+            this.lblWelcome.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
+            this.lblWelcome.Location = new System.Drawing.Point(30, 62);
+            this.lblWelcome.Name = "lblWelcome";
+            this.lblWelcome.Size = new System.Drawing.Size(508, 41);
+            this.lblWelcome.TabIndex = 0;
+            this.lblWelcome.Text = "Xin chào, Độc giả | Thư viện UNETI";
+            // 
+            // guna2ControlBox3
+            // 
+            this.guna2ControlBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.guna2ControlBox3.ControlBoxType = Guna.UI2.WinForms.Enums.ControlBoxType.MinimizeBox;
+            this.guna2ControlBox3.FillColor = System.Drawing.Color.Transparent;
+            this.guna2ControlBox3.IconColor = System.Drawing.Color.Gray;
+            this.guna2ControlBox3.Location = new System.Drawing.Point(1250, 10);
+            this.guna2ControlBox3.Name = "guna2ControlBox3";
+            this.guna2ControlBox3.Size = new System.Drawing.Size(45, 30);
+            this.guna2ControlBox3.TabIndex = 8;
             // 
             // guna2ControlBox2
             // 
             this.guna2ControlBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.guna2ControlBox2.ControlBoxType = Guna.UI2.WinForms.Enums.ControlBoxType.MinimizeBox;
+            this.guna2ControlBox2.ControlBoxType = Guna.UI2.WinForms.Enums.ControlBoxType.MaximizeBox;
             this.guna2ControlBox2.FillColor = System.Drawing.Color.Transparent;
-            this.guna2ControlBox2.IconColor = System.Drawing.Color.White;
-            this.guna2ControlBox2.Location = new System.Drawing.Point(1259, 15);
-            this.guna2ControlBox2.Margin = new System.Windows.Forms.Padding(4);
+            this.guna2ControlBox2.IconColor = System.Drawing.Color.Gray;
+            this.guna2ControlBox2.Location = new System.Drawing.Point(1300, 10);
             this.guna2ControlBox2.Name = "guna2ControlBox2";
-            this.guna2ControlBox2.Size = new System.Drawing.Size(59, 44);
-            this.guna2ControlBox2.TabIndex = 2;
+            this.guna2ControlBox2.Size = new System.Drawing.Size(45, 30);
+            this.guna2ControlBox2.TabIndex = 7;
             // 
             // guna2ControlBox1
             // 
             this.guna2ControlBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.guna2ControlBox1.FillColor = System.Drawing.Color.Transparent;
             this.guna2ControlBox1.HoverState.FillColor = System.Drawing.Color.Red;
-            this.guna2ControlBox1.IconColor = System.Drawing.Color.White;
-            this.guna2ControlBox1.Location = new System.Drawing.Point(1325, 15);
-            this.guna2ControlBox1.Margin = new System.Windows.Forms.Padding(4);
+            this.guna2ControlBox1.HoverState.IconColor = System.Drawing.Color.White;
+            this.guna2ControlBox1.IconColor = System.Drawing.Color.Gray;
+            this.guna2ControlBox1.Location = new System.Drawing.Point(1350, 10);
             this.guna2ControlBox1.Name = "guna2ControlBox1";
-            this.guna2ControlBox1.Size = new System.Drawing.Size(59, 44);
-            this.guna2ControlBox1.TabIndex = 1;
+            this.guna2ControlBox1.Size = new System.Drawing.Size(45, 30);
+            this.guna2ControlBox1.TabIndex = 6;
             // 
-            // lblWelcome
+            // flpBooks
             // 
-            this.lblWelcome.AutoSize = true;
-            this.lblWelcome.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            this.lblWelcome.ForeColor = System.Drawing.Color.White;
-            this.lblWelcome.Location = new System.Drawing.Point(26, 7);
-            this.lblWelcome.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblWelcome.Name = "lblWelcome";
-            this.lblWelcome.Size = new System.Drawing.Size(553, 37);
-            this.lblWelcome.TabIndex = 0;
-            this.lblWelcome.Text = "Xin chào, Độc giả | Cổng thông tin Library";
-            this.lblWelcome.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.flpBooks.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.flpBooks.AutoScroll = true;
+            this.flpBooks.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.flpBooks.Location = new System.Drawing.Point(35, 70);
+            this.flpBooks.Name = "flpBooks";
+            this.flpBooks.Size = new System.Drawing.Size(1330, 493);
+            this.flpBooks.TabIndex = 1;
             // 
-            // txtSearch
+            // pnlContent
             // 
-            this.txtSearch.BorderRadius = 8;
-            this.txtSearch.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txtSearch.DefaultText = "";
-            this.txtSearch.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
-            this.txtSearch.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.txtSearch.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
-            this.txtSearch.Location = new System.Drawing.Point(33, 117);
-            this.txtSearch.Margin = new System.Windows.Forms.Padding(5);
-            this.txtSearch.Name = "txtSearch";
-            this.txtSearch.PlaceholderText = "🔍 Nhập tên sách hoặc tác giả...";
-            this.txtSearch.SelectedText = "";
-            this.txtSearch.Size = new System.Drawing.Size(600, 55);
-            this.txtSearch.TabIndex = 1;
-            this.txtSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSearch_KeyDown);
+            this.pnlContent.Controls.Add(this.flpBooks);
+            this.pnlContent.Controls.Add(this.lblSectionTitle);
+            this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlContent.Location = new System.Drawing.Point(0, 217);
+            this.pnlContent.Name = "pnlContent";
+            this.pnlContent.Size = new System.Drawing.Size(1400, 583);
+            this.pnlContent.TabIndex = 1;
             // 
-            // btnSearch
+            // lblSectionTitle
             // 
-            this.btnSearch.BorderRadius = 8;
-            this.btnSearch.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
-            this.btnSearch.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnSearch.ForeColor = System.Drawing.Color.White;
-            this.btnSearch.Location = new System.Drawing.Point(647, 117);
-            this.btnSearch.Margin = new System.Windows.Forms.Padding(4);
-            this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(160, 55);
-            this.btnSearch.TabIndex = 2;
-            this.btnSearch.Text = "TÌM KIẾM";
-            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
+            this.lblSectionTitle.AutoSize = true;
+            this.lblSectionTitle.Font = new System.Drawing.Font("Segoe UI", 15F, System.Drawing.FontStyle.Bold);
+            this.lblSectionTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblSectionTitle.Location = new System.Drawing.Point(30, 20);
+            this.lblSectionTitle.Name = "lblSectionTitle";
+            this.lblSectionTitle.Size = new System.Drawing.Size(275, 35);
+            this.lblSectionTitle.TabIndex = 0;
+            this.lblSectionTitle.Text = "📚 Lịch sử mượn sách";
             // 
-            // btnLichSu
+            // btnAI
             // 
-            this.btnLichSu.BorderRadius = 8;
-            this.btnLichSu.FillColor = System.Drawing.Color.Gray;
-            this.btnLichSu.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.btnLichSu.ForeColor = System.Drawing.Color.White;
-            this.btnLichSu.Location = new System.Drawing.Point(820, 117);
-            this.btnLichSu.Margin = new System.Windows.Forms.Padding(4);
-            this.btnLichSu.Name = "btnLichSu";
-            this.btnLichSu.Size = new System.Drawing.Size(173, 55);
-            this.btnLichSu.TabIndex = 3;
-            this.btnLichSu.Text = "LỊCH SỬ MƯỢN";
-            this.btnLichSu.Click += new System.EventHandler(this.btnLichSu_Click);
-            // 
-            // pnlBarcodeCard
-            // 
-            this.pnlBarcodeCard.BackColor = System.Drawing.Color.Transparent;
-            this.pnlBarcodeCard.BorderRadius = 10;
-            this.pnlBarcodeCard.Controls.Add(this.lblBarcodeTitle);
-            this.pnlBarcodeCard.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(81)))), ((int)(((byte)(0)))));
-            this.pnlBarcodeCard.Location = new System.Drawing.Point(1013, 117);
-            this.pnlBarcodeCard.Margin = new System.Windows.Forms.Padding(4);
-            this.pnlBarcodeCard.Name = "pnlBarcodeCard";
-            this.pnlBarcodeCard.Size = new System.Drawing.Size(353, 55);
-            this.pnlBarcodeCard.TabIndex = 4;
-            // 
-            // lblBarcodeTitle
-            // 
-            this.lblBarcodeTitle.AutoSize = true;
-            this.lblBarcodeTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblBarcodeTitle.ForeColor = System.Drawing.Color.White;
-            this.lblBarcodeTitle.Location = new System.Drawing.Point(34, 15);
-            this.lblBarcodeTitle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblBarcodeTitle.Name = "lblBarcodeTitle";
-            this.lblBarcodeTitle.Size = new System.Drawing.Size(271, 28);
-            this.lblBarcodeTitle.TabIndex = 0;
-            this.lblBarcodeTitle.Text = "⚡ TỰ ĐỘNG MƯỢN SÁCH";
-            // 
-            // lblBarcodeDesc
-            // 
-            this.lblBarcodeDesc.Location = new System.Drawing.Point(0, 0);
-            this.lblBarcodeDesc.Name = "lblBarcodeDesc";
-            this.lblBarcodeDesc.Size = new System.Drawing.Size(100, 23);
-            this.lblBarcodeDesc.TabIndex = 0;
-            // 
-            // lblGridTitle
-            // 
-            this.lblGridTitle.AutoSize = true;
-            this.lblGridTitle.Font = new System.Drawing.Font("Segoe UI", 13F, System.Drawing.FontStyle.Bold);
-            this.lblGridTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
-            this.lblGridTitle.Location = new System.Drawing.Point(28, 203);
-            this.lblGridTitle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblGridTitle.Name = "lblGridTitle";
-            this.lblGridTitle.Size = new System.Drawing.Size(329, 30);
-            this.lblGridTitle.TabIndex = 5;
-            this.lblGridTitle.Text = "📚 Lịch sử mượn sách của bạn";
-            // 
-            // dgvMain
-            // 
-            this.dgvMain.AllowUserToAddRows = false;
-            this.dgvMain.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.White;
-            this.dgvMain.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle4;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvMain.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
-            this.dgvMain.ColumnHeadersHeight = 40;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI", 10.5F);
-            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvMain.DefaultCellStyle = dataGridViewCellStyle6;
-            this.dgvMain.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dgvMain.Location = new System.Drawing.Point(33, 252);
-            this.dgvMain.Margin = new System.Windows.Forms.Padding(4);
-            this.dgvMain.Name = "dgvMain";
-            this.dgvMain.ReadOnly = true;
-            this.dgvMain.RowHeadersVisible = false;
-            this.dgvMain.RowHeadersWidth = 51;
-            this.dgvMain.RowTemplate.Height = 35;
-            this.dgvMain.Size = new System.Drawing.Size(1333, 517);
-            this.dgvMain.TabIndex = 6;
-            this.dgvMain.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.White;
-            this.dgvMain.ThemeStyle.AlternatingRowsStyle.Font = null;
-            this.dgvMain.ThemeStyle.AlternatingRowsStyle.ForeColor = System.Drawing.Color.Empty;
-            this.dgvMain.ThemeStyle.AlternatingRowsStyle.SelectionBackColor = System.Drawing.Color.Empty;
-            this.dgvMain.ThemeStyle.AlternatingRowsStyle.SelectionForeColor = System.Drawing.Color.Empty;
-            this.dgvMain.ThemeStyle.BackColor = System.Drawing.Color.White;
-            this.dgvMain.ThemeStyle.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dgvMain.ThemeStyle.HeaderStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
-            this.dgvMain.ThemeStyle.HeaderStyle.BorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            this.dgvMain.ThemeStyle.HeaderStyle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            this.dgvMain.ThemeStyle.HeaderStyle.ForeColor = System.Drawing.Color.White;
-            this.dgvMain.ThemeStyle.HeaderStyle.HeaightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.dgvMain.ThemeStyle.HeaderStyle.Height = 40;
-            this.dgvMain.ThemeStyle.ReadOnly = true;
-            this.dgvMain.ThemeStyle.RowsStyle.BackColor = System.Drawing.Color.White;
-            this.dgvMain.ThemeStyle.RowsStyle.BorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
-            this.dgvMain.ThemeStyle.RowsStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dgvMain.ThemeStyle.RowsStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            this.dgvMain.ThemeStyle.RowsStyle.Height = 35;
-            this.dgvMain.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dgvMain.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            this.btnAI.BorderRadius = 22;
+            this.btnAI.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnAI.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.btnAI.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnAI.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.btnAI.Location = new System.Drawing.Point(914, 137);
+            this.btnAI.Name = "btnAI";
+            this.btnAI.Size = new System.Drawing.Size(140, 63);
+            this.btnAI.TabIndex = 9;
+            this.btnAI.Text = "AI HỖ TRỢ";
+            this.btnAI.Click += new System.EventHandler(this.btnAI_Click);
             // 
             // frmTrangChuDocGia
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(246)))), ((int)(((byte)(250)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
             this.ClientSize = new System.Drawing.Size(1400, 800);
-            this.Controls.Add(this.dgvMain);
-            this.Controls.Add(this.lblGridTitle);
-            this.Controls.Add(this.pnlBarcodeCard);
-            this.Controls.Add(this.btnLichSu);
-            this.Controls.Add(this.btnSearch);
-            this.Controls.Add(this.txtSearch);
-            this.Controls.Add(this.pnlHeader);
+            this.Controls.Add(this.pnlContent);
+            this.Controls.Add(this.pnlTop);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(4);
+            this.KeyPreview = true;
             this.Name = "frmTrangChuDocGia";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Trang Chủ Độc Giả";
-            this.Load += new System.EventHandler(this.frmTrangChuDocGia_Load);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmTrangChuDocGia_KeyDown);
-            this.pnlHeader.ResumeLayout(false);
-            this.pnlHeader.PerformLayout();
-            this.pnlBarcodeCard.ResumeLayout(false);
-            this.pnlBarcodeCard.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvMain)).EndInit();
+            this.pnlTop.ResumeLayout(false);
+            this.pnlTop.PerformLayout();
+            this.pnlDebtCard.ResumeLayout(false);
+            this.pnlDebtCard.PerformLayout();
+            this.pnlContent.ResumeLayout(false);
+            this.pnlContent.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
-        #endregion
-
         private Guna.UI2.WinForms.Guna2Elipse guna2Elipse1;
-        private Guna.UI2.WinForms.Guna2ShadowForm guna2ShadowForm1;
-        private Guna.UI2.WinForms.Guna2Panel pnlHeader;
+        private Guna.UI2.WinForms.Guna2Panel pnlTop;
         private System.Windows.Forms.Label lblWelcome;
-        private Guna.UI2.WinForms.Guna2ControlBox guna2ControlBox2;
-        private Guna.UI2.WinForms.Guna2ControlBox guna2ControlBox1;
+        private Guna.UI2.WinForms.Guna2Panel pnlDebtCard;
+        private System.Windows.Forms.Label lblCongNo;
+        private Guna.UI2.WinForms.Guna2Button btnPay;
         private Guna.UI2.WinForms.Guna2TextBox txtSearch;
         private Guna.UI2.WinForms.Guna2Button btnSearch;
         private Guna.UI2.WinForms.Guna2Button btnLichSu;
-        private Guna.UI2.WinForms.Guna2Panel pnlBarcodeCard;
-        private System.Windows.Forms.Label lblBarcodeTitle;
-        private System.Windows.Forms.Label lblBarcodeDesc;
-        private System.Windows.Forms.Label lblGridTitle;
-        private Guna.UI2.WinForms.Guna2DataGridView dgvMain;
-        private System.Windows.Forms.Label lblCongNo;
+        private Guna.UI2.WinForms.Guna2Button btnAutoBorrow;
+        private Guna.UI2.WinForms.Guna2ControlBox guna2ControlBox1;
+        private Guna.UI2.WinForms.Guna2ControlBox guna2ControlBox2;
+        private Guna.UI2.WinForms.Guna2ControlBox guna2ControlBox3;
+        private Guna.UI2.WinForms.Guna2Panel pnlContent;
+        private System.Windows.Forms.Label lblSectionTitle;
+        private System.Windows.Forms.FlowLayoutPanel flpBooks;
+        private Guna.UI2.WinForms.Guna2Button btnAI;
     }
 }

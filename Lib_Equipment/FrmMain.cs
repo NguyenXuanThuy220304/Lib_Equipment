@@ -83,6 +83,7 @@ namespace Lib_Equipment
                 btnSubQuanLyBanSao.Visible = false; // Ẩn nút mới thêm
                 btnSubQuanLyDocGia.Visible = false;
                 btnSubMuonTra.Visible = false;
+                btnSubThanhLy.Visible = false;
 
                 btnSubDanhMucTB.Visible = false;
                 btnSubLuanChuyen.Visible = false;
@@ -115,7 +116,7 @@ namespace Lib_Equipment
                 if (btnSubQuanLySach.Visible || btnSubQuanLyBanSao.Visible || btnSubQuanLyDocGia.Visible || btnSubMuonTra.Visible)
                     btnThuVien.Visible = true;
 
-                if (btnSubDanhMucTB.Visible || btnSubLuanChuyen.Visible || btnSubBaoTri.Visible)
+                if (btnSubDanhMucTB.Visible || btnSubLuanChuyen.Visible || btnSubBaoTri.Visible || btnSubThanhLy.Visible)
                     btnThietBi.Visible = true;
 
                 if (btnSubBCThuVien.Visible || btnSubBCThietBi.Visible)
@@ -177,7 +178,20 @@ namespace Lib_Equipment
 
         private void btnSubBCThuVien_Click(object sender, EventArgs e) { OpenChildForm(new FrmThongKeThuVien(), "BÁO CÁO VÀ THỐNG KÊ THƯ VIỆN"); }
         private void btnSubBCThietBi_Click(object sender, EventArgs e) { OpenChildForm(new FrmThongKeThietBi(), "BÁO CÁO VÀ THỐNG KÊ THIẾT BỊ"); }
-        private void btnAIsub_Click(object sender, EventArgs e) { OpenChildForm(new FrmTroLyAI(), "Hỗ trợ"); }
+
+        // ========================================================
+        // ĐÃ SỬA: TRUYỀN ROLE ĐĂNG NHẬP VÀO FORM AI ĐỂ PHÂN QUYỀN
+        // ========================================================
+        private void btnAIsub_Click(object sender, EventArgs e)
+        {
+            string currentRole = string.IsNullOrEmpty(AppSession.RoleID) ? "DocGia" : AppSession.RoleID.Trim();
+            OpenChildForm(new FrmTroLyAI(currentRole), "TRỢ LÝ THÔNG MINH (AI)");
+        }
+
+        private void btnSubThanhLy_Click(object sender, EventArgs e)
+        {
+            OpenChildForm(new FrmThanhLyThietBi(), "THANH LÝ TÀI SẢN");
+        }
 
         private void btnDangXuat_Click(object sender, EventArgs e)
         {
@@ -190,6 +204,7 @@ namespace Lib_Equipment
                 AiSessionMemory.ClearMemory();
             }
         }
+
         private void RunAutoPenaltySystem()
         {
             try
@@ -204,6 +219,7 @@ namespace Lib_Equipment
                 Console.WriteLine("Lỗi chạy hệ thống phạt tự động: " + ex.Message);
             }
         }
+
         private void FrmMain_Load_1(object sender, EventArgs e)
         {
             // Giới hạn vùng phóng to (chừa lại thanh Taskbar)

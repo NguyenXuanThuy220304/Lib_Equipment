@@ -1,4 +1,7 @@
-﻿namespace Lib_Equipment
+﻿using System;
+using System.Drawing;
+
+namespace Lib_Equipment
 {
     partial class FrmQuanLyDocGia
     {
@@ -29,6 +32,7 @@
             this.btnXoa = new Guna.UI2.WinForms.Guna2Button();
             this.btnSua = new Guna.UI2.WinForms.Guna2Button();
             this.btnThem = new Guna.UI2.WinForms.Guna2Button();
+            this.btnInThe = new Guna.UI2.WinForms.Guna2Button();
             this.dgvDocGia = new Guna.UI2.WinForms.Guna2DataGridView();
             this.pnlControls.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDocGia)).BeginInit();
@@ -49,6 +53,7 @@
             this.pnlControls.Controls.Add(this.btnXoa);
             this.pnlControls.Controls.Add(this.btnSua);
             this.pnlControls.Controls.Add(this.btnThem);
+            this.pnlControls.Controls.Add(this.btnInThe);
             this.pnlControls.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlControls.Location = new System.Drawing.Point(0, 0);
             this.pnlControls.Name = "pnlControls";
@@ -61,7 +66,7 @@
             this.btnDebugMail.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.btnDebugMail.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnDebugMail.ForeColor = System.Drawing.Color.White;
-            this.btnDebugMail.Location = new System.Drawing.Point(965, 172);
+            this.btnDebugMail.Location = new System.Drawing.Point(863, 172);
             this.btnDebugMail.Name = "btnDebugMail";
             this.btnDebugMail.Size = new System.Drawing.Size(147, 49);
             this.btnDebugMail.TabIndex = 9;
@@ -74,7 +79,7 @@
             this.btnDongBo.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.btnDongBo.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnDongBo.ForeColor = System.Drawing.Color.White;
-            this.btnDongBo.Location = new System.Drawing.Point(776, 172);
+            this.btnDongBo.Location = new System.Drawing.Point(698, 172);
             this.btnDongBo.Name = "btnDongBo";
             this.btnDongBo.Size = new System.Drawing.Size(147, 49);
             this.btnDongBo.TabIndex = 9;
@@ -183,7 +188,7 @@
             this.btnLamMoi.FillColor = System.Drawing.Color.Gray;
             this.btnLamMoi.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnLamMoi.ForeColor = System.Drawing.Color.White;
-            this.btnLamMoi.Location = new System.Drawing.Point(587, 172);
+            this.btnLamMoi.Location = new System.Drawing.Point(533, 172);
             this.btnLamMoi.Name = "btnLamMoi";
             this.btnLamMoi.Size = new System.Drawing.Size(147, 49);
             this.btnLamMoi.TabIndex = 3;
@@ -196,7 +201,7 @@
             this.btnXoa.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
             this.btnXoa.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnXoa.ForeColor = System.Drawing.Color.White;
-            this.btnXoa.Location = new System.Drawing.Point(400, 172);
+            this.btnXoa.Location = new System.Drawing.Point(364, 172);
             this.btnXoa.Name = "btnXoa";
             this.btnXoa.Size = new System.Drawing.Size(147, 49);
             this.btnXoa.TabIndex = 2;
@@ -209,7 +214,7 @@
             this.btnSua.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
             this.btnSua.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnSua.ForeColor = System.Drawing.Color.White;
-            this.btnSua.Location = new System.Drawing.Point(220, 172);
+            this.btnSua.Location = new System.Drawing.Point(202, 172);
             this.btnSua.Name = "btnSua";
             this.btnSua.Size = new System.Drawing.Size(147, 49);
             this.btnSua.TabIndex = 1;
@@ -228,6 +233,19 @@
             this.btnThem.TabIndex = 0;
             this.btnThem.Text = "THÊM";
             this.btnThem.Click += new System.EventHandler(this.btnThem_Click);
+            // 
+            // btnInThe
+            // 
+            this.btnInThe.BorderRadius = 5;
+            this.btnInThe.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(150)))), ((int)(((byte)(136)))));
+            this.btnInThe.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnInThe.ForeColor = System.Drawing.Color.White;
+            this.btnInThe.Location = new System.Drawing.Point(1027, 172);
+            this.btnInThe.Name = "btnInThe";
+            this.btnInThe.Size = new System.Drawing.Size(130, 49);
+            this.btnInThe.TabIndex = 10;
+            this.btnInThe.Text = "IN THẺ SV";
+            this.btnInThe.Click += new System.EventHandler(this.btnInThe_Click);
             // 
             // dgvDocGia
             // 
@@ -301,7 +319,7 @@
 
         }
         #endregion
-
+        private Guna.UI2.WinForms.Guna2Button btnInThe;
         private Guna.UI2.WinForms.Guna2Panel pnlControls;
         private Guna.UI2.WinForms.Guna2DataGridView dgvDocGia;
         private Guna.UI2.WinForms.Guna2TextBox txtHoTen;

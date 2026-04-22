@@ -39,21 +39,46 @@ namespace Lib_Equipment
 
         private void LoadDanhSachMenu()
         {
-            // ĐÃ SỬA SQL Ở ĐÂY: Bổ sung "OR MenuID LIKE '%BanSao'" vào Nhóm 3 (Thư viện)
+            // CÁCH MỚI: Đánh số thứ tự cứng cho từng MenuID để nó hiển thị y hệt như thanh Sidebar thực tế
             string query = @"
-                SELECT MenuID, MenuName 
-                FROM SysMenu 
-                ORDER BY 
-                    CASE 
-                        WHEN MenuID = 'btnTrangChu' THEN 1
-                        WHEN MenuID LIKE 'btnHeThong%' OR MenuID LIKE 'btnSub%TaiKhoan' OR MenuID LIKE 'btnSub%PhanQuyen' OR MenuID LIKE 'btnSub%SaoLuu' THEN 2
-                        WHEN MenuID LIKE 'btnThuVien%' OR MenuID LIKE 'btnSub%Sach' OR MenuID LIKE '%BanSao' OR MenuID LIKE 'btnSub%DocGia' OR MenuID LIKE 'btnSub%MuonTra' THEN 3
-                        WHEN MenuID LIKE 'btnThietBi%' OR MenuID LIKE 'btnSub%DanhMucTB' OR MenuID LIKE 'btnSub%LuanChuyen' OR MenuID LIKE 'btnSub%BaoTri' THEN 4
-                        WHEN MenuID LIKE 'btnBaoCao%' OR MenuID LIKE 'btnSub%BCThuVien' OR MenuID LIKE 'btnSub%BCThietBi' THEN 5
-                        ELSE 6 
-                    END,
-                    CASE WHEN MenuName NOT LIKE '%---%' THEN 0 ELSE 1 END,
-                    MenuName ASC";
+        SELECT MenuID, MenuName 
+        FROM SysMenu 
+        ORDER BY 
+            CASE MenuID
+                -- 1. Trang chủ
+                WHEN 'btnTrangChu' THEN 10
+
+                -- 2. Quản lý Hệ thống
+                WHEN 'btnHeThong' THEN 20
+                WHEN 'btnSubTaiKhoan' THEN 21
+                WHEN 'btnSubPhanQuyen' THEN 22
+                WHEN 'btnSubSaoLuu' THEN 23
+
+                -- 3. Quản lý Thư viện
+                WHEN 'btnThuVien' THEN 30
+                WHEN 'btnSubQuanLySach' THEN 31
+                WHEN 'btnSubQuanLyBanSao' THEN 32
+                WHEN 'btnSubQuanLyDocGia' THEN 33
+                WHEN 'btnSubMuonTra' THEN 34
+
+                -- 4. Quản lý Trang thiết bị
+                WHEN 'btnThietBi' THEN 40
+                WHEN 'btnSubDanhMucTB' THEN 41
+                WHEN 'btnSubLuanChuyen' THEN 42
+                WHEN 'btnSubBaoTri' THEN 43
+                WHEN 'btnSubThanhLy' THEN 44
+
+                -- 5. Báo cáo & Thống kê
+                WHEN 'btnBaoCao' THEN 50
+                WHEN 'btnSubBCThuVien' THEN 51
+                WHEN 'btnSubBCThietBi' THEN 52
+
+                -- 6. Hỗ trợ AI
+                WHEN 'btnAIsub' THEN 60
+
+                -- Mặc định nếu có mục lạ
+                ELSE 99 
+            END ASC";
 
             DataTable dtMenu = DataProvider.Instance.ExecuteQuery(query);
 

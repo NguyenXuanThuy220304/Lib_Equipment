@@ -21,11 +21,13 @@
             this.guna2Elipse1 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
             this.pnlSidebar = new Guna.UI2.WinForms.Guna2Panel();
             this.btnDangXuat = new Guna.UI2.WinForms.Guna2Button();
+            this.btnAIsub = new Guna.UI2.WinForms.Guna2Button();
             this.pnlSubMenuBaoCao = new Guna.UI2.WinForms.Guna2Panel();
             this.btnSubBCThietBi = new Guna.UI2.WinForms.Guna2Button();
             this.btnSubBCThuVien = new Guna.UI2.WinForms.Guna2Button();
             this.btnBaoCao = new Guna.UI2.WinForms.Guna2Button();
             this.pnlSubMenuThietBi = new Guna.UI2.WinForms.Guna2Panel();
+            this.btnSubThanhLy = new Guna.UI2.WinForms.Guna2Button();
             this.btnSubBaoTri = new Guna.UI2.WinForms.Guna2Button();
             this.btnSubLuanChuyen = new Guna.UI2.WinForms.Guna2Button();
             this.btnSubDanhMucTB = new Guna.UI2.WinForms.Guna2Button();
@@ -36,11 +38,11 @@
             this.btnSubQuanLyBanSao = new Guna.UI2.WinForms.Guna2Button();
             this.btnSubQuanLySach = new Guna.UI2.WinForms.Guna2Button();
             this.btnThuVien = new Guna.UI2.WinForms.Guna2Button();
-            this.btnAIsub = new Guna.UI2.WinForms.Guna2Button();
             this.pnlSubMenuHeThong = new Guna.UI2.WinForms.Guna2Panel();
             this.btnSubSaoLuu = new Guna.UI2.WinForms.Guna2Button();
             this.btnSubPhanQuyen = new Guna.UI2.WinForms.Guna2Button();
             this.btnSubTaiKhoan = new Guna.UI2.WinForms.Guna2Button();
+            this.btnHeThong = new Guna.UI2.WinForms.Guna2Button();
             this.btnTrangChu = new Guna.UI2.WinForms.Guna2Button();
             this.pnlLogo = new Guna.UI2.WinForms.Guna2Panel();
             this.lblLogo = new System.Windows.Forms.Label();
@@ -52,7 +54,6 @@
             this.pnlDesktop = new Guna.UI2.WinForms.Guna2Panel();
             this.lblWelcomeText = new System.Windows.Forms.Label();
             this.guna2DragControl1 = new Guna.UI2.WinForms.Guna2DragControl(this.components);
-            this.btnHeThong = new Guna.UI2.WinForms.Guna2Button();
             this.pnlSidebar.SuspendLayout();
             this.pnlSubMenuBaoCao.SuspendLayout();
             this.pnlSubMenuThietBi.SuspendLayout();
@@ -98,7 +99,7 @@
             this.btnDangXuat.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.btnDangXuat.ForeColor = System.Drawing.Color.White;
             this.btnDangXuat.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
-            this.btnDangXuat.Location = new System.Drawing.Point(0, 1104); // <--- Đẩy tọa độ Y xuống sâu hơn
+            this.btnDangXuat.Location = new System.Drawing.Point(0, 1159);
             this.btnDangXuat.Margin = new System.Windows.Forms.Padding(4);
             this.btnDangXuat.Name = "btnDangXuat";
             this.btnDangXuat.Size = new System.Drawing.Size(326, 62);
@@ -108,13 +109,30 @@
             this.btnDangXuat.TextOffset = new System.Drawing.Point(20, 0);
             this.btnDangXuat.Click += new System.EventHandler(this.btnDangXuat_Click);
             // 
+            // btnAIsub
+            // 
+            this.btnAIsub.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnAIsub.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
+            this.btnAIsub.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.btnAIsub.ForeColor = System.Drawing.Color.White;
+            this.btnAIsub.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
+            this.btnAIsub.Location = new System.Drawing.Point(0, 1097);
+            this.btnAIsub.Margin = new System.Windows.Forms.Padding(4);
+            this.btnAIsub.Name = "btnAIsub";
+            this.btnAIsub.Size = new System.Drawing.Size(326, 62);
+            this.btnAIsub.TabIndex = 10;
+            this.btnAIsub.Text = "  Hỗ trợ (AI)";
+            this.btnAIsub.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnAIsub.TextOffset = new System.Drawing.Point(20, 0);
+            this.btnAIsub.Click += new System.EventHandler(this.btnAIsub_Click);
+            // 
             // pnlSubMenuBaoCao
             // 
             this.pnlSubMenuBaoCao.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(85)))), ((int)(((byte)(142)))));
             this.pnlSubMenuBaoCao.Controls.Add(this.btnSubBCThietBi);
             this.pnlSubMenuBaoCao.Controls.Add(this.btnSubBCThuVien);
             this.pnlSubMenuBaoCao.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlSubMenuBaoCao.Location = new System.Drawing.Point(0, 931);
+            this.pnlSubMenuBaoCao.Location = new System.Drawing.Point(0, 986);
             this.pnlSubMenuBaoCao.Margin = new System.Windows.Forms.Padding(4);
             this.pnlSubMenuBaoCao.Name = "pnlSubMenuBaoCao";
             this.pnlSubMenuBaoCao.Size = new System.Drawing.Size(326, 111);
@@ -164,7 +182,7 @@
             this.btnBaoCao.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.btnBaoCao.ForeColor = System.Drawing.Color.White;
             this.btnBaoCao.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
-            this.btnBaoCao.Location = new System.Drawing.Point(0, 869);
+            this.btnBaoCao.Location = new System.Drawing.Point(0, 924);
             this.btnBaoCao.Margin = new System.Windows.Forms.Padding(4);
             this.btnBaoCao.Name = "btnBaoCao";
             this.btnBaoCao.Size = new System.Drawing.Size(326, 62);
@@ -177,6 +195,7 @@
             // pnlSubMenuThietBi
             // 
             this.pnlSubMenuThietBi.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(85)))), ((int)(((byte)(142)))));
+            this.pnlSubMenuThietBi.Controls.Add(this.btnSubThanhLy);
             this.pnlSubMenuThietBi.Controls.Add(this.btnSubBaoTri);
             this.pnlSubMenuThietBi.Controls.Add(this.btnSubLuanChuyen);
             this.pnlSubMenuThietBi.Controls.Add(this.btnSubDanhMucTB);
@@ -184,9 +203,26 @@
             this.pnlSubMenuThietBi.Location = new System.Drawing.Point(0, 703);
             this.pnlSubMenuThietBi.Margin = new System.Windows.Forms.Padding(4);
             this.pnlSubMenuThietBi.Name = "pnlSubMenuThietBi";
-            this.pnlSubMenuThietBi.Size = new System.Drawing.Size(326, 166);
+            this.pnlSubMenuThietBi.Size = new System.Drawing.Size(326, 221);
             this.pnlSubMenuThietBi.TabIndex = 7;
             this.pnlSubMenuThietBi.Visible = false;
+            // 
+            // btnSubThanhLy
+            // 
+            this.btnSubThanhLy.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnSubThanhLy.FillColor = System.Drawing.Color.Transparent;
+            this.btnSubThanhLy.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.btnSubThanhLy.ForeColor = System.Drawing.Color.LightGray;
+            this.btnSubThanhLy.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
+            this.btnSubThanhLy.Location = new System.Drawing.Point(0, 165);
+            this.btnSubThanhLy.Margin = new System.Windows.Forms.Padding(4);
+            this.btnSubThanhLy.Name = "btnSubThanhLy";
+            this.btnSubThanhLy.Size = new System.Drawing.Size(326, 55);
+            this.btnSubThanhLy.TabIndex = 3;
+            this.btnSubThanhLy.Text = "• Thanh lý tài sản";
+            this.btnSubThanhLy.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnSubThanhLy.TextOffset = new System.Drawing.Point(40, 0);
+            this.btnSubThanhLy.Click += new System.EventHandler(this.btnSubThanhLy_Click);
             // 
             // btnSubBaoTri
             // 
@@ -355,7 +391,6 @@
             this.btnThuVien.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnThuVien.TextOffset = new System.Drawing.Point(20, 0);
             this.btnThuVien.Click += new System.EventHandler(this.btnThuVien_Click);
-            
             // 
             // pnlSubMenuHeThong
             // 
@@ -422,6 +457,23 @@
             this.btnSubTaiKhoan.TextOffset = new System.Drawing.Point(40, 0);
             this.btnSubTaiKhoan.Click += new System.EventHandler(this.btnSubTaiKhoan_Click);
             // 
+            // btnHeThong
+            // 
+            this.btnHeThong.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnHeThong.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
+            this.btnHeThong.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.btnHeThong.ForeColor = System.Drawing.Color.White;
+            this.btnHeThong.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
+            this.btnHeThong.Location = new System.Drawing.Point(0, 130);
+            this.btnHeThong.Margin = new System.Windows.Forms.Padding(4);
+            this.btnHeThong.Name = "btnHeThong";
+            this.btnHeThong.Size = new System.Drawing.Size(326, 62);
+            this.btnHeThong.TabIndex = 2;
+            this.btnHeThong.Text = "  Quản lý Hệ thống";
+            this.btnHeThong.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnHeThong.TextOffset = new System.Drawing.Point(20, 0);
+            this.btnHeThong.Click += new System.EventHandler(this.btnHeThong_Click);
+            // 
             // btnTrangChu
             // 
             this.btnTrangChu.Dock = System.Windows.Forms.DockStyle.Top;
@@ -438,23 +490,6 @@
             this.btnTrangChu.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btnTrangChu.TextOffset = new System.Drawing.Point(20, 0);
             this.btnTrangChu.Click += new System.EventHandler(this.btnTrangChu_Click);
-            // 
-            // btnAIsub
-            // 
-            this.btnAIsub.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnAIsub.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.btnAIsub.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.btnAIsub.ForeColor = System.Drawing.Color.White;
-            this.btnAIsub.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
-            this.btnAIsub.Location = new System.Drawing.Point(0, 1042); // <--- Đưa tọa độ Y xuống dưới Báo cáo
-            this.btnAIsub.Margin = new System.Windows.Forms.Padding(4);
-            this.btnAIsub.Name = "btnAIsub";
-            this.btnAIsub.Size = new System.Drawing.Size(326, 62);
-            this.btnAIsub.TabIndex = 10;
-            this.btnAIsub.Text = "  Hỗ trợ (AI)";
-            this.btnAIsub.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-            this.btnAIsub.TextOffset = new System.Drawing.Point(20, 0);
-            this.btnAIsub.Click += new System.EventHandler(this.btnAIsub_Click);
             // 
             // pnlLogo
             // 
@@ -475,7 +510,7 @@
             this.lblLogo.Name = "lblLogo";
             this.lblLogo.Size = new System.Drawing.Size(300, 68);
             this.lblLogo.TabIndex = 0;
-            this.lblLogo.Text = "UNETI ADMIN";
+            this.lblLogo.Text = "UNETI";
             this.lblLogo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // pnlHeader
@@ -571,23 +606,6 @@
             this.guna2DragControl1.TargetControl = this.pnlHeader;
             this.guna2DragControl1.UseTransparentDrag = true;
             // 
-            // btnHeThong
-            // 
-            this.btnHeThong.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnHeThong.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
-            this.btnHeThong.Font = new System.Drawing.Font("Segoe UI", 11F);
-            this.btnHeThong.ForeColor = System.Drawing.Color.White;
-            this.btnHeThong.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
-            this.btnHeThong.Location = new System.Drawing.Point(0, 130);
-            this.btnHeThong.Margin = new System.Windows.Forms.Padding(4);
-            this.btnHeThong.Name = "btnHeThong";
-            this.btnHeThong.Size = new System.Drawing.Size(326, 62);
-            this.btnHeThong.TabIndex = 2;
-            this.btnHeThong.Text = "  Quản lý Hệ thống";
-            this.btnHeThong.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-            this.btnHeThong.TextOffset = new System.Drawing.Point(20, 0);
-            this.btnHeThong.Click += new System.EventHandler(this.btnHeThong_Click);
-            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -655,6 +673,7 @@
         private Guna.UI2.WinForms.Guna2Button btnSubDanhMucTB;
         private Guna.UI2.WinForms.Guna2Button btnSubLuanChuyen;
         private Guna.UI2.WinForms.Guna2Button btnSubBaoTri;
+        private Guna.UI2.WinForms.Guna2Button btnSubThanhLy;
 
         // --- SUB MENU BÁO CÁO ---
         private Guna.UI2.WinForms.Guna2Panel pnlSubMenuBaoCao;

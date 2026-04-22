@@ -270,7 +270,7 @@ namespace Lib_Equipment
         {
             try
             {
-                string q = "SELECT COUNT(*) FROM Equipment WHERE NgayBaoTriDinhKy <= GETDATE() AND Condition != N'Đã thanh lý' AND IsDeleted = 0";
+                string q = "SELECT COUNT(*) FROM Equipment WHERE NgayBaoTriDinhKy <= GETDATE() AND Condition != N'Đề xuất thanh lý' AND IsDeleted = 0";
                 int count = (int)DataProvider.Instance.ExecuteScalar(q);
                 if (count > 0) MessageBox.Show($"Hệ thống: Có {count} thiết bị cần bảo trì định kỳ!", "Cảnh báo bảo trì", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }

@@ -164,7 +164,7 @@
             this.cboTinhTrang.BorderRadius = 5;
             this.cboTinhTrang.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboTinhTrang.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cboTinhTrang.Items.AddRange(new object[] { "Tốt", "Đang sử dụng", "Cần bảo trì", "Đã thanh lý" });
+            this.cboTinhTrang.Items.AddRange(new object[] { "Tốt", "Đang sử dụng", "Cần bảo trì", "Đề xuất thanh lý" });
             this.cboTinhTrang.Location = new System.Drawing.Point(813, 111);
             this.cboTinhTrang.Name = "cboTinhTrang";
             this.cboTinhTrang.Size = new System.Drawing.Size(412, 36);
