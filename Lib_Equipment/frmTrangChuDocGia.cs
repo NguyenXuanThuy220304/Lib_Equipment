@@ -135,11 +135,17 @@ namespace Lib_Equipment
 
         private void BtnThanhToanNo_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Xác nhận bạn đã thanh toán qua cổng Ngân hàng?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            // Lấy lại số nợ hiện tại
+            string query = "SELECT ISNULL(AcademicDebt, 0) FROM Reader WHERE ReaderID = @id";
+            decimal debt = Convert.ToDecimal(DataProvider.Instance.ExecuteScalar(query, new SqlParameter[] { new SqlParameter("@id", currentReaderID) }));
+
+            if (debt > 0)
             {
-                string sql = "UPDATE Reader SET AcademicDebt = 0 WHERE ReaderID = @id";
-                DataProvider.Instance.ExecuteNonQuery(sql, new SqlParameter[] { new SqlParameter("@id", currentReaderID) });
-                MessageBox.Show("Thanh toán thành công!", "Hoàn tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // Mở Form hiển thị QR (Truyền ID, Tên và Số tiền sang)
+                frmThanhToan frm = new frmThanhToan(currentReaderID, currentFullName, debt);
+                frm.ShowDialog();
+
+                // Cập nhật lại UI sau khi Form QR đóng (nghĩa là đã thanh toán xong hoặc user bấm Hủy)
                 UpdateDebtDisplay();
             }
         }

@@ -421,6 +421,9 @@
     <Compile Include="FrmThanhLyThietBi.Designer.cs">
       <DependentUpon>FrmThanhLyThietBi.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmThanhToan.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FrmThongKeThietBi.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -502,6 +505,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrmSaoLuuPhucHoi.resx">
       <DependentUpon>FrmSaoLuuPhucHoi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSecondaryBorrow.resx">
+      <DependentUpon>frmSecondaryBorrow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmThanhLyThietBi.resx">
       <DependentUpon>FrmThanhLyThietBi.cs</DependentUpon>
