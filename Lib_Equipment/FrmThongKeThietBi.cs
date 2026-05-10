@@ -24,6 +24,10 @@ namespace Lib_Equipment
             LoadDataTab_PhanBo();
             LoadDataTab_BaoTri();
 
+            // =============== GỌI HÀM KHOÁC ÁO MỚI VÀO ĐÂY ===============
+            ApplyModernChartStyle();
+            // ==============================================================
+
             // Mặc định chọn tab đầu tiên
             btnMenuDashboard.Checked = true;
         }
@@ -60,47 +64,132 @@ namespace Lib_Equipment
                     lblTongThanhLy.Text = Convert.ToDouble(r["TongThanhLy"]).ToString("N0") + " đ";
                 }
 
-                // TÌNH TRẠNG (Tròn)
+                // TÌNH TRẠNG (Sẽ đổi thành Spline Area ở hàm ApplyModernChartStyle)
                 string sqlTinhTrang = "SELECT Condition, COUNT(EquipmentID) AS SoLuong FROM Equipment WHERE IsDeleted = 0 OR IsDeleted IS NULL GROUP BY Condition";
                 DataTable dtTinhTrang = DataProvider.Instance.ExecuteQuery(sqlTinhTrang);
                 chartTinhTrang.Series.Clear();
-                Series seriesPie = new Series("Tình trạng");
-                seriesPie.ChartType = SeriesChartType.Doughnut;
-                seriesPie.IsValueShownAsLabel = true;
-                seriesPie.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-                seriesPie.LabelForeColor = Color.White;
+                Series seriesSpline = new Series("Tình trạng");
                 foreach (DataRow row in dtTinhTrang.Rows)
                 {
                     string status = row["Condition"].ToString();
-                    int pt = seriesPie.Points.AddXY(status, Convert.ToInt32(row["SoLuong"]));
-                    if (status == "Tốt" || status == "Đang sử dụng") seriesPie.Points[pt].Color = Color.FromArgb(40, 167, 69);
-                    else if (status.Contains("bảo trì") || status.Contains("Hỏng nhẹ")) seriesPie.Points[pt].Color = Color.FromArgb(255, 193, 7);
-                    else seriesPie.Points[pt].Color = Color.FromArgb(220, 53, 69);
+                    seriesSpline.Points.AddXY(status, Convert.ToInt32(row["SoLuong"]));
+                    // Đã tắt phần set màu đỏ/vàng/xanh riêng lẻ để nhường chỗ cho Gradient Xanh của SplineArea
                 }
-                chartTinhTrang.Series.Add(seriesPie);
+                chartTinhTrang.Series.Add(seriesSpline);
                 chartTinhTrang.Titles.Clear();
                 chartTinhTrang.Titles.Add(new Title("TỶ LỆ TÌNH TRẠNG", Docking.Top, new Font("Segoe UI", 14, FontStyle.Bold), Color.FromArgb(26, 75, 132)));
 
-                // PHÂN BỔ KHOA (Cột)
+                // PHÂN BỔ KHOA (Sẽ đổi thành Bar ở hàm ApplyModernChartStyle)
                 string sqlKhoa = @"SELECT TOP 5 d.DepartmentName, COUNT(e.EquipmentID) AS SoLuong FROM Department d LEFT JOIN Equipment e ON d.DepartmentID = e.DepartmentID AND (e.IsDeleted = 0 OR e.IsDeleted IS NULL) WHERE d.IsDeleted = 0 OR d.IsDeleted IS NULL GROUP BY d.DepartmentName ORDER BY SoLuong DESC";
                 DataTable dtKhoa = DataProvider.Instance.ExecuteQuery(sqlKhoa);
                 chartKhoa.Series.Clear();
-                Series seriesCol = new Series("KhoaPhòng");
-                seriesCol.ChartType = SeriesChartType.Column;
-                seriesCol.IsValueShownAsLabel = true;
-                seriesCol.Color = Color.FromArgb(41, 128, 185);
-                seriesCol.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+                Series seriesBar = new Series("KhoaPhòng");
                 foreach (DataRow row in dtKhoa.Rows)
                 {
                     string tenKhoa = row["DepartmentName"].ToString().Replace("Khoa ", "").Replace("Phòng ", "");
-                    seriesCol.Points.AddXY(tenKhoa, Convert.ToInt32(row["SoLuong"]));
+                    seriesBar.Points.AddXY(tenKhoa, Convert.ToInt32(row["SoLuong"]));
                 }
-                chartKhoa.Series.Add(seriesCol);
-                chartKhoa.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+                chartKhoa.Series.Add(seriesBar);
                 chartKhoa.Titles.Clear();
                 chartKhoa.Titles.Add(new Title("TOP 5 ĐƠN VỊ SỞ HỮU", Docking.Top, new Font("Segoe UI", 14, FontStyle.Bold), Color.FromArgb(26, 75, 132)));
             }
             catch (Exception ex) { MessageBox.Show("Lỗi load Dashboard: " + ex.Message); }
+        }
+
+        // =========================================================
+        // HÀM TẠO STYLE CHART THEO THEME SÁNG (GIỐNG THƯ VIỆN)
+        // =========================================================
+        private void ApplyModernChartStyle()
+        {
+            Color lightBg = Color.White;
+            Color darkText = Color.FromArgb(64, 64, 64);
+            Color gridColor = Color.FromArgb(230, 230, 230);
+
+            // =========================================================
+            // 1. CHART TRẠNG THÁI (SÓNG GRADIENT CYAN NHƯ ẢNH TRÁI)
+            // =========================================================
+            chartTinhTrang.BackColor = lightBg;
+            chartTinhTrang.ChartAreas[0].BackColor = lightBg;
+            chartTinhTrang.ChartAreas[0].BorderWidth = 0;
+
+            chartTinhTrang.ChartAreas[0].AxisX.LabelStyle.ForeColor = darkText;
+            chartTinhTrang.ChartAreas[0].AxisX.LabelStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            chartTinhTrang.ChartAreas[0].AxisX.LineColor = gridColor;
+            chartTinhTrang.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+            chartTinhTrang.ChartAreas[0].AxisX.Interval = 1;
+
+            chartTinhTrang.ChartAreas[0].AxisY.LabelStyle.ForeColor = darkText;
+            chartTinhTrang.ChartAreas[0].AxisY.LineColor = gridColor;
+            chartTinhTrang.ChartAreas[0].AxisY.MajorGrid.LineColor = gridColor;
+            chartTinhTrang.ChartAreas[0].AxisY.MajorGrid.LineDashStyle = ChartDashStyle.Dash;
+            chartTinhTrang.ChartAreas[0].AxisY.Minimum = 0;
+
+            if (chartTinhTrang.Legends.Count > 0)
+            {
+                chartTinhTrang.Legends[0].BackColor = lightBg;
+                chartTinhTrang.Legends[0].ForeColor = darkText;
+                chartTinhTrang.Legends[0].Docking = Docking.Top;
+            }
+
+            if (chartTinhTrang.Series.Count > 0)
+            {
+                var s1 = chartTinhTrang.Series[0];
+                s1.ChartType = SeriesChartType.SplineArea; // Sóng ngầm
+
+                s1.Color = Color.FromArgb(120, 0, 190, 255);
+                s1.BackGradientStyle = GradientStyle.TopBottom;
+                s1.BackSecondaryColor = Color.Transparent;
+
+                s1.BorderColor = Color.FromArgb(0, 150, 220);
+                s1.BorderWidth = 3;
+
+                s1.MarkerStyle = MarkerStyle.Circle;
+                s1.MarkerSize = 8;
+                s1.MarkerColor = Color.White;
+                s1.MarkerBorderColor = Color.FromArgb(0, 150, 220);
+                s1.MarkerBorderWidth = 2;
+
+                s1.LabelForeColor = darkText;
+                s1.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+                s1.IsValueShownAsLabel = true;
+            }
+
+            // =========================================================
+            // 2. CHART PHÂN BỔ KHOA (THANH NGANG TÍM HỒNG NHƯ ẢNH PHẢI)
+            // =========================================================
+            chartKhoa.BackColor = lightBg;
+            chartKhoa.ChartAreas[0].BackColor = lightBg;
+            chartKhoa.ChartAreas[0].BorderWidth = 0;
+
+            chartKhoa.ChartAreas[0].AxisX.LabelStyle.ForeColor = darkText;
+            chartKhoa.ChartAreas[0].AxisX.LabelStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            chartKhoa.ChartAreas[0].AxisX.LineColor = gridColor;
+            chartKhoa.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+            chartKhoa.ChartAreas[0].AxisX.Interval = 1;
+
+            chartKhoa.ChartAreas[0].AxisY.LabelStyle.ForeColor = darkText;
+            chartKhoa.ChartAreas[0].AxisY.LineColor = gridColor;
+            chartKhoa.ChartAreas[0].AxisY.MajorGrid.LineColor = gridColor;
+            chartKhoa.ChartAreas[0].AxisY.MajorGrid.LineDashStyle = ChartDashStyle.Dash;
+
+            if (chartKhoa.Legends.Count > 0)
+            {
+                chartKhoa.Legends[0].BackColor = lightBg;
+                chartKhoa.Legends[0].ForeColor = darkText;
+            }
+
+            if (chartKhoa.Series.Count > 0)
+            {
+                var s2 = chartKhoa.Series[0];
+                s2.ChartType = SeriesChartType.Bar; // Thanh ngang
+                s2.Color = Color.FromArgb(142, 124, 230); // Tím pastel
+                s2.BackGradientStyle = GradientStyle.LeftRight; // Đổ màu trái sang phải
+                s2.BackSecondaryColor = Color.FromArgb(219, 112, 219); // Đuổi sang Hồng
+
+                s2.LabelForeColor = Color.Black;
+                s2.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+                s2.IsValueShownAsLabel = true;
+            }
         }
 
         private void FormatAllGrids()
@@ -120,23 +209,19 @@ namespace Lib_Equipment
                 dgv.RowTemplate.Height = 40;
             }
         }
-        // Hàm tạo Header tự động cho bất kỳ DataGridView nào
-        // Hàm tự động vẽ Header nằm TRÊN cái bảng
+
         private void AddHeaderAboveGrid(DataGridView dgv, string titleText, string panelName)
         {
-            // Kiểm tra xem đã vẽ chưa, chưa vẽ thì mới làm để tránh bị đè nhiều lớp
             if (dgv.Parent != null && !dgv.Parent.Controls.ContainsKey(panelName))
             {
-                // 1. Tạo Panel Tiêu đề
                 Guna.UI2.WinForms.Guna2Panel pnlHeader = new Guna.UI2.WinForms.Guna2Panel();
                 pnlHeader.Name = panelName;
-                pnlHeader.Height = 60; // Chiều cao của tiêu đề
-                pnlHeader.Dock = DockStyle.Top; // Neo lên trên cùng
+                pnlHeader.Height = 60;
+                pnlHeader.Dock = DockStyle.Top;
                 pnlHeader.FillColor = Color.FromArgb(240, 248, 255);
                 pnlHeader.CustomBorderColor = Color.LightGray;
                 pnlHeader.CustomBorderThickness = new Padding(0, 0, 0, 2);
 
-                // 2. Tạo Label chứa chữ
                 Label lblTitle = new Label();
                 lblTitle.Text = titleText;
                 lblTitle.Font = new Font("Segoe UI", 15, FontStyle.Bold);
@@ -145,18 +230,12 @@ namespace Lib_Equipment
                 lblTitle.TextAlign = ContentAlignment.MiddleCenter;
                 lblTitle.BackColor = Color.Transparent;
 
-                // 3. Ráp chữ vào Panel
                 pnlHeader.Controls.Add(lblTitle);
-
-                // 4. Nhét Panel vào CÙNG KHÔNG GIAN với cái bảng
                 dgv.Parent.Controls.Add(pnlHeader);
-
-                // ==========================================
-                // ĐÃ SỬA TẠI ĐÂY: DÙNG SendToBack() ĐỂ ĐẨY BẢNG XUỐNG DƯỚI
-                // ==========================================
                 pnlHeader.SendToBack();
             }
         }
+
         private void LoadDataTab_TinhTrang()
         {
             AddHeaderAboveGrid(dgvTinhTrang, "THỐNG KÊ SỐ LƯỢNG THIẾT BỊ THEO TRẠNG THÁI", "pnlHeaderTinhTrang");
@@ -176,7 +255,7 @@ namespace Lib_Equipment
         }
 
         // ========================================================
-        // 3. XUẤT EXCEL CHỐNG LỖI TUYỆT ĐỐI 100% (XML SPREADSHEET)
+        // 3. XUẤT EXCEL CHỐNG LỖI TUYỆT ĐỐI 100%
         // ========================================================
         private void btnXuatExcelAll_Click(object sender, EventArgs e)
         {
@@ -195,7 +274,6 @@ namespace Lib_Equipment
             {
                 try
                 {
-                    // Tự tay Code C# biên dịch ra cấu trúc lõi của file Excel siêu tốc độ
                     using (StreamWriter sw = new StreamWriter(sfd.FileName, false, Encoding.UTF8))
                     {
                         sw.WriteLine("<?xml version=\"1.0\"?>");
@@ -205,7 +283,6 @@ namespace Lib_Equipment
                         sw.WriteLine(" xmlns:x=\"urn:schemas-microsoft-com:office:excel\"");
                         sw.WriteLine(" xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\">");
 
-                        // ĐỊNH NGHĨA STYLES (MÀU SẮC)
                         sw.WriteLine(" <Styles>");
                         sw.WriteLine("  <Style ss:ID=\"Title\">");
                         sw.WriteLine("   <Font ss:Bold=\"1\" ss:Size=\"16\" ss:Color=\"#1A4B84\"/>");
@@ -229,7 +306,6 @@ namespace Lib_Equipment
                         sw.WriteLine("  </Style>");
                         sw.WriteLine(" </Styles>");
 
-                        // TẠO 3 SHEET BẰNG CODE
                         WriteGridToXml(sw, dgvTinhTrang, "TinhTrang_TB", "TÌNH TRẠNG THIẾT BỊ", "HeaderBlue");
                         WriteGridToXml(sw, dgvPhanBo, "PhanBo_Khoa", "PHÂN BỔ TÀI SẢN KHOA", "HeaderBlue");
                         WriteGridToXml(sw, dgvBaoTri, "BaoTri_ThanhLy", "CHI PHÍ BẢO TRÌ & THANH LÝ", "HeaderOrange");
@@ -249,7 +325,6 @@ namespace Lib_Equipment
             }
         }
 
-        // HÀM HỖ TRỢ BIÊN DỊCH LƯỚI THÀNH XML
         private void WriteGridToXml(StreamWriter sw, DataGridView dgv, string sheetName, string title, string headerStyle)
         {
             if (dgv.Rows.Count == 0) return;
@@ -257,35 +332,29 @@ namespace Lib_Equipment
             sw.WriteLine($" <Worksheet ss:Name=\"{sheetName}\">");
             sw.WriteLine("  <Table>");
 
-            // Thiết lập độ rộng cột
             for (int i = 0; i < dgv.Columns.Count; i++)
             {
                 sw.WriteLine("   <Column ss:AutoFitWidth=\"1\" ss:Width=\"150\"/>");
             }
 
-            // Dòng 1
             sw.WriteLine("   <Row>");
             sw.WriteLine("    <Cell><Data ss:Type=\"String\">TRƯỜNG ĐH KINH TẾ - KỸ THUẬT CÔNG NGHIỆP</Data></Cell>");
             sw.WriteLine("   </Row>");
             sw.WriteLine("   <Row></Row>");
 
-            // Dòng 3 (Tiêu đề)
             sw.WriteLine("   <Row ss:Height=\"25\">");
             sw.WriteLine($"    <Cell ss:MergeAcross=\"{dgv.Columns.Count - 1}\" ss:StyleID=\"Title\"><Data ss:Type=\"String\">{title}</Data></Cell>");
             sw.WriteLine("   </Row>");
             sw.WriteLine("   <Row></Row>");
 
-            // Cột Header
             sw.WriteLine("   <Row ss:Height=\"20\">");
             for (int i = 0; i < dgv.Columns.Count; i++)
             {
-                // Thay thế ký tự đặc biệt để chống vỡ cấu trúc XML
                 string headerText = dgv.Columns[i].HeaderText.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
                 sw.WriteLine($"    <Cell ss:StyleID=\"{headerStyle}\"><Data ss:Type=\"String\">{headerText}</Data></Cell>");
             }
             sw.WriteLine("   </Row>");
 
-            // Data
             for (int i = 0; i < dgv.Rows.Count; i++)
             {
                 sw.WriteLine("   <Row>");

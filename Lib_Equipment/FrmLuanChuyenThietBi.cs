@@ -78,7 +78,7 @@ namespace Lib_Equipment
                 Width = 180,
                 FlatStyle = FlatStyle.Flat
             };
-            cmbActual.Items.AddRange("Tốt", "Đang sử dụng", "Hỏng nhẹ", "Cần bảo trì", "Hỏng hoàn toàn");
+            cmbActual.Items.AddRange("Tốt", "Cần bảo trì", "Hỏng");
             dgvThietBi.Columns.Add(cmbActual);
 
             // Căn chỉnh checkbox Header (Select All)

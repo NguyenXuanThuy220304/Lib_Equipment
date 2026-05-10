@@ -76,5 +76,6 @@ namespace Lib_Equipment.BLL
             string defaultPassHash = SecurityHelper.HashSHA256("1"); // Pass mặc định: 1
             return DocGiaDAO.Instance.SyncSystem(defaultPassHash);
         }
+
     }
 }

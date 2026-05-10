@@ -26,17 +26,17 @@ namespace Lib_Equipment
                 return;
             }
 
-            // 2. BĂM MẬT KHẨU (Sử dụng chuẩn SHA256 của bạn)
+            // 2. BĂM MẬT KHẨU
             string hashedPassword = SecurityHelper.HashSHA256(password);
 
-            // 3. Câu lệnh SQL - Lấy thêm FullName để hiển thị lời chào trên form Độc giả
+            // 3. Câu lệnh SQL
             string query = "SELECT UserID, Username, RoleID, FullName FROM [User] WHERE Username = @user AND PasswordHash = @pass AND Status = 1";
 
             // 4. Khai báo tham số
             SqlParameter[] parameters = new SqlParameter[]
             {
-        new SqlParameter("@user", username),
-        new SqlParameter("@pass", hashedPassword)
+                new SqlParameter("@user", username),
+                new SqlParameter("@pass", hashedPassword)
             };
 
             try
@@ -53,13 +53,21 @@ namespace Lib_Equipment
                     string fullName = dt.Rows[0]["FullName"].ToString();
 
                     // =================================================================
+                    // TÍNH NĂNG MỚI: AUTO CHẠY NGẦM GỬI MAIL KHI ĐĂNG NHẬP THÀNH CÔNG
+                    // =================================================================
+                    System.Threading.Tasks.Task.Run(() =>
+                    {
+                        try { Lib_Equipment.BLL.MuonTraBLL.Instance.TuDongKiemTraVaGuiMailLuuLuu(); }
+                        catch { /* Bỏ qua nếu mất mạng để không văng app */ }
+                    });
+
+                    // =================================================================
                     // XỬ LÝ PHÂN LUỒNG VÀ ÉP ĐỔI MẬT KHẨU
                     // =================================================================
 
                     if (AppSession.RoleID == "Reader")
                     {
                         // --- BƯỚC KIỂM TRA LUẬT KỶ LUẬT THƯ VIỆN ---
-                        // Truy vấn vào bảng Reader để lấy Status và IsPermanentlyBanned
                         string checkReaderQuery = "SELECT Status, ISNULL(IsPermanentlyBanned, 0) AS IsPermanentlyBanned FROM Reader WHERE ReaderID = @readerId";
                         DataTable dtReader = DataProvider.Instance.ExecuteQuery(checkReaderQuery, new SqlParameter[] { new SqlParameter("@readerId", AppSession.Username) });
 
@@ -71,20 +79,19 @@ namespace Lib_Equipment
                             // Luật 1: Cấm vĩnh viễn (Đã trễ > 30 ngày)
                             if (isBanned)
                             {
-                                MessageBox.Show("Tài khoản của bạn đã bị CẤM VĨNH VIỄN do vi phạm nghiêm trọng nội quy (Quá hạn > 30 ngày)!\n\nHồ sơ đã được chuyển lên phòng ban xử lý.", "Từ chối truy cập", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                                return; // Đuổi ra ngoài, không chạy code phía dưới nữa
+                                // ĐÃ XÓA LỆNH return; ĐỂ CHO PHÉP ĐĂNG NHẬP
+                                MessageBox.Show("Tài khoản của bạn đã bị CẤM VĨNH VIỄN do vi phạm nghiêm trọng nội quy (Quá hạn > 30 ngày)!\n\nHệ thống tạm thời cho phép bạn đăng nhập để thực hiện TRẢ SÁCH và THANH TOÁN CÔNG NỢ.", "Thông báo vi phạm", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             }
-
                             // Luật 2: Khóa tạm thời (Trễ từ 3 - 30 ngày)
-                            if (readerStatus == 0)
+                            else if (readerStatus == 0) // Dùng else if để không hiện 2 thông báo liên tiếp
                             {
-                                MessageBox.Show("Tài khoản đang bị KHÓA TẠM THỜI do có sách mượn quá hạn!\n\nVui lòng đến quầy Thư viện để trả sách và thanh toán công nợ.", "Tài khoản bị khóa", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                return; // Đuổi ra ngoài
+                                // ĐÃ XÓA LỆNH return; ĐỂ CHO PHÉP ĐĂNG NHẬP
+                                MessageBox.Show("Tài khoản đang bị KHÓA TẠM THỜI do có sách mượn quá hạn!\n\nVui lòng sử dụng hệ thống để trả sách và thanh toán công nợ. Tài khoản sẽ tự động mở khóa sau khi hoàn tất.", "Tài khoản bị khóa", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             }
                         }
                         // -------------------------------------------------------------
 
-                        // Nếu thẻ còn "Xanh", tiếp tục kiểm tra xem có phải pass mặc định không
+                        // Kiểm tra xem có phải pass mặc định không
                         string defaultPasswordHash = SecurityHelper.HashSHA256("1");
 
                         if (hashedPassword == defaultPasswordHash)
@@ -115,7 +122,7 @@ namespace Lib_Equipment
                 }
                 else
                 {
-                    MessageBox.Show("Tên đăng nhập, mật khẩu không đúng hoặc tài khoản bị khóa!", "Lỗi đăng nhập", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Tên đăng nhập, mật khẩu không đúng hoặc tài khoản bị vô hiệu hóa!", "Lỗi đăng nhập", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
@@ -126,7 +133,6 @@ namespace Lib_Equipment
 
         private void FrmLogin_KeyDown(object sender, KeyEventArgs e)
         {
-            
         }
 
         private void txtPassword_KeyDown(object sender, KeyEventArgs e)

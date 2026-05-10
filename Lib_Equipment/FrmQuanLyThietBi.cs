@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 namespace Lib_Equipment
@@ -10,8 +11,6 @@ namespace Lib_Equipment
     public partial class FrmQuanLyThietBi : Form
     {
         private string selectedEquipmentID = "";
-
-        // Dùng Timer để tạo độ "Nhạy" cho Live Search, chống giật lag UI
         private Timer searchTimer;
 
         public FrmQuanLyThietBi()
@@ -19,7 +18,6 @@ namespace Lib_Equipment
             InitializeComponent();
             dgvThietBi.DataError += (s, e) => { e.ThrowException = false; };
 
-            // Cài đặt Timer cho Tìm kiếm (0.3 giây sau khi ngừng gõ sẽ tự động tìm)
             searchTimer = new Timer();
             searchTimer.Interval = 300;
             searchTimer.Tick += SearchTimer_Tick;
@@ -27,6 +25,8 @@ namespace Lib_Equipment
 
         private void FrmQuanLyThietBi_Load(object sender, EventArgs e)
         {
+            txtMaTB.Enabled = false;
+
             LoadComboboxLoaiTB();
             LoadComboboxKhoaPhong();
             LoadData();
@@ -35,6 +35,9 @@ namespace Lib_Equipment
             pnlSearch.Visible = false;
             pnlControls.Visible = true;
             CheckMaintenanceAlert();
+
+            cboLoaiTB.SelectedIndexChanged += cboLoaiTB_SelectedIndexChanged;
+            btnLamMoi_Click(null, null);
         }
 
         private void FrmQuanLyThietBi_Resize(object sender, EventArgs e)
@@ -42,12 +45,210 @@ namespace Lib_Equipment
             AdjustSearchLayout();
         }
 
+        // =======================================================
+        // THUẬT TOÁN SINH MÃ CHO TỪNG THIẾT BỊ 
+        // =======================================================
+        private string SinhMaThietBiTuDong(string categoryId)
+        {
+            if (string.IsNullOrEmpty(categoryId)) return "";
+
+            string query = "SELECT EquipmentID FROM Equipment WHERE CategoryID = @catID";
+            DataTable dt = DataProvider.Instance.ExecuteQuery(query, new SqlParameter[] { new SqlParameter("@catID", categoryId) });
+
+            int maxNum = 0;
+            foreach (DataRow row in dt.Rows)
+            {
+                string id = row["EquipmentID"].ToString();
+                if (id.Length > categoryId.Length)
+                {
+                    string numPart = id.Substring(categoryId.Length);
+                    if (int.TryParse(numPart, out int num))
+                    {
+                        if (num > maxNum) maxNum = num;
+                    }
+                }
+            }
+            int newNum = maxNum + 1;
+            return categoryId + newNum.ToString("D3");
+        }
+
+        // =======================================================
+        // THUẬT TOÁN KHOA HỌC: TỰ ĐỘNG GỢI Ý ĐẦU MÃ DANH MỤC MỚI
+        // =======================================================
+        private string LoaiBoDauTiengViet(string text)
+        {
+            string[] arr1 = new string[] { "á", "à", "ả", "ã", "ạ", "â", "ấ", "ầ", "ẩ", "ẫ", "ậ", "ă", "ắ", "ằ", "ẳ", "ẵ", "ặ",
+            "đ", "é","è","ẻ","ẽ","ẹ","ê","ế","ề","ể","ễ","ệ", "í","ì","ỉ","ĩ","ị",
+            "ó","ò","ỏ","õ","ọ","ô","ố","ồ","ổ","ỗ","ộ","ơ","ớ","ờ","ở","ỡ","ợ",
+            "ú","ù","ủ","ũ","ụ","ư","ứ","ừ","ử","ữ","ự", "ý","ỳ","ỷ","ỹ","ỵ"};
+            string[] arr2 = new string[] { "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a",
+            "d", "e","e","e","e","e","e","e","e","e","e","e", "i","i","i","i","i",
+            "o","o","o","o","o","o","o","o","o","o","o","o","o","o","o","o","o",
+            "u","u","u","u","u","u","u","u","u","u","u", "y","y","y","y","y"};
+            for (int i = 0; i < arr1.Length; i++)
+            {
+                text = text.Replace(arr1[i], arr2[i]);
+                text = text.Replace(arr1[i].ToUpper(), arr2[i].ToUpper());
+            }
+            return text;
+        }
+
+        private string TaoDauMaKhoaHoc(string tenLoai)
+        {
+            // 1. Xóa dấu, in hoa, xóa khoảng trắng thừa
+            string cleanName = LoaiBoDauTiengViet(tenLoai).ToUpper().Trim();
+            if (string.IsNullOrEmpty(cleanName)) return "";
+
+            string[] words = cleanName.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            string basePrefix = "";
+
+            // 2. Lấy các chữ cái đầu tiên (Khoa học)
+            if (words.Length == 1)
+            {
+                // Nếu chỉ có 1 từ (VD: QUẠT), lấy tối đa 3 chữ cái đầu -> QUA
+                basePrefix = words[0].Substring(0, Math.Min(3, words[0].Length));
+            }
+            else
+            {
+                // Nếu có nhiều từ (VD: Máy In Màu), lấy chữ cái đầu mỗi từ -> MIM
+                foreach (string w in words)
+                {
+                    basePrefix += w[0];
+                    if (basePrefix.Length == 4) break; // Chỉ lấy tối đa 4 ký tự cho gọn
+                }
+            }
+
+            // 3. Quét Database chống trùng lặp
+            string finalPrefix = basePrefix;
+            int counter = 1;
+
+            while (true)
+            {
+                string query = "SELECT COUNT(*) FROM EquipmentCategory WHERE CategoryID = @id";
+                int count = (int)DataProvider.Instance.ExecuteScalar(query, new SqlParameter[] { new SqlParameter("@id", finalPrefix) });
+
+                // Nếu chưa ai dùng mã này -> OK lấy luôn
+                if (count == 0) return finalPrefix;
+
+                // Nếu bị trùng (VD: MI đã có rồi), tự động thêm số thành MI1, MI2...
+                finalPrefix = basePrefix + counter.ToString();
+                counter++;
+            }
+        }
+
+        // =======================================================
+
         private void LoadComboboxLoaiTB()
         {
+            cboLoaiTB.SelectedIndexChanged -= cboLoaiTB_SelectedIndexChanged;
+
             string query = "SELECT CategoryID, CategoryName FROM EquipmentCategory WHERE IsDeleted = 0 OR IsDeleted IS NULL";
-            cboLoaiTB.DataSource = DataProvider.Instance.ExecuteQuery(query);
+            DataTable dt = DataProvider.Instance.ExecuteQuery(query);
+
+            DataRow newRow = dt.NewRow();
+            newRow["CategoryID"] = "NEW_CAT";
+            newRow["CategoryName"] = "➕THÊM LOẠI THIẾT BỊ MỚI";
+            dt.Rows.Add(newRow);
+
+            cboLoaiTB.DataSource = dt;
             cboLoaiTB.DisplayMember = "CategoryName";
             cboLoaiTB.ValueMember = "CategoryID";
+
+            cboLoaiTB.SelectedIndexChanged += cboLoaiTB_SelectedIndexChanged;
+        }
+
+        private void cboLoaiTB_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cboLoaiTB.SelectedValue == null) return;
+            string catId = cboLoaiTB.SelectedValue.ToString();
+            if (catId == "System.Data.DataRowView") return;
+
+            if (catId == "NEW_CAT")
+            {
+                HienThiCuaSoThemLoaiMoi();
+                return;
+            }
+
+            if (string.IsNullOrEmpty(selectedEquipmentID))
+            {
+                txtMaTB.Text = SinhMaThietBiTuDong(catId);
+            }
+        }
+
+        private void HienThiCuaSoThemLoaiMoi()
+        {
+            Form prompt = new Form()
+            {
+                Width = 370,
+                Height = 250,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                Text = "Thêm Danh Mục Thiết Bị",
+                StartPosition = FormStartPosition.CenterParent,
+                MaximizeBox = false,
+                MinimizeBox = false
+            };
+
+            Label lblName = new Label() { Left = 20, Top = 20, Text = "Tên loại (Gõ để tự sinh mã):", Width = 300 };
+            TextBox txtName = new TextBox() { Left = 20, Top = 45, Width = 310 };
+
+            Label lblPrefix = new Label() { Left = 20, Top = 80, Text = "Đầu mã (Có thể sửa lại nếu muốn):", Width = 300 };
+            TextBox txtPrefix = new TextBox() { Left = 20, Top = 105, Width = 310, CharacterCasing = CharacterCasing.Upper };
+
+            Button btnSave = new Button() { Text = "Lưu", Left = 150, Top = 160, Width = 80, DialogResult = DialogResult.OK };
+            Button btnCancel = new Button() { Text = "Hủy", Left = 250, Top = 160, Width = 80, DialogResult = DialogResult.Cancel };
+
+            prompt.Controls.Add(lblName); prompt.Controls.Add(txtName);
+            prompt.Controls.Add(lblPrefix); prompt.Controls.Add(txtPrefix);
+            prompt.Controls.Add(btnSave); prompt.Controls.Add(btnCancel);
+            prompt.AcceptButton = btnSave; prompt.CancelButton = btnCancel;
+
+            // Sự kiện Real-time: Ngay khi người dùng gõ Tên, Đầu mã tự động nhảy theo
+            txtName.TextChanged += (s, ev) =>
+            {
+                string input = txtName.Text.Trim();
+                if (input.Length > 0)
+                {
+                    txtPrefix.Text = TaoDauMaKhoaHoc(input);
+                }
+                else
+                {
+                    txtPrefix.Clear();
+                }
+            };
+
+            if (prompt.ShowDialog() == DialogResult.OK)
+            {
+                string newCatName = txtName.Text.Trim();
+                string newPrefix = txtPrefix.Text.Trim();
+
+                if (string.IsNullOrEmpty(newCatName) || string.IsNullOrEmpty(newPrefix))
+                {
+                    MessageBox.Show("Vui lòng nhập đầy đủ Tên loại và Đầu mã!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    LoadComboboxLoaiTB(); return;
+                }
+
+                try
+                {
+                    string query = "INSERT INTO EquipmentCategory (CategoryID, CategoryName, IsDeleted) VALUES (@id, @name, 0)";
+                    DataProvider.Instance.ExecuteNonQuery(query, new SqlParameter[] {
+                        new SqlParameter("@id", newPrefix),
+                        new SqlParameter("@name", newCatName)
+                    });
+
+                    MessageBox.Show("Thêm danh mục thiết bị thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadComboboxLoaiTB();
+                    cboLoaiTB.SelectedValue = newPrefix;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Đầu mã đã tồn tại hoặc có lỗi:\n" + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    LoadComboboxLoaiTB();
+                }
+            }
+            else
+            {
+                LoadComboboxLoaiTB();
+            }
         }
 
         private void LoadComboboxKhoaPhong()
@@ -91,9 +292,6 @@ namespace Lib_Equipment
             FormatGrid();
         }
 
-        // =======================================================
-        // TÍNH NĂNG TÌM KIẾM LIVE SIÊU TỐC + TÌM VIẾT TẮT (FUZZY)
-        // =======================================================
         private void btnTimKiem_Click(object sender, EventArgs e)
         {
             pnlControls.Visible = false;
@@ -103,14 +301,13 @@ namespace Lib_Equipment
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            // Reset lại thời gian đợi mỗi khi gõ phím mới
             searchTimer.Stop();
             searchTimer.Start();
         }
 
         private void SearchTimer_Tick(object sender, EventArgs e)
         {
-            searchTimer.Stop(); // Dừng timer để thực hiện truy vấn
+            searchTimer.Stop();
 
             string keyword = txtSearch.Text.Trim();
             if (string.IsNullOrEmpty(keyword))
@@ -119,11 +316,9 @@ namespace Lib_Equipment
                 return;
             }
 
-            // Thuật toán: Biến "MT" thành "%M%T%" để tìm kiếm viết tắt
             string fuzzyKey = "%";
             foreach (char c in keyword) { fuzzyKey += c + "%"; }
 
-            // Tìm kiếm trực tiếp bằng SQL để hỗ trợ viết tắt hoàn hảo nhất
             string query = @"
                 SELECT e.EquipmentID, e.EquipmentName, c.CategoryName, d.DepartmentName, 
                        e.ImportDate, e.PurchasePrice, e.Condition,
@@ -143,7 +338,7 @@ namespace Lib_Equipment
             };
 
             dgvThietBi.DataSource = DataProvider.Instance.ExecuteQuery(query, param);
-            FormatGrid(); // Luôn format lại cột sau khi nạp data mới
+            FormatGrid();
         }
 
         private void btnLamMoi_Click(object sender, EventArgs e)
@@ -153,11 +348,20 @@ namespace Lib_Equipment
             txtSearch.Clear();
 
             selectedEquipmentID = "";
-            txtMaTB.Enabled = true;
-            txtMaTB.Clear(); txtTenTB.Clear(); txtGiaTien.Clear();
-            if (cboLoaiTB.Items.Count > 0) cboLoaiTB.SelectedIndex = 0;
+            txtTenTB.Clear(); txtGiaTien.Clear();
+
             if (cboKhoaPhong.Items.Count > 0) cboKhoaPhong.SelectedIndex = 0;
             if (cboTinhTrang.Items.Count > 0) cboTinhTrang.SelectedIndex = 0;
+
+            if (cboLoaiTB.Items.Count > 0)
+            {
+                cboLoaiTB.SelectedIndex = 0;
+                string catId = cboLoaiTB.SelectedValue?.ToString();
+                if (catId != null && catId != "System.Data.DataRowView" && catId != "NEW_CAT")
+                {
+                    txtMaTB.Text = SinhMaThietBiTuDong(catId);
+                }
+            }
 
             LoadData();
         }
@@ -168,9 +372,6 @@ namespace Lib_Equipment
             txtSearch.Location = new Point(startX, (pnlSearch.Height - txtSearch.Height) / 2);
         }
 
-        // =======================================================
-        // MÃ VẠCH & CLICK DATA
-        // =======================================================
         private void btnBarcode_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(selectedEquipmentID))
@@ -197,7 +398,6 @@ namespace Lib_Equipment
 
                 txtGiaTien.Text = row.Cells["PurchasePrice"].Value.ToString();
                 cboTinhTrang.Text = row.Cells["Condition"].Value.ToString();
-                txtMaTB.Enabled = false;
             }
         }
 
@@ -212,9 +412,6 @@ namespace Lib_Equipment
             }
         }
 
-        // =======================================================
-        // THÊM, SỬA, XÓA & BẢO TRÌ
-        // =======================================================
         private void btnThem_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txtMaTB.Text) || string.IsNullOrEmpty(txtTenTB.Text))
@@ -234,7 +431,7 @@ namespace Lib_Equipment
             };
             DataProvider.Instance.ExecuteNonQuery(query, p);
             MessageBox.Show("Thêm mới thành công!");
-            LoadData(); btnLamMoi_Click(null, null);
+            btnLamMoi_Click(null, null);
         }
 
         private void btnSua_Click(object sender, EventArgs e)
@@ -251,7 +448,7 @@ namespace Lib_Equipment
             };
             DataProvider.Instance.ExecuteNonQuery(query, p);
             MessageBox.Show("Cập nhật thành công!");
-            LoadData();
+            btnLamMoi_Click(null, null);
         }
 
         private void btnXoa_Click(object sender, EventArgs e)
@@ -262,7 +459,7 @@ namespace Lib_Equipment
                 string query = "UPDATE Equipment SET IsDeleted = 1 WHERE EquipmentID = @id";
                 DataProvider.Instance.ExecuteNonQuery(query, new SqlParameter[] { new SqlParameter("@id", selectedEquipmentID) });
                 MessageBox.Show("Đã xóa thiết bị!");
-                LoadData(); btnLamMoi_Click(null, null);
+                btnLamMoi_Click(null, null);
             }
         }
 

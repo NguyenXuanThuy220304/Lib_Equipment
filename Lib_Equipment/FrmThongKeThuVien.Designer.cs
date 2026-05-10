@@ -238,27 +238,27 @@
             legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
             legend1.Name = "Legend1";
             this.chartTrangThai.Legends.Add(legend1);
-            this.chartTrangThai.Location = new System.Drawing.Point(671, 15);
+            this.chartTrangThai.Location = new System.Drawing.Point(546, 15);
             this.chartTrangThai.Name = "chartTrangThai";
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Doughnut;
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this.chartTrangThai.Series.Add(series1);
-            this.chartTrangThai.Size = new System.Drawing.Size(400, 507);
+            this.chartTrangThai.Size = new System.Drawing.Size(525, 507);
             this.chartTrangThai.TabIndex = 1;
             // 
             // chartTopSach
             // 
             chartArea2.Name = "ChartArea1";
             this.chartTopSach.ChartAreas.Add(chartArea2);
-            this.chartTopSach.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.chartTopSach.Dock = System.Windows.Forms.DockStyle.Left;
             this.chartTopSach.Location = new System.Drawing.Point(0, 15);
             this.chartTopSach.Name = "chartTopSach";
             series2.ChartArea = "ChartArea1";
             series2.Name = "Series1";
             this.chartTopSach.Series.Add(series2);
-            this.chartTopSach.Size = new System.Drawing.Size(1071, 507);
+            this.chartTopSach.Size = new System.Drawing.Size(992, 507);
             this.chartTopSach.TabIndex = 0;
             // 
             // pnlCards
@@ -280,7 +280,7 @@
             this.card4.Controls.Add(this.lblTongPhat);
             this.card4.Controls.Add(this.lblTitle4);
             this.card4.FillColor = System.Drawing.Color.White;
-            this.card4.Location = new System.Drawing.Point(810, 10);
+            this.card4.Location = new System.Drawing.Point(1023, 10);
             this.card4.Name = "card4";
             this.card4.ShadowDecoration.Enabled = true;
             this.card4.Size = new System.Drawing.Size(260, 110);
@@ -315,7 +315,7 @@
             this.card3.Controls.Add(this.lblDangMuon);
             this.card3.Controls.Add(this.lblTitle3);
             this.card3.FillColor = System.Drawing.Color.White;
-            this.card3.Location = new System.Drawing.Point(540, 10);
+            this.card3.Location = new System.Drawing.Point(686, 10);
             this.card3.Name = "card3";
             this.card3.ShadowDecoration.Enabled = true;
             this.card3.Size = new System.Drawing.Size(260, 110);
@@ -350,7 +350,7 @@
             this.card2.Controls.Add(this.lblTongDocGia);
             this.card2.Controls.Add(this.lblTitle2);
             this.card2.FillColor = System.Drawing.Color.White;
-            this.card2.Location = new System.Drawing.Point(270, 10);
+            this.card2.Location = new System.Drawing.Point(350, 10);
             this.card2.Name = "card2";
             this.card2.ShadowDecoration.Enabled = true;
             this.card2.Size = new System.Drawing.Size(260, 110);
@@ -385,7 +385,7 @@
             this.card1.Controls.Add(this.lblTongSach);
             this.card1.Controls.Add(this.lblTitle1);
             this.card1.FillColor = System.Drawing.Color.White;
-            this.card1.Location = new System.Drawing.Point(0, 10);
+            this.card1.Location = new System.Drawing.Point(7, 10);
             this.card1.Name = "card1";
             this.card1.ShadowDecoration.Enabled = true;
             this.card1.Size = new System.Drawing.Size(260, 110);

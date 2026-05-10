@@ -22,8 +22,12 @@ namespace Lib_Equipment
         {
             FormatAllGrids();
 
-            // 1. Tải Dashboard (Thẻ số liệu & Biểu đồ)
+            // 1. Tải Dashboard (Logic truy vấn SQL cũ của bạn vẫn chạy bình thường)
             LoadDashboardData();
+
+            // =============== GỌI HÀM KHOÁC ÁO MỚI VÀO ĐÂY ===============
+            ApplyModernChartStyle();
+            // ==============================================================
 
             // 2. Tải dữ liệu vào Lưới để chuẩn bị Xuất Excel
             LoadDataToGrids();
@@ -97,7 +101,7 @@ namespace Lib_Equipment
                 chartTopSach.Series.Add(seriesCol);
                 chartTopSach.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
                 chartTopSach.Titles.Clear();
-                chartTopSach.Titles.Add(new Title("TOP 10 SÁCH MƯỢN NHIỀU NHẤT", Docking.Top, new Font("Segoe UI", 14, FontStyle.Bold), Color.FromArgb(26, 75, 132)));
+                chartTopSach.Titles.Add(new Title("TOP 7 SÁCH MƯỢN NHIỀU NHẤT", Docking.Top, new Font("Segoe UI", 14, FontStyle.Bold), Color.FromArgb(26, 75, 132)));
 
                 // 1.3. BIỂU ĐỒ TRÒN (TRẠNG THÁI KHO)
                 DataTable dtTrangThai = ThongKeThuVienBLL.Instance.LayDuLieuTrangThaiKho();
@@ -339,6 +343,108 @@ namespace Lib_Equipment
         private void btnMenuTopSach_Click(object sender, EventArgs e)
         {
 
+        }
+        private void ApplyModernChartStyle()
+        {
+            // Màu nền sáng chuẩn Dashboard thanh lịch
+            Color lightBg = Color.White;
+            Color darkText = Color.FromArgb(64, 64, 64); // Chữ màu xám đậm để không bị chói mắt
+            Color gridColor = Color.FromArgb(230, 230, 230); // Lưới kẻ sọc màu xám nhạt
+
+            // Đổi màu nền của Panel chứa biểu đồ cho đồng bộ
+            if (pnlCharts != null) pnlCharts.BackColor = lightBg;
+
+            // =========================================================
+            // 1. CHART TOP SÁCH (THANH NGANG - MÀU SÁNG)
+            // =========================================================
+            chartTopSach.BackColor = lightBg;
+            chartTopSach.ChartAreas[0].BackColor = lightBg;
+            chartTopSach.ChartAreas[0].BorderWidth = 0;
+
+            // Tùy chỉnh chữ và tắt lưới dọc
+            chartTopSach.ChartAreas[0].AxisX.LabelStyle.ForeColor = darkText;
+            chartTopSach.ChartAreas[0].AxisX.LabelStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            chartTopSach.ChartAreas[0].AxisX.LineColor = gridColor;
+            chartTopSach.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+            chartTopSach.ChartAreas[0].AxisX.Interval = 1; // Hiện đủ tên 5 cuốn sách
+
+            // Tùy chỉnh chữ và biến lưới ngang thành nét đứt mờ
+            chartTopSach.ChartAreas[0].AxisY.LabelStyle.ForeColor = darkText;
+            chartTopSach.ChartAreas[0].AxisY.LineColor = gridColor;
+            chartTopSach.ChartAreas[0].AxisY.MajorGrid.LineColor = gridColor;
+            chartTopSach.ChartAreas[0].AxisY.MajorGrid.LineDashStyle = ChartDashStyle.Dash;
+
+            if (chartTopSach.Legends.Count > 0)
+            {
+                chartTopSach.Legends[0].BackColor = lightBg;
+                chartTopSach.Legends[0].ForeColor = darkText;
+            }
+
+            if (chartTopSach.Series.Count > 0)
+            {
+                var s1 = chartTopSach.Series[0];
+                s1.ChartType = SeriesChartType.Bar; // Biểu đồ thanh ngang
+                s1.Color = Color.FromArgb(142, 124, 230); // Tím pastel
+                s1.BackGradientStyle = GradientStyle.LeftRight; // Gradient đổ từ trái sang phải
+                s1.BackSecondaryColor = Color.FromArgb(219, 112, 219); // Đuổi sang màu Hồng
+
+                // Chữ số trên cột màu đen cho dễ nhìn trên nền sáng
+                s1.LabelForeColor = Color.Black;
+                s1.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+                s1.IsValueShownAsLabel = true;
+            }
+
+            // =========================================================
+            // 2. CHART TRẠNG THÁI (SÓNG GRADIENT - MÀU SÁNG)
+            // =========================================================
+            chartTrangThai.BackColor = lightBg;
+            chartTrangThai.ChartAreas[0].BackColor = lightBg;
+            chartTrangThai.ChartAreas[0].BorderWidth = 0;
+
+            chartTrangThai.ChartAreas[0].AxisX.LabelStyle.ForeColor = darkText;
+            chartTrangThai.ChartAreas[0].AxisX.LabelStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            chartTrangThai.ChartAreas[0].AxisX.LineColor = gridColor;
+            chartTrangThai.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+            chartTrangThai.ChartAreas[0].AxisX.Interval = 1;
+
+            chartTrangThai.ChartAreas[0].AxisY.LabelStyle.ForeColor = darkText;
+            chartTrangThai.ChartAreas[0].AxisY.LineColor = gridColor;
+            chartTrangThai.ChartAreas[0].AxisY.MajorGrid.LineColor = gridColor;
+            chartTrangThai.ChartAreas[0].AxisY.MajorGrid.LineDashStyle = ChartDashStyle.Dash;
+            chartTrangThai.ChartAreas[0].AxisY.Minimum = 0;
+
+            if (chartTrangThai.Legends.Count > 0)
+            {
+                chartTrangThai.Legends[0].BackColor = lightBg;
+                chartTrangThai.Legends[0].ForeColor = darkText;
+                chartTrangThai.Legends[0].Docking = Docking.Top;
+            }
+
+            if (chartTrangThai.Series.Count > 0)
+            {
+                var s2 = chartTrangThai.Series[0];
+                s2.ChartType = SeriesChartType.SplineArea; // Biểu đồ sóng ngầm
+
+                // Nền xanh Cyan trong suốt đậm hơn chút để nổi trên nền trắng
+                s2.Color = Color.FromArgb(120, 0, 190, 255);
+                s2.BackGradientStyle = GradientStyle.TopBottom;
+                s2.BackSecondaryColor = Color.Transparent;
+
+                // Đường line biên sắc nét hơn
+                s2.BorderColor = Color.FromArgb(0, 150, 220);
+                s2.BorderWidth = 3;
+
+                // Chấm tròn tại các đỉnh điểm
+                s2.MarkerStyle = MarkerStyle.Circle;
+                s2.MarkerSize = 8;
+                s2.MarkerColor = Color.White;
+                s2.MarkerBorderColor = Color.FromArgb(0, 150, 220);
+                s2.MarkerBorderWidth = 2;
+
+                s2.LabelForeColor = darkText;
+                s2.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+                s2.IsValueShownAsLabel = true;
+            }
         }
     }
 }

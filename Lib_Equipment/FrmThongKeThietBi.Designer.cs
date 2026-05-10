@@ -237,14 +237,14 @@
             legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
             legend1.Name = "Legend1";
             this.chartTinhTrang.Legends.Add(legend1);
-            this.chartTinhTrang.Location = new System.Drawing.Point(671, 15);
+            this.chartTinhTrang.Location = new System.Drawing.Point(549, 15);
             this.chartTinhTrang.Name = "chartTinhTrang";
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Doughnut;
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this.chartTinhTrang.Series.Add(series1);
-            this.chartTinhTrang.Size = new System.Drawing.Size(400, 511);
+            this.chartTinhTrang.Size = new System.Drawing.Size(522, 511);
             this.chartTinhTrang.TabIndex = 1;
             this.chartTinhTrang.Text = "chartTinhTrang";
             // 
@@ -252,13 +252,13 @@
             // 
             chartArea2.Name = "ChartArea1";
             this.chartKhoa.ChartAreas.Add(chartArea2);
-            this.chartKhoa.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.chartKhoa.Dock = System.Windows.Forms.DockStyle.Left;
             this.chartKhoa.Location = new System.Drawing.Point(0, 15);
             this.chartKhoa.Name = "chartKhoa";
             series2.ChartArea = "ChartArea1";
             series2.Name = "Series1";
             this.chartKhoa.Series.Add(series2);
-            this.chartKhoa.Size = new System.Drawing.Size(1071, 511);
+            this.chartKhoa.Size = new System.Drawing.Size(1063, 511);
             this.chartKhoa.TabIndex = 0;
             this.chartKhoa.Text = "chartKhoa";
             // 
