@@ -155,8 +155,7 @@ namespace Lib_Equipment
             this.cboLoaiDocGia.ItemHeight = 43;
             this.cboLoaiDocGia.Items.AddRange(new object[] {
             "Sinh viên",
-            "Giảng viên",
-            "Nhân viên"});
+            "Giảng viên"});
             this.cboLoaiDocGia.Location = new System.Drawing.Point(40, 98);
             this.cboLoaiDocGia.Name = "cboLoaiDocGia";
             this.cboLoaiDocGia.Size = new System.Drawing.Size(265, 49);

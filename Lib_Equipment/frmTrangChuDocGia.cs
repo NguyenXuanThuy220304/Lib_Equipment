@@ -324,14 +324,87 @@ namespace Lib_Equipment
 
         private void ActionGiaHan(string recordId, string copyId, string tenSach)
         {
-            int addDays = 14;
-            if (MessageBox.Show($"Xác nhận gia hạn thêm {addDays} ngày cho sách: {tenSach}?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            try
             {
-                if (XacNhanBangMaVach("GIA HẠN", tenSach, copyId))
+                // 1. Truy vấn thông tin: Loại độc giả, Ngày hạn trả và Số lần đã gia hạn
+                string truyVanThongTin = @"
+            SELECT r.ReaderType, br.DueDate, ISNULL(bd.RenewCount, 0) AS RenewCount 
+            FROM BorrowRecord br 
+            JOIN Reader r ON br.ReaderID = r.ReaderID 
+            JOIN BorrowDetail bd ON br.RecordID = bd.RecordID
+            WHERE br.RecordID = @maPhieu AND bd.CopyID = @maBanSao";
+
+                DataTable dtThongTin = DataProvider.Instance.ExecuteQuery(truyVanThongTin, new SqlParameter[] {
+            new SqlParameter("@maPhieu", recordId),
+            new SqlParameter("@maBanSao", copyId)
+        });
+
+                if (dtThongTin.Rows.Count > 0)
                 {
-                    DataProvider.Instance.ExecuteNonQuery("UPDATE BorrowRecord SET DueDate = DATEADD(day, @days, DueDate) WHERE RecordID = @id", new SqlParameter[] { new SqlParameter("@days", addDays), new SqlParameter("@id", recordId) });
-                    MessageBox.Show("Gia hạn thành công!", "Hoàn tất", MessageBoxButtons.OK, MessageBoxIcon.Information); LoadLichSuMuon();
+                    string loaiDocGia = dtThongTin.Rows[0]["ReaderType"].ToString();
+                    DateTime ngayHanTra = Convert.ToDateTime(dtThongTin.Rows[0]["DueDate"]);
+                    int soLanGiaHan = Convert.ToInt32(dtThongTin.Rows[0]["RenewCount"]);
+
+                    // ==============================================================
+                    // KIỂM TRA LUẬT 1: CHỈ ĐƯỢC GIA HẠN 1 LẦN DUY NHẤT
+                    // ==============================================================
+                    if (soLanGiaHan >= 1)
+                    {
+                        MessageBox.Show("Tài liệu này đã được gia hạn 1 lần trước đó.\nBạn không thể gia hạn thêm!", "Từ chối", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // ==============================================================
+                    // KIỂM TRA LUẬT 2: CHẶN GIA HẠN TRONG 3 NGÀY CUỐI CÙNG
+                    // ==============================================================
+                    int soNgayConLai = (ngayHanTra.Date - DateTime.Now.Date).Days;
+
+                    if (soNgayConLai <= 3)
+                    {
+                        if (soNgayConLai < 0)
+                        {
+                            MessageBox.Show("Tài liệu này đã quá hạn trả, không thể gia hạn!", "Từ chối", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        else
+                        {
+                            MessageBox.Show($"Chỉ còn {soNgayConLai} ngày là đến hạn trả (nằm trong 3 ngày cuối).\nTheo quy định, bạn không thể gia hạn lúc này!", "Từ chối", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                        return;
+                    }
+
+                    // 2. Tính số ngày cộng thêm: Giảng viên 28 ngày, Sinh viên 14 ngày
+                    int soNgayCongThem = loaiDocGia.Contains("Giảng viên") ? 28 : 14;
+
+                    if (MessageBox.Show($"Xác nhận gia hạn thêm {soNgayCongThem} ngày cho tài liệu:\n{tenSach}?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        // 3. Yêu cầu quét mã vạch để xác thực người đó đang cầm sách
+                        if (XacNhanBangMaVach("GIA HẠN", tenSach, copyId))
+                        {
+                            // 4. Cộng ngày vào BorrowRecord VÀ Tăng biến đếm trong BorrowDetail
+                            string lenhCapNhat = @"
+                        UPDATE BorrowRecord 
+                        SET DueDate = DATEADD(day, @soNgayCongThem, DueDate) 
+                        WHERE RecordID = @maPhieu;
+                        
+                        UPDATE BorrowDetail 
+                        SET RenewCount = ISNULL(RenewCount, 0) + 1 
+                        WHERE RecordID = @maPhieu AND CopyID = @maBanSao;";
+
+                            DataProvider.Instance.ExecuteNonQuery(lenhCapNhat, new SqlParameter[] {
+                        new SqlParameter("@soNgayCongThem", soNgayCongThem),
+                        new SqlParameter("@maPhieu", recordId),
+                        new SqlParameter("@maBanSao", copyId)
+                    });
+
+                            MessageBox.Show($"Gia hạn thành công! Hạn trả mới đã được cộng thêm {soNgayCongThem} ngày.", "Hoàn tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            LoadLichSuMuon(); // Tải lại lưới danh sách
+                        }
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xử lý gia hạn: " + ex.Message, "Lỗi SQL", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

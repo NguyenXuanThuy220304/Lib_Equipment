@@ -315,24 +315,133 @@ namespace Lib_Equipment
             }
         }
 
+        //private void btnDebugMail_Click(object sender, EventArgs e)
+        //{
+        //    btnDebugMail.Text = "Đang quét...";
+        //    btnDebugMail.Enabled = false;
+
+        //    try
+        //    {
+        //        int count = MuonTraBLL.Instance.TuDongKiemTraVaGuiMailLuuLuu();
+        //        if (count > 0)
+        //            MessageBox.Show($"Hệ thống đã gửi thành công {count} email nhắc nhở và xử lý kỷ luật!", "Thành công");
+        //        else
+        //            MessageBox.Show("Không có độc giả nào mới cần gửi mail trong hôm nay.", "Thông báo");
+
+        //        LoadData();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show("Lỗi thực thi: " + ex.Message);
+        //    }
+        //    finally
+        //    {
+        //        btnDebugMail.Text = "GỬI MAIL NHẮC NHỞ";
+        //        btnDebugMail.Enabled = true;
+        //    }
+        //}
         private void btnDebugMail_Click(object sender, EventArgs e)
         {
-            btnDebugMail.Text = "Đang quét...";
+            if (MessageBox.Show("Hệ thống sẽ quét TỔNG HỢP (Công nợ cũ + Sách đang quá hạn) để gửi 1 email chi tiết duy nhất cho từng người.\nBạn có chắc chắn muốn thực hiện?", "Xác nhận gửi mail", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                return;
+
+            btnDebugMail.Text = "Đang gửi Mail...";
             btnDebugMail.Enabled = false;
+
+            int emailCount = 0;
 
             try
             {
-                int count = MuonTraBLL.Instance.TuDongKiemTraVaGuiMailLuuLuu();
-                if (count > 0)
-                    MessageBox.Show($"Hệ thống đã gửi thành công {count} email nhắc nhở và xử lý kỷ luật!", "Thành công");
-                else
-                    MessageBox.Show("Không có độc giả nào mới cần gửi mail trong hôm nay.", "Thông báo");
+                // 1. Lệnh SQL quét và GOM NHÓM Độc giả có Nợ cũ HOẶC đang cầm Sách quá hạn
+                string query = @"
+            SELECT r.ReaderID, r.FullName, r.Email, ISNULL(r.AcademicDebt, 0) AS AcademicDebt,
+                   b.Title, DATEDIFF(day, br.DueDate, GETDATE()) AS LateDays
+            FROM Reader r
+            LEFT JOIN BorrowRecord br ON r.ReaderID = br.ReaderID
+            LEFT JOIN BorrowDetail bd ON br.RecordID = bd.RecordID 
+                  AND bd.ReturnDate IS NULL 
+                  AND CAST(br.DueDate AS DATE) < CAST(GETDATE() AS DATE)
+            LEFT JOIN BookCopy bc ON bd.CopyID = bc.CopyID
+            LEFT JOIN Book b ON bc.BookID = b.BookID
+            WHERE (r.AcademicDebt > 0 OR bd.RecordID IS NOT NULL)
+              AND r.Email IS NOT NULL 
+              AND LTRIM(RTRIM(r.Email)) <> '' 
+              AND (r.IsDeleted = 0 OR r.IsDeleted IS NULL)
+            ORDER BY r.ReaderID";
 
+                DataTable dt = DataProvider.Instance.ExecuteQuery(query);
+
+                // Các biến dùng để gom nhóm nhiều sách vào chung 1 email của 1 độc giả
+                string currentReaderID = "";
+                string currentName = "";
+                string currentEmail = "";
+                decimal currentFixedDebt = 0;
+                decimal totalEstimatedFine = 0;
+                string reasonHtml = "";
+
+                // 2. Duyệt qua từng dòng dữ liệu
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    DataRow row = dt.Rows[i];
+                    string id = row["ReaderID"].ToString();
+
+                    // KHI CHUYỂN SANG ĐỘC GIẢ MỚI (Hoặc là dòng đầu tiên)
+                    if (id != currentReaderID)
+                    {
+                        // Bước A: Gửi email cho người cũ trước khi chuyển qua xử lý người mới
+                        if (currentReaderID != "")
+                        {
+                            decimal totalDebt = currentFixedDebt + totalEstimatedFine;
+                            bool sent = EmailHelper.SendNoticeEmail(currentEmail, currentName, currentReaderID, totalDebt, reasonHtml);
+                            if (sent) emailCount++;
+                        }
+
+                        // Bước B: Khởi tạo thông tin cho người mới
+                        currentReaderID = id;
+                        currentName = row["FullName"].ToString();
+                        currentEmail = row["Email"].ToString();
+                        currentFixedDebt = Convert.ToDecimal(row["AcademicDebt"]);
+                        totalEstimatedFine = 0;
+
+                        reasonHtml = "";
+
+                        // Nếu người này có nợ cũ (tiền phạt từ những lần mượn trước chưa trả)
+                        if (currentFixedDebt > 0)
+                        {
+                            reasonHtml += $"• Nợ cũ chưa thanh toán (từ các giao dịch trước): <b style='color:#d93025;'>{currentFixedDebt:N0} VNĐ</b><br/>";
+                        }
+                    }
+
+                    // KHI NGƯỜI NÀY CÓ SÁCH QUÁ HẠN (Cộng dồn vào reasonHtml)
+                    if (row["Title"] != DBNull.Value && row["LateDays"] != DBNull.Value)
+                    {
+                        int lateDays = Convert.ToInt32(row["LateDays"]);
+                        if (lateDays > 0)
+                        {
+                            string title = row["Title"].ToString();
+                            decimal estimatedFine = lateDays * 2000; // Phạt 2.000đ/ngày
+                            totalEstimatedFine += estimatedFine;
+
+                            reasonHtml += $"• Sách đang mượn quá hạn: <i>'{title}'</i><br/>" +
+                                          $"&nbsp;&nbsp;→ Trễ {lateDays} ngày - Phạt tạm tính: <b style='color:#d93025;'>{estimatedFine:N0} VNĐ</b><br/>";
+                        }
+                    }
+
+                    // KHI LÀ DÒNG CUỐI CÙNG CỦA DANH SÁCH -> Chốt sổ gửi luôn
+                    if (i == dt.Rows.Count - 1)
+                    {
+                        decimal totalDebt = currentFixedDebt + totalEstimatedFine;
+                        bool sent = EmailHelper.SendNoticeEmail(currentEmail, currentName, currentReaderID, totalDebt, reasonHtml);
+                        if (sent) emailCount++;
+                    }
+                }
+
+                MessageBox.Show($"Hoàn tất quét hệ thống!\nĐã gửi tổng cộng {emailCount} Email tổng hợp chi tiết cho các Độc giả.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LoadData();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi thực thi: " + ex.Message);
+                MessageBox.Show("Lỗi trong quá trình quét và gửi Mail: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
