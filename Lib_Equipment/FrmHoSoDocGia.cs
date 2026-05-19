@@ -36,7 +36,7 @@ namespace Lib_Equipment
             pnlHeader.Controls.Add(lblTitle);
             this.Controls.Add(pnlHeader);
 
-            // 2. Truy vấn Thông tin Độc giả từ Database (Lấy đúng AcademicDebt)
+            // 2. Truy vấn Thông tin Độc giả từ Database
             string query = @"
                 SELECT 
                     ISNULL(ReaderType, N'Chưa xác định') AS ReaderType, 
@@ -73,7 +73,6 @@ namespace Lib_Equipment
 
             Label lblDebtTitle = new Label { Text = "CÔNG NỢ HIỆN TẠI", ForeColor = Color.Gray, Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true, Location = new Point(20, 310) };
 
-            // Hiển thị nợ hiện tại theo đúng CSDL
             lblDebtValue = new Label { Text = $"{debt:N0} VNĐ", ForeColor = debt > 0 ? Color.Red : Color.Green, Font = new Font("Segoe UI", 24, FontStyle.Bold), AutoSize = true, Location = new Point(20, 340) };
 
             pnlInfo.Controls.AddRange(new Control[] { lblAvatar, lblId, lblType, lblEmail, lblStatus, lblDebtTitle, lblDebtValue });
@@ -107,7 +106,6 @@ namespace Lib_Equipment
 
             this.Controls.Add(dgvHistory);
 
-            // Lôgic bổ sung cực hay: Nếu tổng phạt trong quá khứ > 0 nhưng nợ hiện tại = 0 (Đã thanh toán)
             decimal totalFinesInHistory = 0;
             try { totalFinesInHistory = Convert.ToDecimal(DataProvider.Instance.ExecuteScalar("SELECT ISNULL(SUM(FineAmount), 0) FROM BorrowRecord br JOIN BorrowDetail bd ON br.RecordID = bd.RecordID WHERE br.ReaderID = @id", new SqlParameter[] { new SqlParameter("@id", _readerID) })); } catch { }
 
@@ -120,18 +118,22 @@ namespace Lib_Equipment
 
         private void LoadData()
         {
+            // ĐÃ SỬA: Đổi VARCHAR thành NVARCHAR, và gọi cột ReturnCondition thay vì bc.Status
             string query = @"
                 SELECT 
-                    b.Title AS [Tên Sách], 
+                    ISNULL(b.Title, N'Sách đã bị xóa/thanh lý') AS [Tên Sách], 
                     br.BorrowDate AS [Ngày Mượn], 
                     br.DueDate AS [Hạn Trả], 
-                    ISNULL(CONVERT(VARCHAR, bd.ReturnDate, 103), 'Chưa trả') AS [Ngày Trả], 
+                    ISNULL(CONVERT(NVARCHAR, bd.ReturnDate, 103), N'Chưa trả') AS [Ngày Trả], 
                     ISNULL(bd.FineAmount, 0) AS [Tiền Phạt], 
-                    bc.Status AS [Tình Trạng]
+                    CASE 
+                        WHEN bd.ReturnDate IS NULL THEN N'Đang mượn' 
+                        ELSE ISNULL(bd.ReturnCondition, N'Bình thường') 
+                    END AS [Tình Trạng]
                 FROM BorrowRecord br
                 JOIN BorrowDetail bd ON br.RecordID = bd.RecordID
-                JOIN BookCopy bc ON bd.CopyID = bc.CopyID
-                JOIN Book b ON bc.BookID = b.BookID
+                LEFT JOIN BookCopy bc ON bd.CopyID = bc.CopyID
+                LEFT JOIN Book b ON bc.BookID = b.BookID
                 WHERE br.ReaderID = @id
                 ORDER BY br.BorrowDate DESC";
 
@@ -174,9 +176,19 @@ namespace Lib_Equipment
             if (dgvHistory.Columns[e.ColumnIndex].Name == "Tình Trạng")
             {
                 string status = e.Value.ToString();
-                if (status == "Hỏng" || status == "Mất") { e.CellStyle.ForeColor = Color.Red; e.CellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold); }
-                else if (status == "Chờ kiểm duyệt") e.CellStyle.ForeColor = Color.Orange;
-                else e.CellStyle.ForeColor = Color.Green;
+                if (status == "Hỏng" || status == "Mất" || status.Contains("Lỗi"))
+                {
+                    e.CellStyle.ForeColor = Color.Red;
+                    e.CellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+                }
+                else if (status == "Đang mượn" || status == "Chưa trả")
+                {
+                    e.CellStyle.ForeColor = Color.Orange;
+                }
+                else
+                {
+                    e.CellStyle.ForeColor = Color.Green;
+                }
             }
         }
     }

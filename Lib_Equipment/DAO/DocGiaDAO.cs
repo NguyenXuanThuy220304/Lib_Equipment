@@ -63,21 +63,22 @@ namespace Lib_Equipment.DAO
         // FILE: DAO/DocGiaDAO.cs
         public void TuocQuyenVinhVien(string readerID, decimal soTienPhat)
         {
-            string query = "UPDATE Reader SET IsPermanentlyBanned = 1, Status = 0, AcademicDebt = @tien WHERE ReaderID = @id";
+            string query = "UPDATE Reader SET IsPermanentlyBanned = 1, Status = 0, AcademicDebt = ISNULL(AcademicDebt, 0) + @tien WHERE ReaderID = @id";
             SqlParameter[] param = {
-        new SqlParameter("@tien", soTienPhat),
-        new SqlParameter("@id", readerID)
-    };
+                new SqlParameter("@tien", soTienPhat),
+                new SqlParameter("@id", readerID)
+            };
             DataProvider.Instance.ExecuteNonQuery(query, param);
         }
-        // Khóa tạm thời (Chỉ chỉnh Status = 0)
+
+        // ĐÃ SỬA: Dùng ISNULL(AcademicDebt, 0) + @tien
         public void KhoaTheTamThoi(string readerID, decimal soTienPhat)
         {
-            string query = "UPDATE Reader SET Status = 0, AcademicDebt = @tien WHERE ReaderID = @id";
+            string query = "UPDATE Reader SET Status = 0, AcademicDebt = ISNULL(AcademicDebt, 0) + @tien WHERE ReaderID = @id";
             SqlParameter[] param = {
-        new SqlParameter("@tien", soTienPhat),
-        new SqlParameter("@id", readerID)
-    };
+                new SqlParameter("@tien", soTienPhat),
+                new SqlParameter("@id", readerID)
+            };
             DataProvider.Instance.ExecuteNonQuery(query, param);
         }
         // Dùng cho Sync

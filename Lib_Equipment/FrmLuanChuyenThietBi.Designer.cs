@@ -77,99 +77,6 @@
             this.gbThongTinPhieu.Text = "THÔNG TIN BÀN GIAO";
             this.gbThongTinPhieu.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // label1
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.Color.Transparent;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            this.label1.ForeColor = System.Drawing.Color.Gray;
-            this.label1.Location = new System.Drawing.Point(20, 60);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(77, 21);
-            this.label1.Text = "Mã phiếu:";
-            // 
-            // txtMaPhieu
-            this.txtMaPhieu.BorderRadius = 5;
-            this.txtMaPhieu.DefaultText = "";
-            this.txtMaPhieu.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtMaPhieu.Location = new System.Drawing.Point(20, 85);
-            this.txtMaPhieu.Name = "txtMaPhieu";
-            this.txtMaPhieu.ReadOnly = true;
-            this.txtMaPhieu.Size = new System.Drawing.Size(335, 40);
-            this.txtMaPhieu.TabIndex = 1;
-            // 
-            // lblTuKhoa
-            this.lblTuKhoa.AutoSize = true;
-            this.lblTuKhoa.BackColor = System.Drawing.Color.Transparent;
-            this.lblTuKhoa.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            this.lblTuKhoa.ForeColor = System.Drawing.Color.Gray;
-            this.lblTuKhoa.Location = new System.Drawing.Point(20, 145);
-            this.lblTuKhoa.Name = "lblTuKhoa";
-            this.lblTuKhoa.Size = new System.Drawing.Size(142, 21);
-            this.lblTuKhoa.Text = "Từ Khoa (Nơi giao):";
-            // 
-            // cboTuKhoa
-            this.cboTuKhoa.BorderRadius = 5;
-            this.cboTuKhoa.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cboTuKhoa.ForeColor = System.Drawing.Color.Black;
-            this.cboTuKhoa.Location = new System.Drawing.Point(20, 170);
-            this.cboTuKhoa.Name = "cboTuKhoa";
-            this.cboTuKhoa.Size = new System.Drawing.Size(335, 36);
-            this.cboTuKhoa.TabIndex = 2;
-            this.cboTuKhoa.SelectedIndexChanged += new System.EventHandler(this.cboTuKhoa_SelectedIndexChanged);
-            // 
-            // lblDenKhoa
-            this.lblDenKhoa.AutoSize = true;
-            this.lblDenKhoa.BackColor = System.Drawing.Color.Transparent;
-            this.lblDenKhoa.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            this.lblDenKhoa.ForeColor = System.Drawing.Color.Gray;
-            this.lblDenKhoa.Location = new System.Drawing.Point(20, 230);
-            this.lblDenKhoa.Name = "lblDenKhoa";
-            this.lblDenKhoa.Size = new System.Drawing.Size(155, 21);
-            this.lblDenKhoa.Text = "Đến Khoa (Nơi nhận):";
-            // 
-            // cboDenKhoa
-            this.cboDenKhoa.BorderRadius = 5;
-            this.cboDenKhoa.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cboDenKhoa.ForeColor = System.Drawing.Color.Black;
-            this.cboDenKhoa.Location = new System.Drawing.Point(20, 255);
-            this.cboDenKhoa.Name = "cboDenKhoa";
-            this.cboDenKhoa.Size = new System.Drawing.Size(335, 36);
-            this.cboDenKhoa.TabIndex = 3;
-            // 
-            // label4
-            this.label4.AutoSize = true;
-            this.label4.BackColor = System.Drawing.Color.Transparent;
-            this.label4.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            this.label4.ForeColor = System.Drawing.Color.Gray;
-            this.label4.Location = new System.Drawing.Point(20, 315);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(114, 21);
-            this.label4.Text = "Ngày bàn giao:";
-            // 
-            // dtpNgayChuyen
-            this.dtpNgayChuyen.BorderRadius = 5;
-            this.dtpNgayChuyen.Checked = true;
-            this.dtpNgayChuyen.FillColor = System.Drawing.Color.White;
-            this.dtpNgayChuyen.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.dtpNgayChuyen.ForeColor = System.Drawing.Color.Black;
-            this.dtpNgayChuyen.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpNgayChuyen.Location = new System.Drawing.Point(20, 340);
-            this.dtpNgayChuyen.Name = "dtpNgayChuyen";
-            this.dtpNgayChuyen.Size = new System.Drawing.Size(335, 40);
-            this.dtpNgayChuyen.TabIndex = 4;
-            this.dtpNgayChuyen.Value = new System.DateTime(2026, 4, 15, 0, 0, 0, 0);
-            // 
-            // txtLyDo
-            this.txtLyDo.BorderRadius = 5;
-            this.txtLyDo.DefaultText = "";
-            this.txtLyDo.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtLyDo.Location = new System.Drawing.Point(20, 410);
-            this.txtLyDo.Multiline = true;
-            this.txtLyDo.Name = "txtLyDo";
-            this.txtLyDo.PlaceholderText = "Lý do bàn giao...";
-            this.txtLyDo.Size = new System.Drawing.Size(335, 100);
-            this.txtLyDo.TabIndex = 5;
-            // 
             // btnThucHien
             // 
             this.btnThucHien.BorderRadius = 8;
@@ -182,6 +89,131 @@
             this.btnThucHien.TabIndex = 6;
             this.btnThucHien.Text = "XÁC NHẬN BÀN GIAO";
             this.btnThucHien.Click += new System.EventHandler(this.btnThucHien_Click);
+            // 
+            // txtLyDo
+            // 
+            this.txtLyDo.BorderRadius = 5;
+            this.txtLyDo.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtLyDo.DefaultText = "";
+            this.txtLyDo.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txtLyDo.Location = new System.Drawing.Point(20, 410);
+            this.txtLyDo.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.txtLyDo.Multiline = true;
+            this.txtLyDo.Name = "txtLyDo";
+            this.txtLyDo.PlaceholderText = "Lý do bàn giao...";
+            this.txtLyDo.SelectedText = "";
+            this.txtLyDo.Size = new System.Drawing.Size(335, 100);
+            this.txtLyDo.TabIndex = 5;
+            // 
+            // dtpNgayChuyen
+            // 
+            this.dtpNgayChuyen.BorderRadius = 5;
+            this.dtpNgayChuyen.Checked = true;
+            this.dtpNgayChuyen.FillColor = System.Drawing.Color.White;
+            this.dtpNgayChuyen.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.dtpNgayChuyen.ForeColor = System.Drawing.Color.Black;
+            this.dtpNgayChuyen.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpNgayChuyen.Location = new System.Drawing.Point(20, 340);
+            this.dtpNgayChuyen.MaxDate = new System.DateTime(9998, 12, 31, 0, 0, 0, 0);
+            this.dtpNgayChuyen.MinDate = new System.DateTime(1753, 1, 1, 0, 0, 0, 0);
+            this.dtpNgayChuyen.Name = "dtpNgayChuyen";
+            this.dtpNgayChuyen.Size = new System.Drawing.Size(335, 40);
+            this.dtpNgayChuyen.TabIndex = 4;
+            this.dtpNgayChuyen.Value = new System.DateTime(2026, 5, 13, 0, 0, 0, 0);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.BackColor = System.Drawing.Color.Transparent;
+            this.label4.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            this.label4.ForeColor = System.Drawing.Color.Gray;
+            this.label4.Location = new System.Drawing.Point(20, 315);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(114, 21);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "Ngày bàn giao:";
+            // 
+            // cboDenKhoa
+            // 
+            this.cboDenKhoa.BackColor = System.Drawing.Color.Transparent;
+            this.cboDenKhoa.BorderRadius = 5;
+            this.cboDenKhoa.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cboDenKhoa.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboDenKhoa.FocusedColor = System.Drawing.Color.Empty;
+            this.cboDenKhoa.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.cboDenKhoa.ForeColor = System.Drawing.Color.Black;
+            this.cboDenKhoa.ItemHeight = 30;
+            this.cboDenKhoa.Location = new System.Drawing.Point(20, 255);
+            this.cboDenKhoa.Name = "cboDenKhoa";
+            this.cboDenKhoa.Size = new System.Drawing.Size(335, 36);
+            this.cboDenKhoa.TabIndex = 3;
+            // 
+            // lblDenKhoa
+            // 
+            this.lblDenKhoa.AutoSize = true;
+            this.lblDenKhoa.BackColor = System.Drawing.Color.Transparent;
+            this.lblDenKhoa.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            this.lblDenKhoa.ForeColor = System.Drawing.Color.Gray;
+            this.lblDenKhoa.Location = new System.Drawing.Point(20, 230);
+            this.lblDenKhoa.Name = "lblDenKhoa";
+            this.lblDenKhoa.Size = new System.Drawing.Size(159, 21);
+            this.lblDenKhoa.TabIndex = 8;
+            this.lblDenKhoa.Text = "Đến Khoa (Nơi nhận):";
+            // 
+            // cboTuKhoa
+            // 
+            this.cboTuKhoa.BackColor = System.Drawing.Color.Transparent;
+            this.cboTuKhoa.BorderRadius = 5;
+            this.cboTuKhoa.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cboTuKhoa.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboTuKhoa.FocusedColor = System.Drawing.Color.Empty;
+            this.cboTuKhoa.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.cboTuKhoa.ForeColor = System.Drawing.Color.Black;
+            this.cboTuKhoa.ItemHeight = 30;
+            this.cboTuKhoa.Location = new System.Drawing.Point(20, 170);
+            this.cboTuKhoa.Name = "cboTuKhoa";
+            this.cboTuKhoa.Size = new System.Drawing.Size(335, 36);
+            this.cboTuKhoa.TabIndex = 2;
+            this.cboTuKhoa.SelectedIndexChanged += new System.EventHandler(this.cboTuKhoa_SelectedIndexChanged);
+            // 
+            // lblTuKhoa
+            // 
+            this.lblTuKhoa.AutoSize = true;
+            this.lblTuKhoa.BackColor = System.Drawing.Color.Transparent;
+            this.lblTuKhoa.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            this.lblTuKhoa.ForeColor = System.Drawing.Color.Gray;
+            this.lblTuKhoa.Location = new System.Drawing.Point(20, 145);
+            this.lblTuKhoa.Name = "lblTuKhoa";
+            this.lblTuKhoa.Size = new System.Drawing.Size(143, 21);
+            this.lblTuKhoa.TabIndex = 9;
+            this.lblTuKhoa.Text = "Từ Khoa (Nơi giao):";
+            // 
+            // txtMaPhieu
+            // 
+            this.txtMaPhieu.BorderRadius = 5;
+            this.txtMaPhieu.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtMaPhieu.DefaultText = "";
+            this.txtMaPhieu.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txtMaPhieu.Location = new System.Drawing.Point(20, 85);
+            this.txtMaPhieu.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.txtMaPhieu.Name = "txtMaPhieu";
+            this.txtMaPhieu.PlaceholderText = "";
+            this.txtMaPhieu.ReadOnly = true;
+            this.txtMaPhieu.SelectedText = "";
+            this.txtMaPhieu.Size = new System.Drawing.Size(335, 40);
+            this.txtMaPhieu.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.Transparent;
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            this.label1.ForeColor = System.Drawing.Color.Gray;
+            this.label1.Location = new System.Drawing.Point(20, 60);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(78, 21);
+            this.label1.TabIndex = 10;
+            this.label1.Text = "Mã phiếu:";
             // 
             // pnlRight
             // 
@@ -204,18 +236,16 @@
             this.gbDanhSachThietBi.Location = new System.Drawing.Point(10, 10);
             this.gbDanhSachThietBi.Name = "gbDanhSachThietBi";
             this.gbDanhSachThietBi.Size = new System.Drawing.Size(842, 763);
+            this.gbDanhSachThietBi.TabIndex = 0;
             this.gbDanhSachThietBi.Text = "DANH SÁCH THIẾT BỊ BÀN GIAO";
             // 
-            // dgvThietBi (TỐI ƯU CỰC MẠNH: KHÓA SỬA + ĐẸP Ô TÍCH)
+            // dgvThietBi
             // 
             this.dgvThietBi.AllowUserToAddRows = false;
             this.dgvThietBi.AllowUserToDeleteRows = false;
             this.dgvThietBi.AllowUserToResizeRows = false;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.White;
             this.dgvThietBi.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            this.dgvThietBi.BackgroundColor = System.Drawing.Color.White;
-            this.dgvThietBi.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.dgvThietBi.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
@@ -226,7 +256,7 @@
             this.dgvThietBi.ColumnHeadersHeight = 45;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
             dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
@@ -236,17 +266,35 @@
             this.dgvThietBi.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
             this.dgvThietBi.Location = new System.Drawing.Point(0, 40);
             this.dgvThietBi.Name = "dgvThietBi";
-            this.dgvThietBi.ReadOnly = false; // Phải để False để tick được checkbox
             this.dgvThietBi.RowHeadersVisible = false;
-            this.dgvThietBi.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvThietBi.RowHeadersWidth = 51;
             this.dgvThietBi.ShowCellErrors = false;
             this.dgvThietBi.ShowCellToolTips = false;
             this.dgvThietBi.ShowEditingIcon = false;
             this.dgvThietBi.ShowRowErrors = false;
             this.dgvThietBi.Size = new System.Drawing.Size(842, 723);
             this.dgvThietBi.TabIndex = 0;
-            this.dgvThietBi.ThemeStyle.HeaderStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
             this.dgvThietBi.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
+            this.dgvThietBi.ThemeStyle.AlternatingRowsStyle.Font = null;
+            this.dgvThietBi.ThemeStyle.AlternatingRowsStyle.ForeColor = System.Drawing.Color.Empty;
+            this.dgvThietBi.ThemeStyle.AlternatingRowsStyle.SelectionBackColor = System.Drawing.Color.Empty;
+            this.dgvThietBi.ThemeStyle.AlternatingRowsStyle.SelectionForeColor = System.Drawing.Color.Empty;
+            this.dgvThietBi.ThemeStyle.BackColor = System.Drawing.Color.White;
+            this.dgvThietBi.ThemeStyle.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
+            this.dgvThietBi.ThemeStyle.HeaderStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(75)))), ((int)(((byte)(132)))));
+            this.dgvThietBi.ThemeStyle.HeaderStyle.BorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.dgvThietBi.ThemeStyle.HeaderStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dgvThietBi.ThemeStyle.HeaderStyle.ForeColor = System.Drawing.Color.White;
+            this.dgvThietBi.ThemeStyle.HeaderStyle.HeaightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.dgvThietBi.ThemeStyle.HeaderStyle.Height = 45;
+            this.dgvThietBi.ThemeStyle.ReadOnly = false;
+            this.dgvThietBi.ThemeStyle.RowsStyle.BackColor = System.Drawing.Color.White;
+            this.dgvThietBi.ThemeStyle.RowsStyle.BorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            this.dgvThietBi.ThemeStyle.RowsStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dgvThietBi.ThemeStyle.RowsStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            this.dgvThietBi.ThemeStyle.RowsStyle.Height = 22;
+            this.dgvThietBi.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
+            this.dgvThietBi.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
             // 
             // FrmLuanChuyenThietBi
             // 
@@ -266,6 +314,7 @@
             this.gbDanhSachThietBi.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvThietBi)).EndInit();
             this.ResumeLayout(false);
+
         }
 
         #endregion

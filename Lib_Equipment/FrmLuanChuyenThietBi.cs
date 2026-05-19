@@ -26,6 +26,7 @@ namespace Lib_Equipment
             LoadKhoaPhong();
             SetupDataGridView();
             LoadNextTransferID();
+            this.dtpNgayChuyen.Value = DateTime.Now;
         }
 
         // 1. TẢI DANH SÁCH KHOA PHÒNG

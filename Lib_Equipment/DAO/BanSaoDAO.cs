@@ -44,7 +44,7 @@ namespace Lib_Equipment.DAO
 
             for (int i = 0; i < quantity; i++)
             {
-                string copyId = $"{bookId}-{(startNumber + i):D2}"; // Format D2 tạo số 01, 02...
+                string copyId = $"{bookId}-{(startNumber + i):D1}"; // Format D2 tạo số 01, 02...
                 sb.AppendLine($"INSERT INTO BookCopy (CopyID, BookID, Status, CreatedAt, IsDeleted) VALUES ('{copyId}', '{bookId}', N'Có sẵn', GETDATE(), 0);");
             }
 

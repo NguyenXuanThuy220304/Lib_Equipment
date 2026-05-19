@@ -70,7 +70,7 @@ namespace Lib_Equipment
             this.btnDebugMail.Name = "btnDebugMail";
             this.btnDebugMail.Size = new System.Drawing.Size(147, 49);
             this.btnDebugMail.TabIndex = 9;
-            this.btnDebugMail.Text = "Debug mail";
+            this.btnDebugMail.Text = "GỬI EMAIL";
             this.btnDebugMail.Click += new System.EventHandler(this.btnDebugMail_Click);
             // 
             // btnDongBo
@@ -243,7 +243,7 @@ namespace Lib_Equipment
             this.btnInThe.Name = "btnInThe";
             this.btnInThe.Size = new System.Drawing.Size(130, 49);
             this.btnInThe.TabIndex = 10;
-            this.btnInThe.Text = "IN THẺ SV";
+            this.btnInThe.Text = "IN THẺ";
             this.btnInThe.Click += new System.EventHandler(this.btnInThe_Click);
             // 
             // dgvDocGia

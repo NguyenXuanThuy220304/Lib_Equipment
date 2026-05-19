@@ -17,13 +17,21 @@ namespace Lib_Equipment
         {
             // 1. Load Combobox Trạng thái
             cboTrangThai.Items.Clear();
-            cboTrangThai.Items.AddRange(new object[] { "Có sẵn", "Đang mượn", "Hỏng", "Mất" });
+            cboTrangThai.Items.AddRange(new object[] { "Có sẵn", "Đang mượn", "Hỏng/Mất" });
             cboTrangThai.SelectedIndex = 0;
 
             // 2. Load Combobox Đầu sách
             cboMaSach.DataSource = BanSaoBLL.Instance.LayDanhSachDauSach();
             cboMaSach.DisplayMember = "Title";
             cboMaSach.ValueMember = "BookID";
+            // ========================================================
+            // BẬT TÍNH NĂNG TÌM KIẾM THÔNG MINH (GÕ ĐẾN ĐÂU TÌM ĐẾN ĐÓ)
+            // ========================================================
+            cboMaSach.DropDownStyle = ComboBoxStyle.DropDown;
+            cboMaSach.AutoCompleteSource = AutoCompleteSource.ListItems;
+            cboMaSach.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            
+            // ========================================================
 
             LoadData();
         }

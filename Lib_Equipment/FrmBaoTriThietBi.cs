@@ -29,6 +29,7 @@ namespace Lib_Equipment
             cboHanhDong.Items.Add("Đang bảo trì");
             cboHanhDong.Items.Add("Đề xuất thanh lý");
             cboHanhDong.StartIndex = 0;
+            dtpNgayBT.Value = DateTime.Now;
         }
 
         private void LoadNextID()

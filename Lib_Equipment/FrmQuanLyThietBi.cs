@@ -12,6 +12,19 @@ namespace Lib_Equipment
     {
         private string selectedEquipmentID = "";
         private Timer searchTimer;
+        private Label lblMaintenanceAlert;
+
+        // BÍ QUYẾT ĐỂ LƯỚI GRID VIEW VÀ FORM HỒ SƠ ĐỒNG BỘ 100%
+        // Ép SQL tự tính toán Ngày bảo trì tiếp theo y hệt code C#
+        private readonly string sqlDynamicMaintenanceDate = @"
+            CAST(DATEADD(month, 
+                CASE 
+                    WHEN ISNULL(e.PurchasePrice, 0) < 10000000 THEN 5 
+                    WHEN ISNULL(e.PurchasePrice, 0) < 25000000 THEN 8 
+                    ELSE 12 
+                END, 
+                ISNULL((SELECT TOP 1 MaintenanceDate FROM MaintenanceRecord WHERE EquipmentID = e.EquipmentID ORDER BY MaintenanceDate DESC), e.ImportDate)
+            ) AS DATE)";
 
         public FrmQuanLyThietBi()
         {
@@ -21,6 +34,31 @@ namespace Lib_Equipment
             searchTimer = new Timer();
             searchTimer.Interval = 300;
             searchTimer.Tick += SearchTimer_Tick;
+
+            InitializeMaintenanceAlertLabel();
+            dgvThietBi.CellFormatting += DgvThietBi_CellFormatting;
+        }
+
+        private void InitializeMaintenanceAlertLabel()
+        {
+            lblMaintenanceAlert = new Label
+            {
+                Text = "",
+                ForeColor = Color.White,
+                BackColor = Color.FromArgb(220, 53, 69),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                AutoSize = true,
+                Visible = false,
+                Padding = new Padding(5),
+                // Bổ sung lệnh ghim chặt vào góc Trên - Phải
+                Anchor = AnchorStyles.Top | AnchorStyles.Right
+            };
+
+            this.Controls.Add(lblMaintenanceAlert);
+            lblMaintenanceAlert.BringToFront();
+
+            lblMaintenanceAlert.Click += LblMaintenanceAlert_Click;
+            lblMaintenanceAlert.Cursor = Cursors.Hand;
         }
 
         private void FrmQuanLyThietBi_Load(object sender, EventArgs e)
@@ -29,6 +67,9 @@ namespace Lib_Equipment
 
             LoadComboboxLoaiTB();
             LoadComboboxKhoaPhong();
+
+            TuDongCapNhatTrangThaiBaoTri();
+
             LoadData();
             AdjustSearchLayout();
 
@@ -46,15 +87,13 @@ namespace Lib_Equipment
         }
 
         // =======================================================
-        // THUẬT TOÁN SINH MÃ CHO TỪNG THIẾT BỊ 
+        // THUẬT TOÁN SINH MÃ VÀ ĐẦU MÃ
         // =======================================================
         private string SinhMaThietBiTuDong(string categoryId)
         {
             if (string.IsNullOrEmpty(categoryId)) return "";
-
             string query = "SELECT EquipmentID FROM Equipment WHERE CategoryID = @catID";
             DataTable dt = DataProvider.Instance.ExecuteQuery(query, new SqlParameter[] { new SqlParameter("@catID", categoryId) });
-
             int maxNum = 0;
             foreach (DataRow row in dt.Rows)
             {
@@ -68,13 +107,9 @@ namespace Lib_Equipment
                     }
                 }
             }
-            int newNum = maxNum + 1;
-            return categoryId + newNum.ToString("D3");
+            return categoryId + (maxNum + 1).ToString("D3");
         }
 
-        // =======================================================
-        // THUẬT TOÁN KHOA HỌC: TỰ ĐỘNG GỢI Ý ĐẦU MÃ DANH MỤC MỚI
-        // =======================================================
         private string LoaiBoDauTiengViet(string text)
         {
             string[] arr1 = new string[] { "á", "à", "ả", "ã", "ạ", "â", "ấ", "ầ", "ẩ", "ẫ", "ậ", "ă", "ắ", "ằ", "ẳ", "ẵ", "ặ",
@@ -95,30 +130,22 @@ namespace Lib_Equipment
 
         private string TaoDauMaKhoaHoc(string tenLoai)
         {
-            // 1. Xóa dấu, in hoa, xóa khoảng trắng thừa
             string cleanName = LoaiBoDauTiengViet(tenLoai).ToUpper().Trim();
             if (string.IsNullOrEmpty(cleanName)) return "";
 
             string[] words = cleanName.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             string basePrefix = "";
 
-            // 2. Lấy các chữ cái đầu tiên (Khoa học)
-            if (words.Length == 1)
-            {
-                // Nếu chỉ có 1 từ (VD: QUẠT), lấy tối đa 3 chữ cái đầu -> QUA
-                basePrefix = words[0].Substring(0, Math.Min(3, words[0].Length));
-            }
+            if (words.Length == 1) basePrefix = words[0].Substring(0, Math.Min(3, words[0].Length));
             else
             {
-                // Nếu có nhiều từ (VD: Máy In Màu), lấy chữ cái đầu mỗi từ -> MIM
                 foreach (string w in words)
                 {
                     basePrefix += w[0];
-                    if (basePrefix.Length == 4) break; // Chỉ lấy tối đa 4 ký tự cho gọn
+                    if (basePrefix.Length == 4) break;
                 }
             }
 
-            // 3. Quét Database chống trùng lặp
             string finalPrefix = basePrefix;
             int counter = 1;
 
@@ -126,22 +153,15 @@ namespace Lib_Equipment
             {
                 string query = "SELECT COUNT(*) FROM EquipmentCategory WHERE CategoryID = @id";
                 int count = (int)DataProvider.Instance.ExecuteScalar(query, new SqlParameter[] { new SqlParameter("@id", finalPrefix) });
-
-                // Nếu chưa ai dùng mã này -> OK lấy luôn
                 if (count == 0) return finalPrefix;
-
-                // Nếu bị trùng (VD: MI đã có rồi), tự động thêm số thành MI1, MI2...
                 finalPrefix = basePrefix + counter.ToString();
                 counter++;
             }
         }
 
-        // =======================================================
-
         private void LoadComboboxLoaiTB()
         {
             cboLoaiTB.SelectedIndexChanged -= cboLoaiTB_SelectedIndexChanged;
-
             string query = "SELECT CategoryID, CategoryName FROM EquipmentCategory WHERE IsDeleted = 0 OR IsDeleted IS NULL";
             DataTable dt = DataProvider.Instance.ExecuteQuery(query);
 
@@ -153,7 +173,6 @@ namespace Lib_Equipment
             cboLoaiTB.DataSource = dt;
             cboLoaiTB.DisplayMember = "CategoryName";
             cboLoaiTB.ValueMember = "CategoryID";
-
             cboLoaiTB.SelectedIndexChanged += cboLoaiTB_SelectedIndexChanged;
         }
 
@@ -168,11 +187,7 @@ namespace Lib_Equipment
                 HienThiCuaSoThemLoaiMoi();
                 return;
             }
-
-            if (string.IsNullOrEmpty(selectedEquipmentID))
-            {
-                txtMaTB.Text = SinhMaThietBiTuDong(catId);
-            }
+            if (string.IsNullOrEmpty(selectedEquipmentID)) txtMaTB.Text = SinhMaThietBiTuDong(catId);
         }
 
         private void HienThiCuaSoThemLoaiMoi()
@@ -202,18 +217,11 @@ namespace Lib_Equipment
             prompt.Controls.Add(btnSave); prompt.Controls.Add(btnCancel);
             prompt.AcceptButton = btnSave; prompt.CancelButton = btnCancel;
 
-            // Sự kiện Real-time: Ngay khi người dùng gõ Tên, Đầu mã tự động nhảy theo
             txtName.TextChanged += (s, ev) =>
             {
                 string input = txtName.Text.Trim();
-                if (input.Length > 0)
-                {
-                    txtPrefix.Text = TaoDauMaKhoaHoc(input);
-                }
-                else
-                {
-                    txtPrefix.Clear();
-                }
+                if (input.Length > 0) txtPrefix.Text = TaoDauMaKhoaHoc(input);
+                else txtPrefix.Clear();
             };
 
             if (prompt.ShowDialog() == DialogResult.OK)
@@ -226,18 +234,14 @@ namespace Lib_Equipment
                     MessageBox.Show("Vui lòng nhập đầy đủ Tên loại và Đầu mã!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     LoadComboboxLoaiTB(); return;
                 }
-
                 try
                 {
                     string query = "INSERT INTO EquipmentCategory (CategoryID, CategoryName, IsDeleted) VALUES (@id, @name, 0)";
                     DataProvider.Instance.ExecuteNonQuery(query, new SqlParameter[] {
-                        new SqlParameter("@id", newPrefix),
-                        new SqlParameter("@name", newCatName)
+                        new SqlParameter("@id", newPrefix), new SqlParameter("@name", newCatName)
                     });
-
                     MessageBox.Show("Thêm danh mục thiết bị thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadComboboxLoaiTB();
-                    cboLoaiTB.SelectedValue = newPrefix;
+                    LoadComboboxLoaiTB(); cboLoaiTB.SelectedValue = newPrefix;
                 }
                 catch (Exception ex)
                 {
@@ -245,10 +249,7 @@ namespace Lib_Equipment
                     LoadComboboxLoaiTB();
                 }
             }
-            else
-            {
-                LoadComboboxLoaiTB();
-            }
+            else LoadComboboxLoaiTB();
         }
 
         private void LoadComboboxKhoaPhong()
@@ -265,28 +266,49 @@ namespace Lib_Equipment
             if (dgvThietBi.Columns.Contains("EquipmentName")) dgvThietBi.Columns["EquipmentName"].HeaderText = "Tên Thiết Bị";
             if (dgvThietBi.Columns.Contains("CategoryName")) dgvThietBi.Columns["CategoryName"].HeaderText = "Phân Loại";
             if (dgvThietBi.Columns.Contains("DepartmentName")) dgvThietBi.Columns["DepartmentName"].HeaderText = "Khoa/Phòng";
-            if (dgvThietBi.Columns.Contains("ImportDate")) dgvThietBi.Columns["ImportDate"].HeaderText = "Ngày Nhập";
+
+            if (dgvThietBi.Columns.Contains("ImportDate"))
+            {
+                dgvThietBi.Columns["ImportDate"].HeaderText = "Ngày Nhập";
+                dgvThietBi.Columns["ImportDate"].DefaultCellStyle.Format = "dd/MM/yyyy";
+            }
+
             if (dgvThietBi.Columns.Contains("PurchasePrice"))
             {
                 dgvThietBi.Columns["PurchasePrice"].HeaderText = "Giá Nhập";
                 dgvThietBi.Columns["PurchasePrice"].DefaultCellStyle.Format = "N0";
             }
+
             if (dgvThietBi.Columns.Contains("Condition")) dgvThietBi.Columns["Condition"].HeaderText = "Tình Trạng";
+
+            if (dgvThietBi.Columns.Contains("NgayBaoTriDinhKy"))
+            {
+                dgvThietBi.Columns["NgayBaoTriDinhKy"].HeaderText = "Hạn Bảo Trì";
+                dgvThietBi.Columns["NgayBaoTriDinhKy"].DefaultCellStyle.Format = "dd/MM/yyyy";
+            }
 
             if (dgvThietBi.Columns.Contains("CategoryID")) dgvThietBi.Columns["CategoryID"].Visible = false;
             if (dgvThietBi.Columns.Contains("DepartmentID")) dgvThietBi.Columns["DepartmentID"].Visible = false;
         }
 
-        private void LoadData()
+        private void LoadData(bool showOnlyOverdue = false)
         {
-            string query = @"
+            // Thay vì dùng cột có sẵn có thể lỗi, ta ép SQL gọi thẳng công thức tính chuẩn xác
+            string query = $@"
                 SELECT e.EquipmentID, e.EquipmentName, c.CategoryName, d.DepartmentName, 
-                       e.ImportDate, e.PurchasePrice, e.Condition, 
+                       CAST(e.ImportDate AS DATE) AS ImportDate, 
+                       e.PurchasePrice, e.Condition, 
+                       {sqlDynamicMaintenanceDate} AS NgayBaoTriDinhKy,
                        e.CategoryID, e.DepartmentID 
                 FROM Equipment e
                 LEFT JOIN EquipmentCategory c ON e.CategoryID = c.CategoryID
                 LEFT JOIN Department d ON e.DepartmentID = d.DepartmentID
-                WHERE e.IsDeleted = 0 OR e.IsDeleted IS NULL";
+                WHERE (e.IsDeleted = 0 OR e.IsDeleted IS NULL)";
+
+            if (showOnlyOverdue)
+            {
+                query += $" AND {sqlDynamicMaintenanceDate} <= CAST(GETDATE() AS DATE) AND e.Condition != N'Đề xuất thanh lý'";
+            }
 
             dgvThietBi.DataSource = DataProvider.Instance.ExecuteQuery(query);
             FormatGrid();
@@ -319,9 +341,11 @@ namespace Lib_Equipment
             string fuzzyKey = "%";
             foreach (char c in keyword) { fuzzyKey += c + "%"; }
 
-            string query = @"
+            string query = $@"
                 SELECT e.EquipmentID, e.EquipmentName, c.CategoryName, d.DepartmentName, 
-                       e.ImportDate, e.PurchasePrice, e.Condition,
+                       CAST(e.ImportDate AS DATE) AS ImportDate, 
+                       e.PurchasePrice, e.Condition, 
+                       {sqlDynamicMaintenanceDate} AS NgayBaoTriDinhKy,
                        e.CategoryID, e.DepartmentID 
                 FROM Equipment e
                 LEFT JOIN EquipmentCategory c ON e.CategoryID = c.CategoryID
@@ -364,6 +388,7 @@ namespace Lib_Equipment
             }
 
             LoadData();
+            CheckMaintenanceAlert();
         }
 
         private void AdjustSearchLayout()
@@ -409,6 +434,9 @@ namespace Lib_Equipment
                 string name = dgvThietBi.Rows[e.RowIndex].Cells["EquipmentName"].Value.ToString();
                 FrmHoSoThietBi frm = new FrmHoSoThietBi(id, name);
                 frm.ShowDialog();
+
+                LoadData();
+                CheckMaintenanceAlert();
             }
         }
 
@@ -420,14 +448,19 @@ namespace Lib_Equipment
             }
             decimal price = 0; decimal.TryParse(txtGiaTien.Text, out price);
 
-            string query = @"INSERT INTO Equipment (EquipmentID, EquipmentName, CategoryID, DepartmentID, ImportDate, PurchasePrice, Condition, UpdatedAt, IsDeleted) 
-                             VALUES (@id, @name, @cat, @dept, @date, @price, @condition, GETDATE(), 0)";
+            // Bổ sung xử lý tính NgayBaoTriDinhKy ban đầu (chuẩn theo logic giá tiền)
+            int chuKyThang = price < 10000000 ? 5 : (price < 25000000 ? 8 : 12);
+            DateTime importDate = dtpNgayNhap.Value;
+            DateTime nextMaintenanceDate = importDate.AddMonths(chuKyThang);
+
+            string query = @"INSERT INTO Equipment (EquipmentID, EquipmentName, CategoryID, DepartmentID, ImportDate, PurchasePrice, Condition, NgayBaoTriDinhKy, UpdatedAt, IsDeleted) 
+                             VALUES (@id, @name, @cat, @dept, @date, @price, @condition, @nextMaint, GETDATE(), 0)";
 
             SqlParameter[] p = {
                 new SqlParameter("@id", txtMaTB.Text), new SqlParameter("@name", txtTenTB.Text),
                 new SqlParameter("@cat", cboLoaiTB.SelectedValue), new SqlParameter("@dept", cboKhoaPhong.SelectedValue),
-                new SqlParameter("@date", dtpNgayNhap.Value), new SqlParameter("@price", price),
-                new SqlParameter("@condition", cboTinhTrang.Text)
+                new SqlParameter("@date", importDate), new SqlParameter("@price", price),
+                new SqlParameter("@condition", cboTinhTrang.Text), new SqlParameter("@nextMaint", nextMaintenanceDate)
             };
             DataProvider.Instance.ExecuteNonQuery(query, p);
             MessageBox.Show("Thêm mới thành công!");
@@ -467,11 +500,83 @@ namespace Lib_Equipment
         {
             try
             {
-                string q = "SELECT COUNT(*) FROM Equipment WHERE NgayBaoTriDinhKy <= GETDATE() AND Condition != N'Đề xuất thanh lý' AND IsDeleted = 0";
+                string q = $@"
+                    SELECT COUNT(*) 
+                    FROM Equipment e 
+                    WHERE {sqlDynamicMaintenanceDate} <= CAST(GETDATE() AS DATE) 
+                      AND e.Condition != N'Đề xuất thanh lý' 
+                      AND (e.IsDeleted = 0 OR e.IsDeleted IS NULL)";
+
                 int count = (int)DataProvider.Instance.ExecuteScalar(q);
-                if (count > 0) MessageBox.Show($"Hệ thống: Có {count} thiết bị cần bảo trì định kỳ!", "Cảnh báo bảo trì", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                if (count > 0)
+                {
+                    lblMaintenanceAlert.Text = $"⚠️ Có {count} thiết bị quá hạn bảo trì! (click)";
+
+                    // LỆNH TỰ TÍNH TOÁN ĐẨY LABEL SÁT VÀO GÓC TRÊN BÊN PHẢI (Cách mép phải 30px, mép trên 15px)
+                    lblMaintenanceAlert.Left = this.ClientSize.Width - lblMaintenanceAlert.Width - 30;
+                    lblMaintenanceAlert.Top = 15;
+
+                    lblMaintenanceAlert.Visible = true;
+                }
+                else
+                {
+                    lblMaintenanceAlert.Visible = false;
+                }
             }
-            catch { }
+            catch (Exception)
+            {
+                lblMaintenanceAlert.Visible = false;
+            }
+        }
+
+        private void LblMaintenanceAlert_Click(object sender, EventArgs e)
+        {
+            LoadData(showOnlyOverdue: true);
+        }
+
+        private void DgvThietBi_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= dgvThietBi.Rows.Count) return;
+
+            if (dgvThietBi.Columns.Contains("NgayBaoTriDinhKy"))
+            {
+                var cellValue = dgvThietBi.Rows[e.RowIndex].Cells["NgayBaoTriDinhKy"].Value;
+                string condition = dgvThietBi.Rows[e.RowIndex].Cells["Condition"].Value?.ToString();
+
+                if (cellValue != null && cellValue != DBNull.Value && condition != "Đề xuất thanh lý")
+                {
+                    DateTime maintDate = Convert.ToDateTime(cellValue);
+                    if (maintDate <= DateTime.Now)
+                    {
+                        dgvThietBi.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.FromArgb(255, 204, 204);
+                        dgvThietBi.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.DarkRed;
+                    }
+                }
+            }
+        }
+
+        // =========================================================
+        // HÀM CHẠY NGẦM: TỰ ĐỘNG CHUYỂN TRẠNG THÁI THIẾT BỊ QUÁ HẠN
+        // =========================================================
+        private void TuDongCapNhatTrangThaiBaoTri()
+        {
+            try
+            {
+                string query = $@"
+                    UPDATE e 
+                    SET e.Condition = N'Cần bảo trì' 
+                    FROM Equipment e
+                    WHERE {sqlDynamicMaintenanceDate} <= CAST(GETDATE() AS DATE) 
+                      AND e.Condition NOT IN (N'Cần bảo trì', N'Đang bảo trì', N'Đề xuất thanh lý', N'Đã thanh lý') 
+                      AND (e.IsDeleted = 0 OR e.IsDeleted IS NULL)";
+
+                DataProvider.Instance.ExecuteNonQuery(query, null);
+            }
+            catch (Exception)
+            {
+                // Bỏ qua lỗi ngầm để không làm crash form
+            }
         }
 
         private void btnInQR_Click(object sender, EventArgs e)

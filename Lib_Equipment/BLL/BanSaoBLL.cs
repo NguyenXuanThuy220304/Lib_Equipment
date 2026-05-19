@@ -31,7 +31,7 @@ namespace Lib_Equipment.BLL
 
             if (BanSaoDAO.Instance.AddCopiesBatch(bookId, startNumber, quantity))
             {
-                msg = $"Đã nhập kho thành công {quantity} cuốn sách.\nMã vạch sinh ra từ: {bookId}-{startNumber:D2} đến {bookId}-{(startNumber + quantity - 1):D2}";
+                msg = $"Đã nhập kho thành công {quantity} cuốn sách.\nMã vạch sinh ra từ: {bookId}-{startNumber:D1} đến {bookId}-{(startNumber + quantity - 1):D1}";
                 return true;
             }
 

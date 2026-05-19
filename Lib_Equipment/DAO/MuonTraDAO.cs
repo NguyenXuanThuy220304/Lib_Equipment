@@ -112,12 +112,9 @@ namespace Lib_Equipment.DAO
             UPDATE BookCopy SET Status = @status WHERE CopyID = @copy;
 
             -- 3. XỬ LÝ ĐỘC GIẢ: 
-            -- - Trừ hết công nợ về 0.
-            -- - Nếu KHÔNG BỊ CẤM VĨNH VIỄN (IsPermanentlyBanned = 0) thì mở khóa (Status = 1).
-            -- - Nếu ĐANG BỊ CẤM VĨNH VIỄN thì vẫn giữ Status = 0.
+            -- CHỈ mở khóa thẻ (nếu ko bị cấm vĩnh viễn), TUYỆT ĐỐI KHÔNG reset nợ về 0 ở đây nữa.
             UPDATE Reader
-            SET AcademicDebt = 0,
-                Status = CASE 
+            SET Status = CASE 
                             WHEN IsPermanentlyBanned = 0 THEN 1 
                             ELSE 0 
                          END
@@ -131,14 +128,13 @@ namespace Lib_Equipment.DAO
         END CATCH;";
 
             SqlParameter[] param = {
-        new SqlParameter("@rec", recordId),
-        new SqlParameter("@copy", copyId),
-        new SqlParameter("@cond", condition),
-        new SqlParameter("@fine", fineAmount),
-        new SqlParameter("@status", newStatus)
-    };
+                new SqlParameter("@rec", recordId),
+                new SqlParameter("@copy", copyId),
+                new SqlParameter("@cond", condition),
+                new SqlParameter("@fine", fineAmount),
+                new SqlParameter("@status", newStatus)
+            };
 
-            // Gọi DataProvider để thực thi
             return DataProvider.Instance.ExecuteNonQuery(sqlReturn, param) > 0;
         }
 
